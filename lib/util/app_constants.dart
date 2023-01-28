@@ -78,12 +78,14 @@ class AppConstants {
   static const String THEME = '6am_mart_store_theme';
   static const String INTRO = '6am_mart_store_intro';
   static const String TOKEN = '6am_mart_store_token';
+  static const String TYPE = '6am_mart_store_type';
   static const String COUNTRY_CODE = '6am_mart_store_country_code';
   static const String LANGUAGE_CODE = '6am_mart_store_language_code';
   static const String CART_LIST = '6am_mart_store_cart_list';
   static const String USER_PASSWORD = '6am_mart_store_user_password';
   static const String USER_ADDRESS = '6am_mart_store_user_address';
   static const String USER_NUMBER = '6am_mart_store_user_number';
+  static const String USER_TYPE = '6am_mart_store_user_type';
   static const String NOTIFICATION = '6am_mart_store_notification';
   static const String NOTIFICATION_COUNT = '6am_mart_store_notification_count';
   static const String SEARCH_HISTORY = '6am_mart_store_search_history';
