@@ -1,3 +1,4 @@
+import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/response/config_model.dart';
 import 'package:sixam_mart_store/data/repository/splash_repo.dart';
@@ -79,12 +80,29 @@ class SplashController extends GetxController implements GetxService {
     _moduleType = moduleType;
     if(moduleType != null) {
       _configModel.moduleConfig.module = Module.fromJson(_data['module_config'][moduleType]);
-      print('-------${_configModel.moduleConfig.module.toJson()}');
     }
     update();
   }
 
-  Module getModule(String moduleType) => Module.fromJson(_data['module_config'][moduleType]);
+  Module getModuleConfig(String moduleType) {
+    Module _module = Module.fromJson(_data['module_config'][moduleType]);
+    if(moduleType == 'food') {
+      _module.newVariation = true;
+    }else {
+      _module.newVariation = false;
+    }
+    return _module;
+  }
+
+  Module getStoreModuleConfig() {
+    Module _module = Module.fromJson(_data['module_config'][Get.find<AuthController>().profileModel.stores.first.module.moduleType]);
+    if(Get.find<AuthController>().profileModel.stores.first.module.moduleType == 'food') {
+      _module.newVariation = true;
+    }else {
+      _module.newVariation = false;
+    }
+    return _module;
+  }
 
   Future<void> getHtmlText(bool isPrivacyPolicy) async {
     _htmlText = null;

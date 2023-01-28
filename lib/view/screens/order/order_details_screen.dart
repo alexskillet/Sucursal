@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:photo_view/photo_view.dart';
 import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/controller/localization_controller.dart';
@@ -11,6 +10,7 @@ import 'package:sixam_mart_store/data/model/response/order_details_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_model.dart';
 import 'package:sixam_mart_store/helper/date_converter.dart';
 import 'package:sixam_mart_store/helper/price_converter.dart';
+import 'package:sixam_mart_store/helper/responsive_helper.dart';
 import 'package:sixam_mart_store/helper/route_helper.dart';
 import 'package:sixam_mart_store/util/app_constants.dart';
 import 'package:sixam_mart_store/util/dimensions.dart';
@@ -21,6 +21,7 @@ import 'package:sixam_mart_store/view/base/custom_app_bar.dart';
 import 'package:sixam_mart_store/view/base/custom_button.dart';
 import 'package:sixam_mart_store/view/base/custom_image.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
+import 'package:sixam_mart_store/view/screens/order/invoice_print_screen.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/order_item_widget.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/slider_button.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/verify_delivery_sheet.dart';
@@ -41,6 +42,14 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBindingObserver{
   Timer _timer;
 
+  Future<void> loadData() async {
+    await Get.find<OrderController>().getOrderDetails(widget.orderId); ///order
+
+    Get.find<OrderController>().getOrderItemsDetails(widget.orderId); ///order details
+
+    _startApiCalling();
+  }
+
   void _startApiCalling(){
     _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       Get.find<OrderController>().getOrderDetails(widget.orderId);
@@ -51,11 +60,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
   void initState() {
     super.initState();
 
-    Get.find<OrderController>().getOrderDetails(widget.orderId);
-
-    Get.find<OrderController>().getOrderItemsDetails(widget.orderId);
-
-    _startApiCalling();
+    Get.find<OrderController>().clearPreviousData();
+    loadData();
   }
 
   @override
@@ -117,20 +123,27 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
           double _tax = 0;
           double _addOns = 0;
           double _dmTips = 0;
+          bool _isPrescriptionOrder = false;
           OrderModel _order = _controllerOrderModer;
           if(_order != null && orderController.orderDetailsModel != null) {
             if(_order.orderType == 'delivery') {
               _deliveryCharge = _order.deliveryCharge;
               _dmTips = _order.dmTips;
+              _isPrescriptionOrder = _order.prescriptionOrder;
             }
             _discount = _order.storeDiscountAmount;
             _tax = _order.totalTaxAmount;
             _couponDiscount = _order.couponDiscountAmount;
-            for(OrderDetailsModel orderDetails in orderController.orderDetailsModel) {
-              for(AddOn addOn in orderDetails.addOns) {
-                _addOns = _addOns + (addOn.price * addOn.quantity);
+            if(_isPrescriptionOrder){
+              double orderAmount = _order.orderAmount ?? 0;
+              _itemsPrice = (orderAmount + _discount) - (_tax + _deliveryCharge );
+            }else {
+              for (OrderDetailsModel orderDetails in orderController.orderDetailsModel) {
+                for (AddOn addOn in orderDetails.addOns) {
+                  _addOns = _addOns + (addOn.price * addOn.quantity);
+                }
+                _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
               }
-              _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
             }
           }
           double _subTotal = _itemsPrice + _addOns;
@@ -232,20 +245,38 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
                 ]) : SizedBox(),
 
-                (Get.find<SplashController>().getModule(_order.moduleType).orderAttachment && _order.orderAttachment != null
+                (Get.find<SplashController>().getModuleConfig(_order.moduleType).orderAttachment && _order.orderAttachment != null
                 && _order.orderAttachment.isNotEmpty) ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('prescription'.tr, style: robotoRegular),
                   SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                  InkWell(
-                    onTap: () => openDialog(context, '${Get.find<SplashController>().configModel.baseUrls.orderAttachmentUrl}/${_order.orderAttachment}'),
-                    child: Center(child: ClipRRect(
-                      borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                      child: CustomImage(
-                        image: '${Get.find<SplashController>().configModel.baseUrls.orderAttachmentUrl}/${_order.orderAttachment}',
-                        width: 200,
+
+                  GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 1,
+                        crossAxisCount: ResponsiveHelper.isTab(context) ? 5 : 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 5,
                       ),
-                    )),
-                  ),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _order.orderAttachment.length,
+                      itemBuilder: (BuildContext context, index) {
+                        print('---> ${Get.find<SplashController>().configModel.baseUrls.orderAttachmentUrl}/${_order.orderAttachment[index]}');
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InkWell(
+                            onTap: () => openDialog(context, '${Get.find<SplashController>().configModel.baseUrls.orderAttachmentUrl}/${_order.orderAttachment[index]}'),
+                            child: Center(child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                              child: CustomImage(
+                                image: '${Get.find<SplashController>().configModel.baseUrls.orderAttachmentUrl}/${_order.orderAttachment[index]}',
+                                width: 100, height: 100,
+                              ),
+                            )),
+                          ),
+                        );
+                      }),
+
                   SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
                 ]) : SizedBox(),
 
@@ -301,7 +332,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   ) : SizedBox(),
                   SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
 
-                  (_order.orderStatus != 'delivered' && _order.orderStatus != 'failed'
+                  (_order.orderStatus != 'delivered' && _order.orderStatus != 'failed' && Get.find<AuthController>().modulePermission.chat
                   && _order.orderStatus != 'canceled' && _order.orderStatus != 'refunded') ? TextButton.icon(
                     onPressed: () async {
                       _timer.cancel();
@@ -365,8 +396,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       ),
                     ) : SizedBox(),
 
-                    (_controllerOrderModer.orderStatus != 'delivered' && _controllerOrderModer.orderStatus != 'failed'
-                    && _controllerOrderModer.orderStatus != 'canceled' && _controllerOrderModer.orderStatus != 'refunded') ? TextButton.icon(
+                    (_controllerOrderModer.orderStatus != 'delivered' && _controllerOrderModer.orderStatus != 'failed' && _controllerOrderModer.orderStatus != 'canceled'
+                    && _controllerOrderModer.orderStatus != 'refunded' && Get.find<AuthController>().modulePermission.chat) ? TextButton.icon(
                       onPressed: () async {
                         _timer.cancel();
                         await Get.toNamed(RouteHelper.getChatRoute(
@@ -399,7 +430,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 ]),
                 SizedBox(height: 10),
 
-                Get.find<SplashController>().getModule(_order.moduleType).addOn ? Row(
+                Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('addons'.tr, style: robotoRegular),
@@ -407,18 +438,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   ],
                 ) : SizedBox(),
 
-                Get.find<SplashController>().getModule(_order.moduleType).addOn ? Divider(
+                Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? Divider(
                   thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5),
                 ) : SizedBox(),
 
-                Get.find<SplashController>().getModule(_order.moduleType).addOn ? Row(
+                Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('subtotal'.tr, style: robotoMedium),
                     Text(PriceConverter.convertPrice(_subTotal), style: robotoMedium),
                   ],
                 ) : SizedBox(),
-                SizedBox(height: Get.find<SplashController>().getModule(_order.moduleType).addOn ? 10 : 0),
+                SizedBox(height: Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? 10 : 0),
 
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text('discount'.tr, style: robotoRegular),
@@ -583,6 +614,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
               backgroundColor: Color(0xffF4F7FC),
               baseColor: Theme.of(context).primaryColor,
             ) : SizedBox() : SizedBox(),
+
+            Padding(
+              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+              child: CustomButton(
+                onPressed: () {
+                  Get.dialog(Dialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+                    child: InVoicePrintScreen(order: _order, orderDetails: orderController.orderDetailsModel),
+                  ));
+                },
+                icon: Icons.local_print_shop,
+                buttonText: 'print_invoice'.tr,
+              ),
+            ),
+
 
           ]) : Center(child: CircularProgressIndicator());
         }),

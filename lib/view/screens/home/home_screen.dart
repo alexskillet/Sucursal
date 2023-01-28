@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
 
             GetBuilder<AuthController>(builder: (authController) {
               return Column(children: [
-                Container(
+                Get.find<AuthController>().modulePermission.storeSetup ? Container(
                   padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
@@ -100,9 +100,10 @@ class HomeScreen extends StatelessWidget {
                       },
                     ) : Shimmer(duration: Duration(seconds: 2), child: Container(height: 30, width: 50, color: Colors.grey[300])),
                   ]),
-                ),
+                ) : SizedBox(),
                 SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                Container(
+
+                authController.modulePermission.wallet ? Container(
                   padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
@@ -151,7 +152,7 @@ class HomeScreen extends StatelessWidget {
                       ])),
                     ]),
                   ]),
-                ),
+                ) : SizedBox(),
               ]);
             }),
             SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
@@ -162,7 +163,7 @@ class HomeScreen extends StatelessWidget {
                 _orderList = orderController.runningOrders[orderController.orderIndex].orderList;
               }
 
-              return Column(children: [
+              return Get.find<AuthController>().modulePermission.order ? Column(children: [
 
                 orderController.runningOrders != null ? Container(
                   height: 40,
@@ -216,7 +217,10 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
 
-              ]);
+              ]) : Center(child: Padding(
+                padding: const EdgeInsets.only(top: 100),
+                child: Text('you_have_no_permission_to_access_this_feature'.tr, style: robotoMedium),
+              ));
             }),
 
           ]),

@@ -50,6 +50,11 @@ class OrderController extends GetxController implements GetxService {
   String get orderType => _orderType;
   OrderModel get orderModel => _orderModel;
 
+  void clearPreviousData(){
+    _orderDetailsModel = null;
+    _orderModel = null;
+  }
+
   Future<void> getOrderDetails(int orderId) async{
     Response response = await orderRepo.getOrderWithId(orderId);
     if(response.statusCode == 200) {
@@ -190,14 +195,19 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getOrderItemsDetails(int orderID) async {
     _orderDetailsModel = null;
-    Response response = await orderRepo.getOrderDetails(orderID);
-    if(response.statusCode == 200) {
+
+    if(_orderModel != null && !_orderModel.prescriptionOrder){
+      Response response = await orderRepo.getOrderDetails(orderID);
+      if(response.statusCode == 200) {
+        _orderDetailsModel = [];
+        response.body.forEach((orderDetails) => _orderDetailsModel.add(OrderDetailsModel.fromJson(orderDetails)));
+      }else {
+        ApiChecker.checkApi(response);
+      }
+      update();
+    }else{
       _orderDetailsModel = [];
-      response.body.forEach((orderDetails) => _orderDetailsModel.add(OrderDetailsModel.fromJson(orderDetails)));
-    }else {
-      ApiChecker.checkApi(response);
     }
-    update();
   }
 
   void setOrderIndex(int index) {

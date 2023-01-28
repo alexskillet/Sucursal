@@ -73,7 +73,10 @@ class WithdrawRequestBottomSheet extends StatelessWidget {
               String _amount = _amountController.text.trim();
               if(_amount.isEmpty) {
                 showCustomSnackBar('enter_amount'.tr);
-              }else {
+              } else if(double.parse(_amount) > 999999){
+                showCustomSnackBar('you_cant_withdraw_more_then_1000000'.tr);
+              }
+              else {
                 bankController.requestWithdraw(_amount);
               }
             },

@@ -22,7 +22,7 @@ class NotificationController extends GetxController implements GetxService {
       response.body.forEach((notification) {
         NotificationModel _notification = NotificationModel.fromJson(notification);
         _notification.title = notification['data']['title'];
-        _notification.description = notification['data']['description'];
+        _notification.description = notification['data']['description'].toString();
         _notification.image = notification['data']['image'];
         _notificationList.add(_notification);
       });

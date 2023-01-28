@@ -113,7 +113,6 @@ class ItemWidget extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
-                    // TODO: add product
                     Get.toNamed(RouteHelper.getItemRoute(item));
                   }else {
                     showCustomSnackBar('this_feature_is_blocked_by_admin'.tr);

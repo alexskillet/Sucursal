@@ -101,7 +101,7 @@ class _NewPassScreenState extends State<NewPassScreen> {
       }else {
         Get.find<AuthController>().resetPassword(widget.resetToken, widget.email, _password, _confirmPassword).then((value) {
           if (value.isSuccess) {
-            Get.find<AuthController>().login(widget.email, _password).then((value) async {
+            Get.find<AuthController>().login(widget.email, _password, 'owner').then((value) async {
               Get.offAllNamed(RouteHelper.getInitialRoute());
             });
           } else {

@@ -1,6 +1,7 @@
 import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/controller/order_controller.dart';
 import 'package:sixam_mart_store/util/dimensions.dart';
+import 'package:sixam_mart_store/util/styles.dart';
 import 'package:sixam_mart_store/view/base/custom_app_bar.dart';
 import 'package:sixam_mart_store/view/screens/home/widget/order_button.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/count_widget.dart';
@@ -16,7 +17,7 @@ class OrderHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(title: 'order_history'.tr, isBackButtonExist: false),
       body: GetBuilder<OrderController>(builder: (orderController) {
-        return Padding(
+        return Get.find<AuthController>().modulePermission.order ? Padding(
           padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
           child: Column(children: [
 
@@ -59,7 +60,7 @@ class OrderHistoryScreen extends StatelessWidget {
             ),
 
           ]),
-        );
+        ) : Center(child: Text('you_have_no_permission_to_access_this_feature'.tr, style: robotoMedium));
       }),
     );
   }

@@ -19,12 +19,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isOwner;
 
   @override
   void initState() {
     super.initState();
 
     Get.find<AuthController>().getProfile();
+
+    _isOwner = Get.find<AuthController>().getUserType() == 'owner';
   }
 
   @override
@@ -43,8 +46,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             alignment: Alignment.center,
             child: ClipOval(child: FadeInImage.assetNetwork(
               placeholder: Images.placeholder,
-              image: '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}'
-                  '/${authController.profileModel != null ? authController.profileModel.image : ''}',
+              image: _isOwner ? '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}'
+                  '/${authController.profileModel != null ? authController.profileModel.image : ''}'
+                  : '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}/${authController.profileModel.image}',
               height: 100, width: 100, fit: BoxFit.cover,
               imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholder, height: 100, width: 100, fit: BoxFit.cover),
             )),
@@ -54,16 +58,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
             child: Column(children: [
 
-              Text(
+              _isOwner ? Text(
                 '${authController.profileModel.fName} ${authController.profileModel.lName}',
+                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+              ) : Text(
+                '${authController.profileModel.employeeInfo.fName} ${authController.profileModel.employeeInfo.lName}',
                 style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
               ),
               SizedBox(height: 30),
 
               Row(children: [
-                ProfileCard(title: 'since_joining'.tr, data: '${authController.profileModel.memberSinceDays} ${'days'.tr}'),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
-                ProfileCard(title: 'total_order'.tr, data: authController.profileModel.orderCount.toString()),
+                _isOwner ? ProfileCard(title: 'since_joining'.tr, data: '${authController.profileModel.memberSinceDays} ${'days'.tr}') : SizedBox(),
+                SizedBox(width: Get.find<AuthController>().modulePermission.order && _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
+                Get.find<AuthController>().modulePermission.order ? ProfileCard(title: 'total_order'.tr, data: authController.profileModel.orderCount.toString()) : SizedBox(),
               ]),
               SizedBox(height: 30),
 
@@ -80,17 +87,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
-              SwitchButton(icon: Icons.lock, title: 'change_password'.tr, onTap: () {
+              _isOwner ? SwitchButton(icon: Icons.lock, title: 'change_password'.tr, onTap: () {
                 Get.toNamed(RouteHelper.getResetPasswordRoute('', '', 'password-change'));
-              }),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              }) : SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
 
-              SwitchButton(icon: Icons.edit, title: 'edit_profile'.tr, onTap: () {
+              _isOwner ? SwitchButton(icon: Icons.edit, title: 'edit_profile'.tr, onTap: () {
                 Get.toNamed(RouteHelper.getUpdateProfileRoute());
-              }),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              }) : SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
 
-              SwitchButton(
+              _isOwner ? SwitchButton(
                 icon: Icons.delete, title: 'delete_account'.tr,
                 onTap: () {
                   Get.dialog(ConfirmationDialog(icon: Images.warning, title: 'are_you_sure_to_delete_account'.tr,
@@ -98,8 +105,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onYesPressed: () => authController.removeVendor()),
                       useSafeArea: false);
                 },
-              ),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              ) : SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_LARGE : 0),
 
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('${'version'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),

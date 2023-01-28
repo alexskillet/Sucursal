@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart_store/controller/chat_controller.dart';
+import 'package:sixam_mart_store/controller/localization_controller.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
 import 'package:sixam_mart_store/data/model/body/notification_body.dart';
 import 'package:sixam_mart_store/data/model/response/conversation_model.dart';
@@ -169,14 +170,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                       ]),
                                     ),
 
-                                    _user != null ? Positioned( right: 5,bottom: 5,
+                                    _user != null ? Positioned(
+                                      right: Get.find<LocalizationController>().isLtr ? 5 : null, bottom: 5, left: Get.find<LocalizationController>().isLtr ? null : 5,
                                       child: Text(
                                         DateConverter.localDateToIsoStringAMPM(DateConverter.dateTimeStringToDate(conversation.lastMessageTime)),
                                         style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL),
                                       ),
                                     ) : SizedBox(),
 
-                                    (conversation.unreadMessageCount > 0) ? Positioned( right: 5,top: 5, child: Container(
+                                    (conversation.unreadMessageCount > 0) ? Positioned(
+                                      right: Get.find<LocalizationController>().isLtr ? 5 : null, top: 5, left: Get.find<LocalizationController>().isLtr ? null : 5,
+                                      child: Container(
                                         padding: EdgeInsets.all(
                                           conversation.lastMessage != null ? (conversation.lastMessage.senderId == _user.id)
                                               ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0.0 : Dimensions.PADDING_SIZE_EXTRA_SMALL,

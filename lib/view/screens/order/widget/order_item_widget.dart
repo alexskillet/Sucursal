@@ -1,4 +1,5 @@
 import 'package:sixam_mart_store/controller/splash_controller.dart';
+import 'package:sixam_mart_store/data/model/response/item_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_details_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_model.dart';
 import 'package:sixam_mart_store/helper/price_converter.dart';
@@ -15,8 +16,6 @@ class OrderItemWidget extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    print('--------${'${order.itemCampaign == 1 ? Get.find<SplashController>().configModel.baseUrls.campaignImageUrl
-        : Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${orderDetails.itemDetails.image}'}');
     String _addOnText = '';
     orderDetails.addOns.forEach((addOn) {
       _addOnText = _addOnText + '${(_addOnText.isEmpty) ? '' : ',  '}${addOn.name} (${addOn.quantity})';
@@ -24,15 +23,25 @@ class OrderItemWidget extends StatelessWidget {
 
     String _variationText = '';
     if(orderDetails.variation.length > 0) {
-      List<String> _variationTypes = orderDetails.variation[0].type.split('-');
-      if(_variationTypes.length == orderDetails.itemDetails.choiceOptions.length) {
-        int _index = 0;
-        orderDetails.itemDetails.choiceOptions.forEach((choice) {
-          _variationText = _variationText + '${(_index == 0) ? '' : ',  '}${choice.title} - ${_variationTypes[_index]}';
-          _index = _index + 1;
-        });
-      }else {
-        _variationText = orderDetails.itemDetails.variations[0].type;
+      if(orderDetails.variation.length > 0) {
+        List<String> _variationTypes = orderDetails.variation[0].type.split('-');
+        if(_variationTypes.length == orderDetails.itemDetails.choiceOptions.length) {
+          int _index = 0;
+          orderDetails.itemDetails.choiceOptions.forEach((choice) {
+            _variationText = _variationText + '${(_index == 0) ? '' : ',  '}${choice.title} - ${_variationTypes[_index]}';
+            _index = _index + 1;
+          });
+        }else {
+          _variationText = orderDetails.itemDetails.variations[0].type;
+        }
+      }
+    }else if(orderDetails.foodVariation.length > 0) {
+      for(FoodVariation variation in orderDetails.foodVariation) {
+        _variationText += '${_variationText.isNotEmpty ? ', ' : ''}${variation.name} (';
+        for(VariationValue value in variation.variationValues) {
+          _variationText += '${_variationText.endsWith('(') ? '' : ', '}${value.level}';
+        }
+        _variationText += ')';
       }
     }
     
@@ -98,7 +107,7 @@ class OrderItemWidget extends StatelessWidget {
         ]),
       ) : SizedBox(),
 
-      orderDetails.itemDetails.variations.length > 0 ? Padding(
+      _variationText.isNotEmpty ? Padding(
         padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_EXTRA_SMALL),
         child: Row(children: [
           SizedBox(width: 60),

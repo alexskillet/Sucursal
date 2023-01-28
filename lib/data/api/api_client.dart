@@ -20,20 +20,24 @@ class ApiClient extends GetxService {
   final int timeoutInSeconds = 30;
 
   String token;
+  String type;
   Map<String, String> _mainHeaders;
 
   ApiClient({@required this.appBaseUrl, @required this.sharedPreferences}) {
     token = sharedPreferences.getString(AppConstants.TOKEN);
+    type = sharedPreferences.getString(AppConstants.TYPE);
     debugPrint('Token: $token');
-    updateHeader(token, sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null);
+    debugPrint('Type: $type');
+    updateHeader(token, sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null, type);
   }
 
-  void updateHeader(String token, String languageCode, int moduleID) {
+  void updateHeader(String token, String languageCode, int moduleID, String type) {
     _mainHeaders = {
       'Content-Type': 'application/json; charset=UTF-8',
       AppConstants.LOCALIZATION_KEY: languageCode ?? AppConstants.languages[0].languageCode,
       AppConstants.MODULE_ID: moduleID != null ? moduleID.toString() : null,
-      'Authorization': 'Bearer $token'
+      'Authorization': 'Bearer $token',
+      'vendorType': type,
     };
   }
 

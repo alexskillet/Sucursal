@@ -120,32 +120,9 @@ class ItemDetailsScreen extends StatelessWidget {
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
 
-              item.variations.length > 0 ? Text('variations'.tr, style: robotoMedium) : SizedBox(),
-              SizedBox(height: item.variations.length > 0 ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
-              item.variations.length > 0 ? ListView.builder(
-                itemCount: item.variations.length,
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  return Row(children: [
-
-                    Text(item.variations[index].type+':', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-                    SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                    Text(
-                      PriceConverter.convertPrice(item.variations[index].price),
-                      style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-                    ),
-                    SizedBox(width: _module.stock ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
-                    _module.stock ? Text(
-                      '(${item.variations[index].stock})',
-                      style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-                    ) : SizedBox(),
-
-                  ]);
-                },
-              ) : SizedBox(),
-              SizedBox(height: item.variations.length > 0 ? Dimensions.PADDING_SIZE_LARGE : 0),
+              Get.find<SplashController>().getStoreModuleConfig().newVariation ? FoodVariationView(
+                item: item,
+              ) : VariationView(item: item, stock: _module.stock),
 
               Row(children: [
                 _module.stock ? Text('${'total_stock'.tr}:', style: robotoMedium) : SizedBox(),
@@ -234,3 +211,102 @@ class ItemDetailsScreen extends StatelessWidget {
     );
   }
 }
+
+class VariationView extends StatelessWidget {
+  final Item item;
+  final bool stock;
+  const VariationView({Key key, @required this.item, @required this.stock}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+
+      (item.variations != null && item.variations.length > 0) ? Text('variations'.tr, style: robotoMedium) : SizedBox(),
+      SizedBox(height: (item.variations != null && item.variations.length > 0) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+
+      (item.variations != null && item.variations.length > 0) ? ListView.builder(
+        itemCount: item.variations.length,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        itemBuilder: (context, index) {
+          return Row(children: [
+
+            Text(item.variations[index].type+':', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
+            SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            Text(
+              PriceConverter.convertPrice(item.variations[index].price),
+              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+            ),
+            SizedBox(width: stock ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+            stock ? Text(
+              '(${item.variations[index].stock})',
+              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+            ) : SizedBox(),
+
+          ]);
+        },
+      ) : SizedBox(),
+
+      SizedBox(height: (item.variations != null && item.variations.length > 0) ? Dimensions.PADDING_SIZE_LARGE : 0),
+
+    ]);
+  }
+}
+
+class FoodVariationView extends StatelessWidget {
+  final Item item;
+  const FoodVariationView({Key key, @required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+
+      (item.foodVariations != null && item.foodVariations.length > 0) ? Text('variations'.tr, style: robotoMedium) : SizedBox(),
+      SizedBox(height: (item.foodVariations != null && item.foodVariations.length > 0) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+
+      (item.foodVariations != null && item.foodVariations.length > 0) ? ListView.builder(
+        itemCount: item.foodVariations.length,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+              Row(children: [
+                Text('${item.foodVariations[index].name +' - '}', style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_DEFAULT)),
+                Text(
+                  ' ${item.foodVariations[index].type == 'multi' ? 'multiple_select'.tr : 'single_select'.tr}'
+                    ' (${item.foodVariations[index].required == 'on' ? 'required'.tr : 'optional'.tr})',
+                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                ),
+              ]),
+
+              SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+
+              ListView.builder(
+                itemCount: item.foodVariations[index].variationValues.length,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(left: 20),
+                shrinkWrap: true,
+                itemBuilder: (context, i){
+                  return Text(
+                    '${item.foodVariations[index].variationValues[i].level}'
+                        ' - ${PriceConverter.convertPrice(double.parse(item.foodVariations[index].variationValues[i].optionPrice))}',
+                    style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL),
+                  );
+                },
+              ),
+
+            ]),
+          );
+        },
+      ) : SizedBox(),
+
+      SizedBox(height: (item.foodVariations != null && item.foodVariations.length > 0) ? Dimensions.PADDING_SIZE_LARGE : 0),
+
+    ]);
+  }
+}
+

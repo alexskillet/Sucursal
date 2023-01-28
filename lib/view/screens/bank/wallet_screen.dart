@@ -25,7 +25,7 @@ class WalletScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'wallet'.tr, isBackButtonExist: false),
       body: GetBuilder<AuthController>(builder: (authController) {
         return GetBuilder<BankController>(builder: (bankController) {
-          return (authController.profileModel != null && bankController.withdrawList != null) ? RefreshIndicator(
+          return authController.modulePermission.wallet ? (authController.profileModel != null && bankController.withdrawList != null) ? RefreshIndicator(
             onRefresh: () async {
               await Get.find<AuthController>().getProfile();
               await Get.find<BankController>().getWithdrawList();
@@ -123,7 +123,9 @@ class WalletScreen extends StatelessWidget {
 
               ]),
             ),
-          ) : Center(child: CircularProgressIndicator());
+          ) : Center(child: CircularProgressIndicator())
+              : Center(child: Text('you_have_no_permission_to_access_this_feature'.tr, style: robotoMedium),
+          );
         });
       }),
     );

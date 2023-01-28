@@ -23,6 +23,8 @@ class ProfileModel {
   double thisWeekEarning;
   double thisMonthEarning;
   List<Store> stores;
+  List<String> roles;
+  EmployeeInfo employeeInfo;
 
   ProfileModel(
       {this.id,
@@ -48,7 +50,10 @@ class ProfileModel {
         this.todaysEarning,
         this.thisWeekEarning,
         this.thisMonthEarning,
-        this.stores});
+        this.stores,
+        this.roles,
+        this.employeeInfo,
+      });
 
   ProfileModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -80,6 +85,13 @@ class ProfileModel {
         stores.add(new Store.fromJson(v));
       });
     }
+    if(json['roles'] != null) {
+      roles = [];
+      json['roles'].forEach((v) => roles.add(v));
+    }
+    if(json['employee_info'] != null){
+      employeeInfo = EmployeeInfo.fromJson(json['employee_info']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -110,6 +122,7 @@ class ProfileModel {
     if (this.stores != null) {
       data['stores'] = this.stores.map((v) => v.toJson()).toList();
     }
+    data['employee_info'] = this.employeeInfo;
     return data;
   }
 }
@@ -213,7 +226,7 @@ class Store {
     reviewsSection = json['reviews_section'];
     itemSection = json['item_section'];
     avgRating = json['avg_rating'].toDouble();
-    ratingCount = json['rating_count '];
+    ratingCount = json['rating_count'];
     active = json['active'];
     gstStatus = json['gst_status'];
     gstCode = json['gst_code'];
@@ -279,6 +292,51 @@ class Store {
     if (this.schedules != null) {
       data['schedules'] = this.schedules.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+class EmployeeInfo {
+  int id;
+  String fName;
+  String lName;
+  String phone;
+  String email;
+  String image;
+  int employeeRoleId;
+  int storeId;
+
+  EmployeeInfo(
+      {this.id,
+        this.fName,
+        this.lName,
+        this.phone,
+        this.email,
+        this.image,
+        this.employeeRoleId,
+        this.storeId,
+      });
+
+  EmployeeInfo.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    fName = json['f_name'];
+    lName = json['l_name'];
+    phone = json['phone'];
+    email = json['email'];
+    image = json['image'];
+    employeeRoleId = json['employee_role_id'];
+    storeId = json['store_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['f_name'] = this.fName;
+    data['l_name'] = this.lName;
+    data['phone'] = this.phone;
+    data['email'] = this.email;
+    data['image'] = this.image;
+    data['employee_role_id'] = this.employeeRoleId;
+    data['store_id'] = this.storeId;
     return data;
   }
 }

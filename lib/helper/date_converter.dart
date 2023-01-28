@@ -56,6 +56,10 @@ class DateConverter {
     return DateFormat('dd MMM yyyy').format(DateFormat('yyyy-MM-dd').parse(date));
   }
 
+  static String dateTimeStringToMonthAndTime(String dateTime) {
+    return DateFormat('dd MMM yyyy HH:mm').format(dateTimeStringToDate(dateTime));
+  }
+
   static bool isAvailable(String start, String end, {DateTime time, bool isoTime = false}) {
     DateTime _currentTime;
     if(time != null) {

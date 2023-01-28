@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
 import 'package:sixam_mart_store/data/api/api_checker.dart';
+import 'package:sixam_mart_store/data/model/body/module_permission_body.dart';
 import 'package:sixam_mart_store/data/model/body/store_body.dart';
 import 'package:sixam_mart_store/data/model/response/address_model.dart';
 import 'package:sixam_mart_store/data/model/response/module_model.dart';
@@ -48,6 +49,8 @@ class AuthController extends GetxController implements GetxService {
   int _deliveryTimeTypeIndex = 0;
   List<ModuleModel> _moduleList;
   int _selectedModuleIndex = 0;
+  int _vendorTypeIndex = 0;
+  ModulePermissionBody _modulePermissionBody;
 
   bool get isLoading => _isLoading;
   bool get notification => _notification;
@@ -69,20 +72,33 @@ class AuthController extends GetxController implements GetxService {
   int get deliveryTimeTypeIndex => _deliveryTimeTypeIndex;
   List<ModuleModel> get moduleList => _moduleList;
   int get selectedModuleIndex => _selectedModuleIndex;
+  int get vendorTypeIndex => _vendorTypeIndex;
+  ModulePermissionBody get modulePermission => _modulePermissionBody;
+
+  void changeVendorType(int index, {bool isUpdate = true}){
+    _vendorTypeIndex = index;
+    print(_vendorTypeIndex);
+    if(isUpdate) {
+      update();
+    }
+  }
 
   void selectModuleIndex(int index) {
     _selectedModuleIndex = index;
     update();
   }
 
-  Future<ResponseModel> login(String email, String password) async {
+  Future<ResponseModel> login(String email, String password, String type) async {
     _isLoading = true;
     update();
-    Response response = await authRepo.login(email, password);
+    Response response = await authRepo.login(email, password, type);
     ResponseModel responseModel;
     if (response.statusCode == 200) {
-      authRepo.saveUserToken(response.body['token'], response.body['zone_wise_topic']);
+      authRepo.saveUserToken(response.body['token'], response.body['zone_wise_topic'], type);
+      if(response.body['role'] != null && type == 'employee'){
+      }
       await authRepo.updateToken();
+      getProfile();
       responseModel = ResponseModel(true, 'successful');
     } else {
       responseModel = ResponseModel(false, response.statusText);
@@ -98,10 +114,38 @@ class AuthController extends GetxController implements GetxService {
       _profileModel = ProfileModel.fromJson(response.body);
       Get.find<SplashController>().setModule(_profileModel.stores[0].module.id, _profileModel.stores[0].module.moduleType);
       authRepo.updateHeader(_profileModel.stores[0].module.id);
+      allowModulePermission(_profileModel.roles);
     } else {
       ApiChecker.checkApi(response);
     }
     update();
+  }
+
+  void allowModulePermission(List<String> roles) {
+    print('----------permission-------->>$roles');
+    if(roles != null && roles.isNotEmpty){
+      List<String> module = roles;
+      print(module);
+      _modulePermissionBody = ModulePermissionBody(
+        item: module.contains('item'),
+        order: module.contains('order'),
+        storeSetup: module.contains('store_setup'),
+        addon: module.contains('addon'),
+        wallet: module.contains('wallet'),
+        bankInfo: module.contains('bank_info'),
+        employee: module.contains('employee'),
+        myShop: module.contains('my_shop'),
+        customRole: module.contains('custom_role'),
+        campaign: module.contains('campaign'),
+        reviews: module.contains('reviews'),
+        pos: module.contains('pos'),
+        chat: module.contains('chat'),
+      );
+    }else{
+      _modulePermissionBody = ModulePermissionBody(item: true, order: true, storeSetup: true, addon: true, wallet: true,
+        bankInfo: true, employee: true, myShop: true, customRole: true, campaign: true, reviews: true, pos: true, chat: true,
+      );
+    }
   }
 
   Future<bool> updateUserInfo(ProfileModel updateUserModel, String token) async {
@@ -240,8 +284,8 @@ class AuthController extends GetxController implements GetxService {
     return await authRepo.clearSharedData();
   }
 
-  void saveUserNumberAndPassword(String number, String password) {
-    authRepo.saveUserNumberAndPassword(number, password);
+  void saveUserNumberAndPassword(String number, String password, String type) {
+    authRepo.saveUserNumberAndPassword(number, password, type);
   }
 
   String getUserNumber() {
@@ -249,6 +293,9 @@ class AuthController extends GetxController implements GetxService {
   }
   String getUserPassword() {
     return authRepo.getUserPassword() ?? "";
+  }
+  String getUserType() {
+    return authRepo.getUserType() ?? "";
   }
 
   Future<bool> clearUserNumberAndPassword() async {

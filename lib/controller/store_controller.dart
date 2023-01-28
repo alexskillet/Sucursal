@@ -4,6 +4,7 @@ import 'package:sixam_mart_store/controller/addon_controller.dart';
 import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
 import 'package:sixam_mart_store/data/api/api_checker.dart';
+import 'package:sixam_mart_store/data/model/body/variation_body.dart';
 import 'package:sixam_mart_store/data/model/response/attr.dart';
 import 'package:sixam_mart_store/data/model/response/category_model.dart';
 import 'package:sixam_mart_store/data/model/response/item_model.dart';
@@ -58,6 +59,8 @@ class StoreController extends GetxController implements GetxService {
   int _unitIndex = 0;
   List<String> _durations = ['min', 'hours', 'days'];
   int _durationIndex = 0;
+  List<VariationModelBody> _variationList;
+  List<String> _tagList = [];
 
   List<Item> get itemList => _itemList;
   List<ReviewModel> get storeReviewList => _storeReviewList;
@@ -93,6 +96,25 @@ class StoreController extends GetxController implements GetxService {
   int get unitIndex => _unitIndex;
   List<String> get durations => _durations;
   int get durationIndex => _durationIndex;
+  List<VariationModelBody> get variationList => _variationList;
+  List<String> get tagList => _tagList;
+
+  void setTag(String name, {bool isUpdate = true}){
+    _tagList.add(name);
+    if(isUpdate) {
+      update();
+    }
+  }
+
+  void initializeTags(String name){
+    _tagList.add(name);
+    update();
+  }
+
+  void removeTag(int index){
+    _tagList.removeAt(index);
+    update();
+  }
 
   Future<void> getItemList(String offset, String type) async {
     if(offset == '1') {
@@ -310,7 +332,7 @@ class StoreController extends GetxController implements GetxService {
     _isLoading = true;
     update();
     Map<String, String> _fields = Map();
-    if(_variantTypeList.length > 0) {
+    if(!Get.find<SplashController>().getStoreModuleConfig().newVariation && _variantTypeList.length > 0) {
       List<int> _idList = [];
       List<String> _nameList = [];
       _attributeList.forEach((attributeModel) {
@@ -333,10 +355,16 @@ class StoreController extends GetxController implements GetxService {
               : _variantTypeList[index].stockController.text.trim()});
       }
     }
-    Response response = await storeRepo.addItem(item, _rawLogo, _rawImages, _savedImages, _fields, isAdd);
+    String _tags = '';
+    _tagList.forEach((element) {
+      _tags = _tags + '${_tags.isEmpty ? '' : ','}' + element.replaceAll(' ', '');
+    });
+
+    Response response = await storeRepo.addItem(item, _rawLogo, _rawImages, _savedImages, _fields, isAdd, _tags);
     if(response.statusCode == 200) {
       Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar(isAdd ? 'product_added_successfully'.tr : 'product_updated_successfully'.tr, isError: false);
+      _tagList.clear();
       getItemList('1', 'all');
     }else {
       ApiChecker.checkApi(response);
@@ -625,6 +653,69 @@ class StoreController extends GetxController implements GetxService {
     if(notify) {
       update();
     }
+  }
+
+  void setEmptyVariationList(){
+    _variationList = [];
+  }
+
+  void setExistingVariation(List<FoodVariation> variationList) {
+    _variationList = [];
+    // print('-------${variationList.length}');
+    if(variationList != null && variationList.length > 0) {
+      variationList.forEach((variation) {
+        List<Option> _options = [];
+
+        variation.variationValues.forEach((option) {
+          _options.add(Option(
+              optionNameController: TextEditingController(text: option.level),
+              optionPriceController: TextEditingController(text: option.optionPrice)),
+          );
+        });
+
+        _variationList.add(VariationModelBody(
+            nameController: TextEditingController(text: variation.name),
+            isSingle: variation.type == 'single' ? true : false,
+            minController: TextEditingController(text: variation.min),
+            maxController: TextEditingController(text: variation.max),
+            required: variation.required == 'on' ? true : false,
+            options: _options),
+        );
+      });
+    }
+  }
+
+  void changeSelectVariationType(int index) {
+    _variationList[index].isSingle = !_variationList[index].isSingle;
+    update();
+  }
+
+  void setVariationRequired(int index) {
+    _variationList[index].required = !_variationList[index].required;
+    update();
+  }
+
+  void addVariation() {
+    _variationList.add(VariationModelBody(
+      nameController: TextEditingController(), required: false, isSingle: true, maxController: TextEditingController(), minController: TextEditingController(),
+      options: [Option(optionNameController: TextEditingController(), optionPriceController: TextEditingController())],
+    ));
+    update();
+  }
+
+  void removeVariation(int index) {
+    _variationList.removeAt(index);
+    update();
+  }
+
+  void addOptionVariation(int index) {
+    _variationList[index].options.add(Option(optionNameController: TextEditingController(), optionPriceController: TextEditingController()));
+    update();
+  }
+
+  void removeOptionVariation(int vIndex, int oIndex) {
+    _variationList[vIndex].options.removeAt(oIndex);
+    update();
   }
 
 }

@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sixam_mart_store/controller/addon_controller.dart';
 import 'package:sixam_mart_store/controller/store_controller.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
+import 'package:sixam_mart_store/data/model/body/variation_body.dart';
 import 'package:sixam_mart_store/data/model/response/attribute_model.dart';
 import 'package:sixam_mart_store/data/model/response/config_model.dart';
 import 'package:sixam_mart_store/data/model/response/item_model.dart';
@@ -21,6 +22,7 @@ import 'package:sixam_mart_store/view/base/my_text_field.dart';
 import 'package:sixam_mart_store/view/screens/store/widget/attribute_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sixam_mart_store/view/screens/store/widget/food_variation_view.dart';
 
 class AddItemScreen extends StatefulWidget {
   final Item item;
@@ -35,9 +37,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  TextEditingController _c = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
   final FocusNode _priceNode = FocusNode();
   final FocusNode _discountNode = FocusNode();
+  TextEditingController _c = TextEditingController();
   bool _update;
   Item _item;
   Module _module = Get.find<SplashController>().configModel.moduleConfig.module;
@@ -50,13 +53,22 @@ class _AddItemScreenState extends State<AddItemScreen> {
     Get.find<StoreController>().getAttributeList(widget.item);
     if(_update) {
       _item = Item.fromJson(widget.item.toJson());
+      if(_item.tags.isNotEmpty){
+        _item.tags.forEach((tag) {
+          Get.find<StoreController>().setTag(tag.tag, isUpdate: false);
+        });
+      }
       _priceController.text = _item.price.toString();
       _discountController.text = _item.discount.toString();
       _stockController.text = _item.stock.toString();
       Get.find<StoreController>().setDiscountTypeIndex(_item.discountType == 'percent' ? 0 : 1, false);
       Get.find<StoreController>().setVeg(_item.veg == 1, false);
+      if(Get.find<SplashController>().getStoreModuleConfig().newVariation) {
+        Get.find<StoreController>().setExistingVariation(_item.foodVariations);
+      }
     }else {
       _item = Item(images: []);
+      Get.find<StoreController>().setEmptyVariationList();
       Get.find<StoreController>().pickImage(false, true);
       Get.find<StoreController>().setVeg(false, false);
     }
@@ -209,7 +221,60 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ]),
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
-              AttributeView(storeController: storeController, product: widget.item),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                Row(children: [
+                  Expanded(
+                    flex: 8,
+                    child: MyTextField(
+                      hintText: 'tag'.tr,
+                      controller: _tagController,
+                      inputAction: TextInputAction.done,
+                      onSubmit: (name){
+                        storeController.setTag(name);
+                        _tagController.text = '';
+                      },
+                    ),
+                  ),
+                  SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: CustomButton(buttonText: 'add'.tr, onPressed: (){
+                        storeController.setTag(_tagController.text.trim());
+                        _tagController.text = '';
+                      }),
+                    ),
+                  )
+                ]),
+                SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+
+                storeController.tagList.isNotEmpty ? SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    shrinkWrap: true, scrollDirection: Axis.horizontal,
+                      itemCount: storeController.tagList.length,
+                      itemBuilder: (context, index){
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
+                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+                      child: Center(child: Row(children: [
+                        Text(storeController.tagList[index], style: robotoMedium.copyWith(color: Theme.of(context).cardColor)),
+                        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+
+                        InkWell(onTap: () => storeController.removeTag(index), child: Icon(Icons.clear, size: 18, color: Theme.of(context).cardColor)),
+                      ])),
+                    );
+                  }),
+                ) : SizedBox(),
+              ]),
+              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+
+              Get.find<SplashController>().getStoreModuleConfig().newVariation ? FoodVariationView(
+                storeController: storeController, item: widget.item,
+              ) : AttributeView(storeController: storeController, product: widget.item),
 
               (_module.stock || _module.unit) ? Row(children: [
                 _module.stock ? Expanded(child: MyTextField(
@@ -545,7 +610,40 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 }
                 _item.translations = [];
                 _item.translations.addAll(widget.translations);
-                storeController.addItem(_item, widget.item == null);
+                bool _hasEmptyValue = false;
+                if(Get.find<SplashController>().getStoreModuleConfig().newVariation) {
+                  _item.foodVariations = [];
+                  for(VariationModelBody variation in storeController.variationList) {
+                    if(variation.nameController.text.trim().isEmpty) {
+                      _hasEmptyValue = true;
+                      break;
+                    }
+                    List<VariationValue> _values = [];
+                    for(Option option in variation.options) {
+                      if(option.optionNameController.text.trim().isEmpty || option.optionPriceController.text.trim().isEmpty) {
+                        _hasEmptyValue = true;
+                        break;
+                      }
+                      _values.add(VariationValue(
+                        level: option.optionNameController.text.trim(),
+                        optionPrice: option.optionPriceController.text.trim(),
+                      ));
+                    }
+                    if(_hasEmptyValue) {
+                      break;
+                    }
+                    _item.foodVariations.add(FoodVariation(
+                      name: variation.nameController.text.trim(), type: variation.isSingle ? 'single' : 'multi',
+                      min: variation.minController.text.trim(), max: variation.maxController.text.trim(),
+                      required: variation.required ? 'on' : 'off', variationValues: _values,
+                    ));
+                  }
+                }
+                if(_hasEmptyValue) {
+                  showCustomSnackBar('set_value_for_all_variation'.tr);
+                }else {
+                  storeController.addItem(_item, widget.item == null);
+                }
               }
             },
           ) : Center(child: CircularProgressIndicator()),

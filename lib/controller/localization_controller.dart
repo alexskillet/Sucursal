@@ -33,9 +33,12 @@ class LocalizationController extends GetxController {
     apiClient.updateHeader(
       sharedPreferences.getString(AppConstants.TOKEN), locale.languageCode,
       Get.find<AuthController>().profileModel != null ? Get.find<AuthController>().profileModel.stores[0].module.id : null,
+        sharedPreferences.getString(AppConstants.TYPE)
     );
     saveLanguage(_locale);
-    Get.find<StoreController>().getItemList('1', 'all');
+    if(Get.find<AuthController>().isLoggedIn()){
+      Get.find<StoreController>().getItemList('1', 'all');
+    }
     update();
   }
 

@@ -51,9 +51,14 @@ class OrderWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
               ),
               alignment: Alignment.center,
-              child: Text(
-                orderModel.orderStatus.toUpperCase(),
-                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).primaryColor),
+              child: Builder(
+                builder: (context) {
+                  print('need translation---> ${orderModel.orderStatus}');
+                  return Text(
+                    orderModel.orderStatus.tr,
+                    style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).primaryColor),
+                  );
+                }
               ),
             ) : Text(
               '${orderModel.detailsCount} ${orderModel.detailsCount < 2 ? 'item'.tr : 'items'.tr}',

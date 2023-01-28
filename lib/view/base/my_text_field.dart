@@ -83,7 +83,7 @@ class _MyTextFieldState extends State<MyTextField> {
           focusNode: widget.focusNode,
           style: robotoRegular,
           textInputAction: widget.nextFocus != null ? widget.inputAction : TextInputAction.done,
-          keyboardType: (widget.isAmount || widget.isNumber) ? TextInputType.number : widget.inputType,
+          keyboardType: widget.isAmount ? TextInputType.numberWithOptions(decimal: true) : widget.isNumber ? TextInputType.number : widget.inputType,
           autofillHints: widget.inputType == TextInputType.name ? [AutofillHints.name]
               : widget.inputType == TextInputType.emailAddress ? [AutofillHints.email]
               : widget.inputType == TextInputType.phone ? [AutofillHints.telephoneNumber]

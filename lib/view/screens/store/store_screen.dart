@@ -46,7 +46,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
         return Scaffold(
           backgroundColor: Theme.of(context).cardColor,
 
-          floatingActionButton: storeController.tabIndex == 0 ? FloatingActionButton(
+          floatingActionButton: storeController.tabIndex == 0 && Get.find<AuthController>().modulePermission.item ? FloatingActionButton(
             heroTag: 'nothing',
             onPressed: () {
               if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
@@ -77,7 +77,13 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                     decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
                     child: Image.asset(Images.edit),
                   ),
-                  onPressed: () => Get.toNamed(RouteHelper.getStoreSettingsRoute(_store)),
+                  onPressed: () {
+                    if(Get.find<AuthController>().modulePermission.storeSetup && Get.find<AuthController>().modulePermission.myShop){
+                      Get.toNamed(RouteHelper.getStoreSettingsRoute(_store));
+                    }else{
+                      showCustomSnackBar('access_denied'.tr);
+                    }
+                  },
                 )],
                 flexibleSpace: FlexibleSpaceBar(
                   background: CustomImage(
@@ -210,11 +216,14 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                 animation: _tabController.animation,
                 builder: (context, child) {
                   if (_tabController.index == 0) {
-                    return ItemView(scrollController: _scrollController, type: storeController.type, onVegFilterTap: (String type) {
+                    return Get.find<AuthController>().modulePermission.item ? ItemView(scrollController: _scrollController, type: storeController.type, onVegFilterTap: (String type) {
                       Get.find<StoreController>().getItemList('1', type);
-                    });
+                    }) : Center(child: Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Text('you_have_no_permission_to_access_this_feature'.tr, style: robotoMedium),
+                    ));
                   } else {
-                    return storeController.storeReviewList != null ? storeController.storeReviewList.length > 0 ? ListView.builder(
+                    return Get.find<AuthController>().modulePermission.reviews ? storeController.storeReviewList != null ? storeController.storeReviewList.length > 0 ? ListView.builder(
                       itemCount: storeController.storeReviewList.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -231,7 +240,10 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                     ) : Padding(
                       padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_LARGE),
                       child: Center(child: CircularProgressIndicator()),
-                    );
+                    ) : Center(child: Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Text('you_have_no_permission_to_access_this_feature'.tr, style: robotoMedium),
+                    ));
                   }
                 },
               )),

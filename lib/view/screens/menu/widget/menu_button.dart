@@ -76,8 +76,9 @@ class ProfileImageWidget extends StatelessWidget {
         decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(width: 2, color: Colors.white)),
         child: ClipOval(
           child: CustomImage(
-            image: '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}'
-                '/${(authController.profileModel != null && Get.find<AuthController>().isLoggedIn()) ? authController.profileModel.image ?? '' : ''}',
+            image: Get.find<AuthController>().getUserType() == 'owner' ? '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}'
+                '/${(authController.profileModel != null && Get.find<AuthController>().isLoggedIn()) ? authController.profileModel.image ?? '' : ''}'
+            : '${Get.find<SplashController>().configModel.baseUrls.storeImageUrl}/${authController.profileModel.stores[0].logo}',
             width: size, height: size, fit: BoxFit.cover,
           ),
         ),

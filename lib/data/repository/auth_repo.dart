@@ -15,8 +15,8 @@ class AuthRepo {
   final SharedPreferences sharedPreferences;
   AuthRepo({@required this.apiClient, @required this.sharedPreferences});
 
-  Future<Response> login(String email, String password) async {
-    return await apiClient.postData(AppConstants.LOGIN_URI, {"email": email, "password": password});
+  Future<Response> login(String email, String password, String type) async {
+    return await apiClient.postData(AppConstants.LOGIN_URI, {"email": email, "password": password, 'vendor_type': type});
   }
 
   Future<Response> getProfileInfo() async {
@@ -86,15 +86,21 @@ class AuthRepo {
     );
   }
 
-  Future<bool> saveUserToken(String token, String zoneTopic) async {
-    apiClient.updateHeader(token, sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null);
+  Future<bool> saveUserToken(String token, String zoneTopic, String type) async {
+    apiClient.updateHeader(token, sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null, type);
     sharedPreferences.setString(AppConstants.ZONE_TOPIC, zoneTopic);
+    sharedPreferences.setString(AppConstants.TYPE, type);
     return await sharedPreferences.setString(AppConstants.TOKEN, token);
   }
+
+  // Future<bool> saveUserModulePermission(String permissionList) async {
+  //   return await sharedPreferences.setString(AppConstants.MODULE_PERMISSION, permissionList);
+  // }
 
   void updateHeader(int moduleID) {
     apiClient.updateHeader(
       sharedPreferences.getString(AppConstants.TOKEN), sharedPreferences.getString(AppConstants.LANGUAGE_CODE), moduleID,
+      sharedPreferences.getString(AppConstants.TYPE),
     );
   }
 
@@ -113,13 +119,15 @@ class AuthRepo {
     }
     await sharedPreferences.remove(AppConstants.TOKEN);
     await sharedPreferences.remove(AppConstants.USER_ADDRESS);
+    await sharedPreferences.remove(AppConstants.TYPE);
     return true;
   }
 
-  Future<void> saveUserNumberAndPassword(String number, String password) async {
+  Future<void> saveUserNumberAndPassword(String number, String password, String type) async {
     try {
       await sharedPreferences.setString(AppConstants.USER_PASSWORD, password);
       await sharedPreferences.setString(AppConstants.USER_NUMBER, number);
+      await sharedPreferences.setString(AppConstants.USER_TYPE, type);
     } catch (e) {
       throw e;
     }
@@ -131,6 +139,10 @@ class AuthRepo {
 
   String getUserPassword() {
     return sharedPreferences.getString(AppConstants.USER_PASSWORD) ?? "";
+  }
+
+  String getUserType() {
+    return sharedPreferences.getString(AppConstants.TYPE) ?? "";
   }
 
   bool isNotificationActive() {
@@ -150,6 +162,7 @@ class AuthRepo {
   }
 
   Future<bool> clearUserNumberAndPassword() async {
+    await sharedPreferences.remove(AppConstants.USER_TYPE);
     await sharedPreferences.remove(AppConstants.USER_PASSWORD);
     return await sharedPreferences.remove(AppConstants.USER_NUMBER);
   }
@@ -187,7 +200,8 @@ class AuthRepo {
   Future<bool> saveUserAddress(String address, List<int> zoneIDs) async {
     apiClient.updateHeader(
       sharedPreferences.getString(AppConstants.TOKEN),
-      sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null
+      sharedPreferences.getString(AppConstants.LANGUAGE_CODE), null,
+        sharedPreferences.getString(AppConstants.TYPE)
     );
     return await sharedPreferences.setString(AppConstants.USER_ADDRESS, address);
   }

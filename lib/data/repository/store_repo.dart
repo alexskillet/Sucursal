@@ -44,12 +44,12 @@ class StoreRepo {
     );
   }
 
-  Future<Response> addItem(Item item, XFile image, List<XFile> images, List<String> savedImages, Map<String, String> attributes, bool isAdd) async {
+  Future<Response> addItem(Item item, XFile image, List<XFile> images, List<String> savedImages, Map<String, String> attributes, bool isAdd, String tags) async {
     Map<String, String> _fields = Map();
     _fields.addAll(<String, String>{
       'price': item.price.toString(), 'discount': item.discount.toString(), 'veg': item.veg.toString(),
       'discount_type': item.discountType, 'category_id': item.categoryIds[0].id,
-      'translations': jsonEncode(item.translations),
+      'translations': jsonEncode(item.translations), 'tags': tags,
     });
     if(Get.find<SplashController>().configModel.moduleConfig.module.stock) {
       _fields.addAll((<String, String> {'current_stock': item.stock.toString()}));
@@ -71,7 +71,10 @@ class StoreRepo {
     if(!isAdd) {
       _fields.addAll(<String, String> {'_method': 'put', 'id': item.id.toString(), 'images': jsonEncode(savedImages)});
     }
-    if(attributes.length > 0) {
+    if(Get.find<SplashController>().getStoreModuleConfig().newVariation && item.foodVariations.isNotEmpty) {
+      _fields.addAll({'options': jsonEncode(item.foodVariations)});
+    }
+    else if(!Get.find<SplashController>().getStoreModuleConfig().newVariation && attributes.isNotEmpty) {
       _fields.addAll(attributes);
     }
     List<MultipartBody> _images = [];

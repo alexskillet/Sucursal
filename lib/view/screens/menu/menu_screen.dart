@@ -13,24 +13,34 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<MenuModel> _menuList = [
       MenuModel(icon: '', title: 'profile'.tr, route: RouteHelper.getProfileRoute()),
-      MenuModel(icon: Images.credit_card, title: 'bank_info'.tr, route: RouteHelper.getBankInfoRoute()),
-      MenuModel(
-        icon: Images.add_food, title: 'add_item'.tr, route: RouteHelper.getItemRoute(null),
-        isBlocked: !Get.find<AuthController>().profileModel.stores[0].itemSection,
-      ),
-      MenuModel(icon: Images.campaign, title: 'campaign'.tr, route: RouteHelper.getCampaignRoute()),
-      MenuModel(icon: Images.categories, title: 'categories'.tr, route: RouteHelper.getCategoriesRoute()),
       MenuModel(icon: Images.language, title: 'language'.tr, route: RouteHelper.getLanguageRoute('menu')),
-      MenuModel(icon: Images.chat, title: 'conversation'.tr, route: RouteHelper.getConversationListRoute()),
       MenuModel(icon: Images.policy, title: 'privacy_policy'.tr, route: RouteHelper.getPrivacyRoute()),
       MenuModel(icon: Images.terms, title: 'terms_condition'.tr, route: RouteHelper.getTermsRoute()),
       MenuModel(icon: Images.log_out, title: 'logout'.tr, route: ''),
     ];
-    if(Get.find<AuthController>().profileModel.stores[0].selfDeliverySystem == 1) {
-      _menuList.insert(5, MenuModel(icon: Images.delivery_man, title: 'delivery_man'.tr, route: RouteHelper.getDeliveryManRoute()));
+    if(Get.find<AuthController>().modulePermission.item) {
+      _menuList.insert(2, MenuModel(
+        icon: Images.add_food, title: 'add_item'.tr, route: RouteHelper.getItemRoute(null),
+        isBlocked: !Get.find<AuthController>().profileModel.stores[0].itemSection,
+      ));
     }
-    if(Get.find<SplashController>().configModel.moduleConfig.module.addOn) {
-      _menuList.insert(6, MenuModel(icon: Images.addon, title: 'addons'.tr, route: RouteHelper.getAddonsRoute()));
+    if(Get.find<AuthController>().modulePermission.item) {
+      _menuList.insert(3, MenuModel(icon: Images.categories, title: 'categories'.tr, route: RouteHelper.getCategoriesRoute()));
+    }
+    if(Get.find<AuthController>().modulePermission.bankInfo) {
+      _menuList.insert(4, MenuModel(icon: Images.credit_card, title: 'bank_info'.tr, route: RouteHelper.getBankInfoRoute()));
+    }
+    if(Get.find<AuthController>().modulePermission.campaign) {
+      _menuList.insert(5, MenuModel(icon: Images.campaign, title: 'campaign'.tr, route: RouteHelper.getCampaignRoute()));
+    }
+    if(Get.find<AuthController>().profileModel.stores[0].selfDeliverySystem == 1 && Get.find<AuthController>().getUserType() == 'owner') {
+      _menuList.insert(6, MenuModel(icon: Images.delivery_man, title: 'delivery_man'.tr, route: RouteHelper.getDeliveryManRoute()));
+    }
+    if(Get.find<SplashController>().configModel.moduleConfig.module.addOn && Get.find<AuthController>().modulePermission.addon) {
+      _menuList.insert(7, MenuModel(icon: Images.addon, title: 'addons'.tr, route: RouteHelper.getAddonsRoute()));
+    }
+    if(Get.find<AuthController>().modulePermission.chat) {
+      _menuList.insert(8, MenuModel(icon: Images.chat, title: 'conversation'.tr, route: RouteHelper.getConversationListRoute()));
     }
 
     return Container(

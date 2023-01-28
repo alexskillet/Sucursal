@@ -1,5 +1,6 @@
 class ConfigModel {
   String businessName;
+  String footerText;
   String logo;
   String address;
   String phone;
@@ -38,6 +39,7 @@ class ConfigModel {
 
   ConfigModel(
       {this.businessName,
+        this.footerText,
         this.logo,
         this.address,
         this.phone,
@@ -77,6 +79,7 @@ class ConfigModel {
 
   ConfigModel.fromJson(Map<String, dynamic> json) {
     businessName = json['business_name'];
+    footerText = json['footer_text'];
     logo = json['logo'];
     address = json['address'];
     phone = json['phone'];
@@ -316,6 +319,7 @@ class Module {
   bool itemAvailableTime;
   bool showRestaurantText;
   bool isParcel;
+  bool newVariation;
   String description;
 
   Module(
@@ -330,7 +334,9 @@ class Module {
         this.itemAvailableTime,
         this.showRestaurantText,
         this.isParcel,
-        this.description});
+        this.newVariation,
+        this.description,
+      });
 
   Module.fromJson(Map<String, dynamic> json) {
     orderStatus = json['order_status'] != null ? new OrderStatus.fromJson(json['order_status']) : null;
@@ -344,6 +350,7 @@ class Module {
     itemAvailableTime = json['item_available_time'];
     showRestaurantText = json['show_restaurant_text'];
     isParcel = json['is_parcel'];
+    newVariation = json['new_variation'];
     description = json['description'];
   }
 
@@ -362,6 +369,7 @@ class Module {
     data['item_available_time'] = this.itemAvailableTime;
     data['show_restaurant_text'] = this.showRestaurantText;
     data['is_parcel'] = this.isParcel;
+    data['new_variation'] = this.newVariation;
     data['description'] = this.description;
     return data;
   }

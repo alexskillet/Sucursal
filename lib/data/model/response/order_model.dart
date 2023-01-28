@@ -68,8 +68,9 @@ class OrderModel {
   String storeLogo;
   int itemCampaign;
   int detailsCount;
-  String orderAttachment;
+  List<String> orderAttachment;
   String moduleType;
+  bool prescriptionOrder;
   Customer customer;
   double dmTips;
   int processingTime;
@@ -112,6 +113,7 @@ class OrderModel {
         this.storeLogo,
         this.itemCampaign,
         this.detailsCount,
+        this.prescriptionOrder,
         this.customer,
         this.orderAttachment,
         this.moduleType,
@@ -159,8 +161,19 @@ class OrderModel {
     storeLogo = json['store_logo'];
     itemCampaign = json['item_campaign'];
     detailsCount = json['details_count'];
-    orderAttachment = json['order_attachment'];
+    if(json['order_attachment'] != null){
+      if(json['order_attachment'].toString().startsWith('[')){
+        orderAttachment = [];
+        json['order_attachment'].forEach((v) {
+          orderAttachment.add(v);
+        });
+      }else{
+        orderAttachment = [];
+        orderAttachment.add(json['order_attachment'].toString());
+      }
+    }
     moduleType = json['module_type'];
+    prescriptionOrder = json['prescription_order'];
     customer = json['customer'] != null
         ? new Customer.fromJson(json['customer'])
         : null;
@@ -213,6 +226,7 @@ class OrderModel {
     data['details_count'] = this.detailsCount;
     data['order_attachment'] = this.orderAttachment;
     data['module_type'] = this.moduleType;
+    data['prescription_order'] = this.prescriptionOrder;
     if (this.customer != null) {
       data['customer'] = this.customer.toJson();
     }

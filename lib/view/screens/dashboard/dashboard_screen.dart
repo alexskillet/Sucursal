@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/util/dimensions.dart';
 import 'package:sixam_mart_store/util/images.dart';
+import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
 import 'package:sixam_mart_store/view/screens/bank/wallet_screen.dart';
 import 'package:sixam_mart_store/view/screens/dashboard/widget/bottom_nav_item.dart';
 import 'package:sixam_mart_store/view/screens/home/home_screen.dart';
@@ -104,7 +106,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         floatingActionButton: !GetPlatform.isMobile ? null : FloatingActionButton(
           elevation: 5,
           backgroundColor: _pageIndex == 2 ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
-          onPressed: () => _setPage(2),
+          onPressed: () {
+            _setPage(2);
+          },
           child: Image.asset(
             Images.restaurant, height: 20, width: 20,
             color: _pageIndex == 2 ? Theme.of(context).cardColor : Theme.of(context).disabledColor,

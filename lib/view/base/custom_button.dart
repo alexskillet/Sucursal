@@ -11,8 +11,9 @@ class CustomButton extends StatelessWidget {
   final double width;
   final double fontSize;
   final Color color;
+  final IconData icon;
   CustomButton({this.onPressed, @required this.buttonText, this.transparent = false, this.margin,
-    this.width, this.height, this.fontSize, this.color});
+    this.width, this.height, this.fontSize, this.color, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +32,14 @@ class CustomButton extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: _flatButtonStyle,
-        child: Text(buttonText ??'', textAlign: TextAlign.center, style: robotoBold.copyWith(
-          color: transparent ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
-          fontSize: fontSize != null ? fontSize : Dimensions.FONT_SIZE_LARGE,
-        )),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          icon != null ? Icon(icon, color: transparent ? Theme.of(context).primaryColor : Theme.of(context).cardColor) : SizedBox(),
+          SizedBox(width: icon != null ? Dimensions.PADDING_SIZE_SMALL : 0),
+          Text(buttonText ??'', textAlign: TextAlign.center, style: robotoBold.copyWith(
+            color: transparent ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+            fontSize: fontSize != null ? fontSize : Dimensions.FONT_SIZE_LARGE,
+          )),
+        ]),
       ),
     );
   }
