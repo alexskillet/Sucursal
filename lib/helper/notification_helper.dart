@@ -20,13 +20,13 @@ class NotificationHelper {
 
   static Future<void> initialize(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var androidInitialize = new AndroidInitializationSettings('notification_icon');
-    var iOSInitialize = new IOSInitializationSettings();
+    var iOSInitialize = new DarwinInitializationSettings();
     var initializationsSettings = new InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    flutterLocalNotificationsPlugin.initialize(initializationsSettings, onSelectNotification: (String payload) async{
+    flutterLocalNotificationsPlugin.initialize(initializationsSettings, onDidReceiveNotificationResponse: (NotificationResponse payload) async{
       try{
-        if(payload != null && payload.isNotEmpty){
+        if(payload != null && payload.payload.isNotEmpty){
 
-          NotificationBody _payload = NotificationBody.fromJson(jsonDecode(payload));
+          NotificationBody _payload = NotificationBody.fromJson(jsonDecode(payload.payload));
 
           if(_payload.notificationType == NotificationType.order){
             Get.offAllNamed(RouteHelper.getOrderDetailsRoute(_payload.orderId, fromNotification: true));
