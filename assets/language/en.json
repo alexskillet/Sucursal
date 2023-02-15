@@ -474,5 +474,8 @@
   "set_value_for_all_variation": "Set value for all variation",
   "you_cant_withdraw_more_then_1000000": "You can't withdraw more then 9,99,999",
   "access_denied": "For access this feature, you need  'my store' & 'store setup' both module permission.",
-  "thank_you": "Thank You"
+  "thank_you": "Thank You",
+  "update_order_amount": "Update Order Amount",
+  "update_discount_amount": "Update Discount Amount",
+  "discount_amount": "Discount Amount"
 }

@@ -39,4 +39,8 @@ class OrderRepo extends GetxService {
     return apiClient.getData('${AppConstants.CURRENT_ORDER_DETAILS_URI}$orderId');
   }
 
+  Future<Response> updateOrderAmount(Map<String, String> body) {
+    return apiClient.postData(AppConstants.UPDATE_ORDER_URI, body);
+  }
+
 }

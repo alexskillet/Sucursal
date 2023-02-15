@@ -1,25 +1,30 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pos_printer_platform/flutter_pos_printer_platform.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as i;
+import 'package:screenshot/screenshot.dart';
 import 'package:sixam_mart_store/controller/auth_controller.dart';
+import 'package:sixam_mart_store/controller/localization_controller.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
 import 'package:sixam_mart_store/data/model/body/bluetoothPrinterBody.dart';
-import 'package:sixam_mart_store/data/model/response/item_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_details_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_model.dart';
 import 'package:sixam_mart_store/data/model/response/profile_model.dart';
 import 'package:sixam_mart_store/helper/date_converter.dart';
 import 'package:sixam_mart_store/util/dimensions.dart';
 import 'package:sixam_mart_store/util/styles.dart';
+import 'package:sixam_mart_store/view/base/custom_button.dart';
 
 class InVoicePrintScreen extends StatefulWidget {
   final OrderModel order;
   final List<OrderDetailsModel> orderDetails;
-  const InVoicePrintScreen({@required this.order, @required this.orderDetails});
+  final bool isPrescriptionOrder;
+  const InVoicePrintScreen({@required this.order, @required this.orderDetails, this.isPrescriptionOrder = false});
 
   @override
   State<InVoicePrintScreen> createState() => _InVoicePrintScreenState();
@@ -40,6 +45,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
   final TextEditingController _ipController = TextEditingController();
   final TextEditingController _portController = TextEditingController();
   BluetoothPrinter _selectedPrinter;
+  bool _searchingMode = true;
 
   @override
   void initState() {
@@ -128,350 +134,11 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
     setState(() {});
   }
 
-  String _priceDecimal(double price) {
-    return price.toStringAsFixed(Get.find<SplashController>().configModel.digitAfterDecimalPoint);
-  }
-
-
-  Future _printReceipt() async {
+  Future _printReceipt(i.Image image) async {
     CapabilityProfile _profile = await CapabilityProfile.load();
     Generator _generator = Generator(_paper80MM ? PaperSize.mm80 : PaperSize.mm58, _profile);
     List<int> _bytes = [];
-
-    Store _store = Get.find<AuthController>().profileModel.stores[0];
-    _bytes += _generator.text(
-      '${_store.name}',
-      styles: const PosStyles(align: PosAlign.center, bold: true),
-    );
-    _bytes += _generator.text(
-      '${_store.address}',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    _bytes += _generator.text(
-      '${_store.phone}',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    _bytes += _generator.text(
-      '${_store.email}',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-    _bytes += _generator.text(' ', styles: const PosStyles(align: PosAlign.center));
-
-    _bytes += _generator.row([
-      PosColumn(
-        text: '${'order_id'.tr.toUpperCase()}#${widget.order.id}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: true),
-      ),
-
-      PosColumn(
-        text: 'payment_method'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-    ]);
-    _bytes += _generator.row([
-      PosColumn(
-        text: '${DateConverter.dateTimeStringToMonthAndTime(widget.order.createdAt)}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: widget.order.paymentMethod.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-    if(widget.order.scheduled == 1) {
-      _bytes += _generator.text(
-        '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(widget.order.scheduleAt)}',
-        styles: PosStyles(align: PosAlign.left),
-      );
-    }
-
-    _bytes += _generator.text(' ');
-
-    _bytes += _generator.text(
-      '${widget.order.customer.fName} ${widget.order.customer.lName}',
-      styles: const PosStyles(align: PosAlign.left),
-    );
-    _bytes += _generator.text(
-      '${widget.order.deliveryAddress.address}',
-      styles: const PosStyles(align: PosAlign.left),
-    );
-    _bytes += _generator.text(
-      '${widget.order.customer.phone}',
-      styles: const PosStyles(align: PosAlign.left),
-    );
-
-    _bytes += _generator.text(' ');
-
-    _bytes += _generator.row([
-      PosColumn(
-        text: '${'sl'.tr.toUpperCase()}',
-        width: 2,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: 'item_info'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: 'qty'.tr,
-        width: 1,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-      PosColumn(
-        text: 'price'.tr,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    for(int i =0; i< widget.orderDetails.length; i++) {
-
-      String _variationText = '';
-      print('=jdsfk=> ${widget.orderDetails[i].itemDetails.variations}');
-      if(widget.orderDetails[i].itemDetails.variations != null){
-        if(widget.orderDetails[i].itemDetails.variations.length > 0) {
-          if(widget.orderDetails[i].itemDetails.variations.length > 0) {
-            List<String> _variationTypes = widget.orderDetails[i].itemDetails.variations[0].type.split('-');
-            if(_variationTypes.length == widget.orderDetails[i].itemDetails.choiceOptions.length) {
-              int _index = 0;
-              widget.orderDetails[i].itemDetails.choiceOptions.forEach((choice) {
-                _variationText = _variationText + '${(_index == 0) ? '' : ',  '}${choice.title} - ${_variationTypes[_index]}';
-                _index = _index + 1;
-              });
-            }else {
-              _variationText = widget.orderDetails[i].itemDetails.variations[0].type;
-            }
-          }
-        }
-      }
-      else if(widget.orderDetails[i].foodVariation.length > 0) {
-        for(FoodVariation variation in widget.orderDetails[i].foodVariation) {
-          _variationText += '${_variationText.isNotEmpty ? ', ' : ''}${variation.name} (';
-          for(VariationValue value in variation.variationValues) {
-            _variationText += '${_variationText.endsWith('(') ? '' : ', '}${value.level}';
-          }
-          _variationText += ')';
-        }
-      }
-
-      print('------------------>> $_variationText');
-
-      _bytes += _generator.row([
-        PosColumn(
-          text: '${i+1}',
-          width: 1,
-          styles: PosStyles(align: PosAlign.left),
-        ),
-        PosColumn(
-          text: '${widget.orderDetails[i].itemDetails.name}',
-          width: 7,
-          styles: PosStyles(align: PosAlign.left),
-        ),
-        PosColumn(
-          text: '${widget.orderDetails[i].quantity.toString()}',
-          width: 1,
-          styles: PosStyles(align: PosAlign.right),
-        ),
-        PosColumn(
-          text: '${widget.orderDetails[i].price * widget.orderDetails[i].quantity}',
-          width: 3,
-          styles: PosStyles(align: PosAlign.right),
-        ),
-      ]);
-
-      if(_variationText != '' ){
-        _bytes += _generator.row([
-          PosColumn(
-            text: '',
-            width: 2,
-            styles: PosStyles(align: PosAlign.left),
-          ),
-          PosColumn(
-            text: '$_variationText',
-            width: 8,
-            styles: PosStyles(align: PosAlign.left),
-          ),
-          PosColumn(
-            text: '',
-            width: 2,
-            styles: PosStyles(align: PosAlign.left),
-          ),
-        ]);
-      }
-    }
-
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    double _itemsPrice = 0;
-    double _addOns = 0;
-    if(widget.order.prescriptionOrder){
-      double orderAmount = widget.order.orderAmount ?? 0;
-      _itemsPrice = (orderAmount + widget.order.storeDiscountAmount) - (widget.order.totalTaxAmount + widget.order.deliveryCharge);
-    }else{
-      for(OrderDetailsModel orderDetails in widget.orderDetails) {
-        for(AddOn addOn in orderDetails.addOns) {
-          _addOns = _addOns + (addOn.price * addOn.quantity);
-        }
-        _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
-      }
-    }
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'item_price'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(_itemsPrice),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    if(_addOns > 0){
-      _bytes += _generator.row([
-        PosColumn(
-          text: 'addons'.tr,
-          width: 6,
-          styles: PosStyles(align: PosAlign.left,),
-        ),
-
-        PosColumn(
-          text: _priceDecimal(_addOns),
-          width: 6,
-          styles: PosStyles(align: PosAlign.right,),
-        ),
-      ]);
-    }
-
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'subtotal'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, bold: true),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(_itemsPrice + _addOns),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, bold: true),
-      ),
-    ]);
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'discount'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(widget.order.storeDiscountAmount),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    if(widget.order.couponDiscountAmount > 0) {
-      _bytes += _generator.row([
-        PosColumn(
-          text: 'coupon_discount'.tr,
-          width: 6,
-          styles: PosStyles(align: PosAlign.left),
-        ),
-
-        PosColumn(
-          text: _priceDecimal(widget.order.couponDiscountAmount),
-          width: 6,
-          styles: PosStyles(align: PosAlign.right),
-        ),
-      ]);
-    }
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'vat_tax'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(widget.order.totalTaxAmount),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'delivery_fee'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(widget.order.deliveryCharge),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    _bytes += _generator.row([
-      PosColumn(
-        text: 'total_amount'.tr,
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, bold: true),
-      ),
-
-      PosColumn(
-        text: _priceDecimal(widget.order.orderAmount),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, bold: true),
-      ),
-    ]);
-
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    _bytes += _generator.text(
-      'thank_you'.tr,
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    _bytes += _generator.text(
-      '..............................................................',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
-    _bytes += _generator.text(
-      '${Get.find<SplashController>().configModel.businessName}. ${Get.find<SplashController>().configModel.footerText}',
-      styles: const PosStyles(align: PosAlign.center),
-    );
-
+    _bytes += _generator.image(image);
     _printEscPos(_bytes, _generator);
   }
 
@@ -517,10 +184,11 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
       default:
     }
     if (bluetoothPrinter.typePrinter == PrinterType.bluetooth) {
-      if (_currentStatus == BTStatus.connected) {
+      try{
+        print('------$_currentStatus');
         _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
         pendingTask = null;
-      }
+      }catch(e) {}
     } else {
       _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
     }
@@ -528,135 +196,322 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(builder: (context,  Orientation orientation) {
-      return SingleChildScrollView(
-        padding: EdgeInsets.all(Dimensions.FONT_SIZE_LARGE),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+    return _searchingMode ? SingleChildScrollView(
+      padding: EdgeInsets.all(Dimensions.FONT_SIZE_LARGE),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
 
-            Text('paper_size'.tr, style: robotoMedium),
-            Row(children: [
-              Expanded(child: RadioListTile(
-                title: Text('80_mm'.tr),
-                groupValue: _paper80MM,
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                value: true,
-                onChanged: (bool value) {
-                  _paper80MM = true;
-                  setState(() {});
-                },
-              )),
-              Expanded(child: RadioListTile(
-                title: Text('58_mm'.tr),
-                groupValue: _paper80MM,
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                value: false,
-                onChanged: (bool value) {
-                  _paper80MM = false;
-                  setState(() {});
-                },
-              )),
-            ]),
-            SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+          Text('paper_size'.tr, style: robotoMedium),
+          Row(children: [
+            Expanded(child: RadioListTile(
+              title: Text('80_mm'.tr),
+              groupValue: _paper80MM,
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              value: true,
+              onChanged: (bool value) {
+                _paper80MM = true;
+                setState(() {});
+              },
+            )),
+            Expanded(child: RadioListTile(
+              title: Text('58_mm'.tr),
+              groupValue: _paper80MM,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              value: false,
+              onChanged: (bool value) {
+                _paper80MM = false;
+                setState(() {});
+              },
+            )),
+          ]),
+          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
-            ListView.builder(
-              itemCount: _devices.length,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
-                  child: InkWell(
-                    onTap: () => _selectDevice(_devices[index]),
-                    child: Stack(children: [
+          ListView.builder(
+            itemCount: _devices.length,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
+                child: InkWell(
+                  onTap: () {
+                    _selectDevice(_devices[index]);
+                    setState(() {
+                      _searchingMode = false;
+                    });
+                  },
+                  child: Stack(children: [
 
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-                        Text('${_devices[index].deviceName}'),
+                      Text('${_devices[index].deviceName}'),
 
-                        Platform.isAndroid && _defaultPrinterType == PrinterType.usb ? null
-                            : Visibility(visible: !Platform.isWindows, child: Text("${_devices[index].address}")),
+                      Platform.isAndroid && _defaultPrinterType == PrinterType.usb ? null : Visibility(
+                        visible: !Platform.isWindows,
+                        child: Text("${_devices[index].address}"),
+                      ),
 
-                        OutlinedButton(
-                          onPressed: _selectedPrinter == null || _devices[index].deviceName != _selectedPrinter?.deviceName ? null : () async {
-                            _printReceipt();
-                            if(Get.isDialogOpen) {
-                              Get.back();
-                            }
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 20),
-                            child: Text("print_invoice".tr, textAlign: TextAlign.center),
-                          ),
-                        ),
-
-                      ]),
-
-                      (_selectedPrinter != null && ((_devices[index].typePrinter == PrinterType.usb && Platform.isWindows
-                          ? _devices[index].deviceName == _selectedPrinter.deviceName
-                          : _devices[index].vendorId != null && _selectedPrinter.vendorId == _devices[index].vendorId) ||
-                          (_devices[index].address != null && _selectedPrinter.address == _devices[index].address))) ? Positioned(
-                            top: 5, right: 5,
-                            child: Icon(Icons.check, color: Colors.green),
-                      ) : SizedBox(),
+                      index != _devices.length-1 ? Divider(color: Theme.of(context).disabledColor) : SizedBox(),
 
                     ]),
-                  ),
-                );
-              },
+
+                    (_selectedPrinter != null && ((_devices[index].typePrinter == PrinterType.usb && Platform.isWindows
+                        ? _devices[index].deviceName == _selectedPrinter.deviceName
+                        : _devices[index].vendorId != null && _selectedPrinter.vendorId == _devices[index].vendorId) ||
+                        (_devices[index].address != null && _selectedPrinter.address == _devices[index].address))) ? Positioned(
+                      top: 5, right: 5,
+                      child: Icon(Icons.check, color: Colors.green),
+                    ) : SizedBox(),
+
+                  ]),
+                ),
+              );
+            },
+          ),
+          Visibility(
+            visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextFormField(
+                controller: _ipController,
+                keyboardType: const TextInputType.numberWithOptions(signed: true),
+                decoration: InputDecoration(
+                  label: Text('ip_address'.tr),
+                  prefixIcon: Icon(Icons.wifi, size: 24),
+                ),
+                onChanged: _setIpAddress,
+              ),
             ),
-            Visibility(
-              visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: TextFormField(
-                  controller: _ipController,
-                  keyboardType: const TextInputType.numberWithOptions(signed: true),
-                  decoration: InputDecoration(
-                    label: Text('ip_address'.tr),
-                    prefixIcon: Icon(Icons.wifi, size: 24),
-                  ),
-                  onChanged: _setIpAddress,
+          ),
+          Visibility(
+            visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextFormField(
+                controller: _portController,
+                keyboardType: const TextInputType.numberWithOptions(signed: true),
+                decoration: InputDecoration(
+                  label: Text('port'.tr),
+                  prefixIcon: Icon(Icons.numbers_outlined, size: 24),
+                ),
+                onChanged: _setPort,
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: OutlinedButton(
+                onPressed: () async {
+                  if (_ipController.text.isNotEmpty) _setIpAddress(_ipController.text);
+                  setState(() {
+                    _searchingMode = false;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 50),
+                  child: Text("print_ticket".tr, textAlign: TextAlign.center),
                 ),
               ),
             ),
-            Visibility(
-              visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: TextFormField(
-                  controller: _portController,
-                  keyboardType: const TextInputType.numberWithOptions(signed: true),
-                  decoration: InputDecoration(
-                    label: Text('port'.tr),
-                    prefixIcon: Icon(Icons.numbers_outlined, size: 24),
-                  ),
-                  onChanged: _setPort,
-                ),
+          )
+        ],
+      ),
+    ) : InvoiceDialog(
+      order: widget.order, orderDetails: widget.orderDetails, isPrescriptionOrder: widget.isPrescriptionOrder,
+      onPrint: (i.Image image) => _printReceipt(image),
+    );
+  }
+}
+
+class InvoiceDialog extends StatelessWidget {
+  final OrderModel order;
+  final List<OrderDetailsModel> orderDetails;
+  final Function(i.Image image) onPrint;
+  final bool isPrescriptionOrder;
+  const InvoiceDialog({@required this.order, @required this.orderDetails, @required this.onPrint, @required this.isPrescriptionOrder});
+
+  String _priceDecimal(double price) {
+    return price.toStringAsFixed(Get.find<SplashController>().configModel.digitAfterDecimalPoint);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double _fontSize = window.physicalSize.width > 1000 ? Dimensions.FONT_SIZE_EXTRA_SMALL : Dimensions.PADDING_SIZE_SMALL;
+    ScreenshotController _controller = ScreenshotController();
+    Store _store = Get.find<AuthController>().profileModel.stores[0];
+
+    double _itemsPrice = 0;
+    double _addOns = 0;
+
+    if(isPrescriptionOrder){
+      double orderAmount = order.orderAmount ?? 0;
+      double discount = order.storeDiscountAmount ?? 0;
+      double tax = order.totalTaxAmount ?? 0;
+      double deliveryCharge = order.deliveryCharge ?? 0;
+      _itemsPrice = (orderAmount + discount) - (tax + deliveryCharge );
+    }
+    for(OrderDetailsModel orderDetails in orderDetails) {
+      for(AddOn addOn in orderDetails.addOns) {
+        _addOns = _addOns + (addOn.price * addOn.quantity);
+      }
+      if(!isPrescriptionOrder){
+        _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
+      }
+    }
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+            boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5)],
+          ),
+          width: context.width - ((window.physicalSize.width - 700) * 0.4),
+          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+          child: Screenshot(
+            controller: _controller,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+
+              Text(_store.name, style: robotoMedium.copyWith(fontSize: _fontSize)),
+              Text(_store.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
+              Text(_store.phone, style: robotoRegular.copyWith(fontSize: _fontSize)),
+              Text(_store.email, style: robotoRegular.copyWith(fontSize: _fontSize)),
+              SizedBox(height: 10),
+
+              Row(children: [
+                Text('order_id'.tr + ':', style: robotoRegular.copyWith(fontSize: _fontSize)),
+                SizedBox(width: 5),
+                Expanded(child: Text(order.id.toString(), style: robotoMedium.copyWith(fontSize: _fontSize))),
+                Text(DateConverter.dateTimeStringToMonthAndTime(order.createdAt), style: robotoRegular.copyWith(fontSize: _fontSize)),
+              ]),
+              order.scheduled == 1 ? Text(
+                '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(order.scheduleAt)}',
+                style: robotoRegular.copyWith(fontSize: _fontSize),
+              ) : SizedBox(),
+              SizedBox(height: 5),
+
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(order.orderType.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                Text(order.paymentMethod.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+              ]),
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+              Align(
+                alignment: Get.find<LocalizationController>().isLtr ? Alignment.topLeft : Alignment.topRight,
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('${order.customer.fName} ${order.customer.lName}', style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  Text(order.deliveryAddress.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  Text(order.deliveryAddress.contactPersonNumber, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                ]),
               ),
-            ),
-            Visibility(
-              visible: _defaultPrinterType == PrinterType.network && Platform.isWindows,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: OutlinedButton(
-                  onPressed: () async {
-                    if (_ipController.text.isNotEmpty) _setIpAddress(_ipController.text);
-                    _printReceipt();
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 50),
-                    child: Text("print_ticket".tr, textAlign: TextAlign.center),
-                  ),
-                ),
+              SizedBox(height: 10),
+
+              Row(children: [
+                Expanded(flex: 1, child: Text('sl'.tr.toUpperCase(), style: robotoMedium.copyWith(fontSize: _fontSize))),
+                Expanded(flex: 6, child: Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: _fontSize))),
+                Expanded(flex: 1, child: Text(
+                  'qty'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                  textAlign: TextAlign.center,
+                )),
+                Expanded(flex: 2, child: Text(
+                  'price'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                  textAlign: TextAlign.right,
+                )),
+              ]),
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+              ListView.builder(
+                itemCount: orderDetails.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  return Row(children: [
+                    Expanded(flex: 1, child: Text(
+                      (index+1).toString(),
+                      style: robotoRegular.copyWith(fontSize: _fontSize),
+                    )),
+                    Expanded(flex: 6, child: Text(
+                      orderDetails[index].itemDetails.name,
+                      style: robotoRegular.copyWith(fontSize: _fontSize),
+                    )),
+                    Expanded(flex: 1, child: Text(
+                      orderDetails[index].quantity.toString(), textAlign: TextAlign.center,
+                      style: robotoRegular.copyWith(fontSize: _fontSize),
+                    )),
+                    Expanded(flex: 2, child: Text(
+                      _priceDecimal(orderDetails[index].price), textAlign: TextAlign.right,
+                      style: robotoRegular.copyWith(fontSize: _fontSize),
+                    )),
+                  ]);
+                },
               ),
-            )
-          ],
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+              PriceWidget(title: 'item_price'.tr, value: _priceDecimal(_itemsPrice), fontSize: _fontSize),
+              SizedBox(height: 5),
+              _addOns > 0 ? PriceWidget(title: 'add_ons'.tr, value: _priceDecimal(_addOns), fontSize: _fontSize) : SizedBox(),
+              SizedBox(height: _addOns > 0 ? 5 : 0),
+              PriceWidget(title: 'subtotal'.tr, value: _priceDecimal(_itemsPrice + _addOns), fontSize: _fontSize),
+              SizedBox(height: 5),
+              PriceWidget(title: 'discount'.tr, value: _priceDecimal(order.storeDiscountAmount), fontSize: _fontSize),
+              SizedBox(height: 5),
+              PriceWidget(title: 'coupon_discount'.tr, value: _priceDecimal(order.couponDiscountAmount), fontSize: _fontSize),
+                SizedBox(height: 5),
+              PriceWidget(title: 'vat_tax'.tr, value: _priceDecimal(order.totalTaxAmount), fontSize: _fontSize),
+              SizedBox(height: 5),
+              PriceWidget(title: 'delivery_fee'.tr, value: _priceDecimal(order.deliveryCharge), fontSize: _fontSize),
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+              PriceWidget(title: 'total_amount'.tr, value: _priceDecimal(order.orderAmount), fontSize: _fontSize+2),
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+              Text('thank_you'.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+              Text(
+                '${Get.find<SplashController>().configModel.businessName}. ${Get.find<SplashController>().configModel.footerText}',
+                style: robotoRegular.copyWith(fontSize: _fontSize),
+              ),
+
+            ]),
+          ),
         ),
-      );
-    });
+        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+        CustomButton(buttonText: 'print_invoice'.tr, height: 40, onPressed: () {
+          _controller.capture(delay: const Duration(milliseconds: 10)).then((capturedImage) async {
+            Get.back();
+            onPrint(i.decodeImage(capturedImage));
+          }).catchError((onError) {
+            print(onError);
+          });
+        }),
+
+      ]),
+    );
+  }
+
+}
+
+class PriceWidget extends StatelessWidget {
+  final String title;
+  final String value;
+  final double fontSize;
+  const PriceWidget({@required this.title, @required this.value, @required this.fontSize});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      Text(title, style: robotoRegular.copyWith(fontSize: fontSize)),
+      Text(value, style: robotoMedium.copyWith(fontSize: fontSize)),
+    ]);
   }
 }

@@ -65,7 +65,7 @@ class _MyTextFieldState extends State<MyTextField> {
         ),
         SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
         widget.isEnabled ? SizedBox() : Text('(${'non_changeable'.tr})', style: robotoRegular.copyWith(
-          fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).errorColor,
+          fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).colorScheme.error,
         )),
       ]) : SizedBox(),
       SizedBox(height: widget.title ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),

@@ -474,5 +474,8 @@
   "set_value_for_all_variation": "قم بتعيين القيمة لجميع التنوعات",
   "you_cant_withdraw_more_then_1000000": "لا يمكنك سحب أكثر من 9،99،999",
   "access_denied": "للوصول إلى هذه الميزة ، تحتاج إلى إعداد متجري ومتجري لكل من إذن الوحدة.",
-  "thank_you": "اشكرك"
+  "thank_you": "اشكرك",
+  "update_order_amount": "تحديث مبلغ الطلب",
+  "update_discount_amount": "تحديث مبلغ الخصم",
+  "discount_amount": "مقدار الخصم"
 }

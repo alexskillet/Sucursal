@@ -22,6 +22,7 @@ import 'package:sixam_mart_store/view/base/custom_button.dart';
 import 'package:sixam_mart_store/view/base/custom_image.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
 import 'package:sixam_mart_store/view/screens/order/invoice_print_screen.dart';
+import 'package:sixam_mart_store/view/screens/order/widget/amount_input_dialogue.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/order_item_widget.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/slider_button.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/verify_delivery_sheet.dart';
@@ -124,6 +125,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
           double _addOns = 0;
           double _dmTips = 0;
           bool _isPrescriptionOrder = false;
+          bool _taxIncluded = false;
           OrderModel _order = _controllerOrderModer;
           if(_order != null && orderController.orderDetailsModel != null) {
             if(_order.orderType == 'delivery') {
@@ -133,6 +135,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
             }
             _discount = _order.storeDiscountAmount;
             _tax = _order.totalTaxAmount;
+            _taxIncluded = _order.taxStatus;
             _couponDiscount = _order.couponDiscountAmount;
             if(_isPrescriptionOrder){
               double orderAmount = _order.orderAmount ?? 0;
@@ -426,7 +429,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 // Total
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text('item_price'.tr, style: robotoRegular),
-                  Text(PriceConverter.convertPrice(_itemsPrice), style: robotoRegular),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    _order.prescriptionOrder ? IconButton(
+                      constraints: BoxConstraints(maxHeight: 36),
+                      onPressed: () =>  Get.dialog(AmountInputDialogue(orderId: widget.orderId, isItemPrice: true, amount: _itemsPrice), barrierDismissible: true),
+                      icon: Icon(Icons.edit, size: 16),
+                    ) : SizedBox(),
+                    Text(PriceConverter.convertPrice(_itemsPrice), style: robotoRegular),
+                  ]),
                 ]),
                 SizedBox(height: 10),
 
@@ -445,7 +455,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('subtotal'.tr, style: robotoMedium),
+                    Text('subtotal'.tr+ ' ${_taxIncluded ? 'tax_included'.tr : ''}', style: robotoMedium),
                     Text(PriceConverter.convertPrice(_subTotal), style: robotoMedium),
                   ],
                 ) : SizedBox(),
@@ -453,7 +463,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text('discount'.tr, style: robotoRegular),
-                  Text('(-) ${PriceConverter.convertPrice(_discount)}', style: robotoRegular),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    _order.prescriptionOrder ? IconButton(
+                      constraints: BoxConstraints(maxHeight: 36),
+                      onPressed: () => Get.dialog(AmountInputDialogue(orderId: widget.orderId, isItemPrice: false, amount: _discount), barrierDismissible: true),
+                      icon: Icon(Icons.edit, size: 16),
+                    ) : SizedBox(),
+                    Text('(-) ${PriceConverter.convertPrice(_discount)}', style: robotoRegular),
+                  ]),
                 ]),
                 SizedBox(height: 10),
 
@@ -466,11 +483,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 ]) : SizedBox(),
                 SizedBox(height: _couponDiscount > 0 ? 10 : 0),
 
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                !_taxIncluded ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text('vat_tax'.tr, style: robotoRegular),
                   Text('(+) ${PriceConverter.convertPrice(_tax)}', style: robotoRegular),
-                ]),
-                SizedBox(height: 10),
+                ]) : SizedBox(),
+                SizedBox(height: _taxIncluded ? 0 : 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -528,11 +545,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                      side: BorderSide(width: 1, color: Theme.of(context).textTheme.bodyText1.color),
+                      side: BorderSide(width: 1, color: Theme.of(context).textTheme.bodyLarge.color),
                     ),
                   ),
                   child: Text('cancel'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(
-                    color: Theme.of(context).textTheme.bodyText1.color,
+                    color: Theme.of(context).textTheme.bodyLarge.color,
                     fontSize: Dimensions.FONT_SIZE_LARGE,
                   )),
                 )),
@@ -621,7 +638,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 onPressed: () {
                   Get.dialog(Dialog(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-                    child: InVoicePrintScreen(order: _order, orderDetails: orderController.orderDetailsModel),
+                    child: InVoicePrintScreen(order: _order, orderDetails: orderController.orderDetailsModel, isPrescriptionOrder: _isPrescriptionOrder),
                   ));
                 },
                 icon: Icons.local_print_shop,

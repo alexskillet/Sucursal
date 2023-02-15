@@ -75,6 +75,7 @@ class OrderModel {
   double dmTips;
   int processingTime;
   DeliveryMan deliveryMan;
+  bool taxStatus;
 
   OrderModel(
       {this.id,
@@ -119,7 +120,8 @@ class OrderModel {
         this.moduleType,
         this.dmTips,
         this.processingTime,
-        this.deliveryMan
+        this.deliveryMan,
+        this.taxStatus,
       });
 
   OrderModel.fromJson(Map<String, dynamic> json) {
@@ -182,6 +184,7 @@ class OrderModel {
     deliveryMan = json['delivery_man'] != null
         ? new DeliveryMan.fromJson(json['delivery_man'])
         : null;
+    taxStatus = json['tax_status'] == 'included' ? true : false;
   }
 
   Map<String, dynamic> toJson() {

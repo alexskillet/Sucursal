@@ -11,37 +11,38 @@ import 'package:get/get.dart';
 class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final List<MenuModel> _menuList = [
-      MenuModel(icon: '', title: 'profile'.tr, route: RouteHelper.getProfileRoute()),
-      MenuModel(icon: Images.language, title: 'language'.tr, route: RouteHelper.getLanguageRoute('menu')),
-      MenuModel(icon: Images.policy, title: 'privacy_policy'.tr, route: RouteHelper.getPrivacyRoute()),
-      MenuModel(icon: Images.terms, title: 'terms_condition'.tr, route: RouteHelper.getTermsRoute()),
-      MenuModel(icon: Images.log_out, title: 'logout'.tr, route: ''),
-    ];
+    final List<MenuModel> _menuList = [];
+
+    _menuList.add(MenuModel(icon: '', title: 'profile'.tr, route: RouteHelper.getProfileRoute()));
+
     if(Get.find<AuthController>().modulePermission.item) {
-      _menuList.insert(2, MenuModel(
+      _menuList.add(MenuModel(
         icon: Images.add_food, title: 'add_item'.tr, route: RouteHelper.getItemRoute(null),
         isBlocked: !Get.find<AuthController>().profileModel.stores[0].itemSection,
       ));
     }
     if(Get.find<AuthController>().modulePermission.item) {
-      _menuList.insert(3, MenuModel(icon: Images.categories, title: 'categories'.tr, route: RouteHelper.getCategoriesRoute()));
+      _menuList.add(MenuModel(icon: Images.categories, title: 'categories'.tr, route: RouteHelper.getCategoriesRoute()));
     }
     if(Get.find<AuthController>().modulePermission.bankInfo) {
-      _menuList.insert(4, MenuModel(icon: Images.credit_card, title: 'bank_info'.tr, route: RouteHelper.getBankInfoRoute()));
+      _menuList.add(MenuModel(icon: Images.credit_card, title: 'bank_info'.tr, route: RouteHelper.getBankInfoRoute()));
     }
     if(Get.find<AuthController>().modulePermission.campaign) {
-      _menuList.insert(5, MenuModel(icon: Images.campaign, title: 'campaign'.tr, route: RouteHelper.getCampaignRoute()));
+      _menuList.add(MenuModel(icon: Images.campaign, title: 'campaign'.tr, route: RouteHelper.getCampaignRoute()));
     }
     if(Get.find<AuthController>().profileModel.stores[0].selfDeliverySystem == 1 && Get.find<AuthController>().getUserType() == 'owner') {
-      _menuList.insert(6, MenuModel(icon: Images.delivery_man, title: 'delivery_man'.tr, route: RouteHelper.getDeliveryManRoute()));
+      _menuList.add(MenuModel(icon: Images.delivery_man, title: 'delivery_man'.tr, route: RouteHelper.getDeliveryManRoute()));
     }
     if(Get.find<SplashController>().configModel.moduleConfig.module.addOn && Get.find<AuthController>().modulePermission.addon) {
-      _menuList.insert(7, MenuModel(icon: Images.addon, title: 'addons'.tr, route: RouteHelper.getAddonsRoute()));
+      _menuList.add(MenuModel(icon: Images.addon, title: 'addons'.tr, route: RouteHelper.getAddonsRoute()));
     }
     if(Get.find<AuthController>().modulePermission.chat) {
-      _menuList.insert(8, MenuModel(icon: Images.chat, title: 'conversation'.tr, route: RouteHelper.getConversationListRoute()));
+      _menuList.add(MenuModel(icon: Images.chat, title: 'conversation'.tr, route: RouteHelper.getConversationListRoute()));
     }
+    _menuList.add(MenuModel(icon: Images.language, title: 'language'.tr, route: RouteHelper.getLanguageRoute('menu')));
+    _menuList.add(MenuModel(icon: Images.policy, title: 'privacy_policy'.tr, route: RouteHelper.getPrivacyRoute()));
+    _menuList.add(MenuModel(icon: Images.terms, title: 'terms_condition'.tr, route: RouteHelper.getTermsRoute()));
+    _menuList.add(MenuModel(icon: Images.log_out, title: 'logout'.tr, route: ''));
 
     return Container(
       padding: EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),

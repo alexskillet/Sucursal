@@ -3,7 +3,7 @@ import 'package:sixam_mart_store/util/images.dart';
 
 class AppConstants {
   static const String APP_NAME = 'LavaGo Socio';
-  static const double APP_VERSION = 1.7;
+  static const double APP_VERSION = 2.0;
 
   static const String BASE_URL = 'https://socio.lavago.app';
   static const String CONFIG_URI = '/api/v1/config';
@@ -66,6 +66,7 @@ class AppConstants {
   static const String RESTAURANT_REGISTER_URI = '/api/v1/auth/vendor/register';
   static const String CURRENT_ORDER_DETAILS_URI = '/api/v1/vendor/order?order_id=';
   static const String MODULES_URI = '/api/v1/module';
+  static const String UPDATE_ORDER_URI = '/api/v1/vendor/update-order-amount';
 
   //chat url
   static const String GET_CONVERSATION_LIST = '/api/v1/vendor/message/list';

@@ -193,6 +193,35 @@ class OrderController extends GetxController implements GetxService {
     return _isSuccess;
   }
 
+  Future<bool> updateOrderAmount(int orderID, String amount, bool isItemPrice) async {
+    _isLoading = true;
+    update();
+    Map<String, String> body = <String,String>{};
+    if(isItemPrice){
+      body['_method'] = 'PUT';
+      body['order_id'] = orderID.toString();
+      body['order_amount'] = amount;
+    }else{
+      body['_method'] = 'PUT';
+      body['order_id'] = orderID.toString();
+      body['discount_amount'] = amount;
+    }
+    Response response = await orderRepo.updateOrderAmount(body);
+    bool _isSuccess;
+    if(response.statusCode == 200) {
+      await getOrderDetails(orderID);
+      Get.back();
+      showCustomSnackBar(response.body['message'], isError: false);
+      _isSuccess = true;
+    }else {
+      ApiChecker.checkApi(response);
+      _isSuccess = false;
+    }
+    _isLoading = false;
+    update();
+    return _isSuccess;
+  }
+
   Future<void> getOrderItemsDetails(int orderID) async {
     _orderDetailsModel = null;
 
