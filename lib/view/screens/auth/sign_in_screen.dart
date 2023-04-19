@@ -77,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Center(child: Text(
                                   'store_owner'.tr,
                                   style: robotoMedium.copyWith(color: authController.vendorTypeIndex == 0
-                                      ? Theme.of(context).textTheme.bodyText1.color : Theme.of(context).textTheme.bodyText1.color.withOpacity(0.3)),
+                                      ? Theme.of(context).textTheme.bodyLarge.color : Theme.of(context).textTheme.bodyLarge.color.withOpacity(0.3)),
                                 )),
                               ),
                               Container(
@@ -95,7 +95,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Center(child: Text(
                                   'store_employee'.tr,
                                   style: robotoMedium.copyWith(color: authController.vendorTypeIndex == 1
-                                      ? Theme.of(context).textTheme.bodyText1.color : Theme.of(context).textTheme.bodyText1.color.withOpacity(0.3)),
+                                      ? Theme.of(context).textTheme.bodyLarge.color : Theme.of(context).textTheme.bodyLarge.color.withOpacity(0.3)),
                                 )),
                               ),
                               Container(
@@ -109,40 +109,31 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     SizedBox(height: 50),
 
-                    Container(
-                      // decoration: BoxDecoration(
-                      //   borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                      //   color: Theme.of(context).cardColor,
-                      //   boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 1, blurRadius: 5)],
-                      // ),
-                      child: Column(children: [
+                    Column(children: [
 
+                      CustomTextField(
+                        hintText: 'email'.tr,
+                        controller: _emailController,
+                        focusNode: _emailFocus,
+                        nextFocus: _passwordFocus,
+                        inputType: TextInputType.emailAddress,
+                        prefixIcon: Images.mail,
+                      ),
 
+                      SizedBox(height: 20),
 
-                        CustomTextField(
-                          hintText: 'email'.tr,
-                          controller: _emailController,
-                          focusNode: _emailFocus,
-                          nextFocus: _passwordFocus,
-                          inputType: TextInputType.emailAddress,
-                          prefixIcon: Images.mail,
-                        ),
+                      CustomTextField(
+                        hintText: 'password'.tr,
+                        controller: _passwordController,
+                        focusNode: _passwordFocus,
+                        inputAction: TextInputAction.done,
+                        inputType: TextInputType.visiblePassword,
+                        prefixIcon: Images.lock,
+                        isPassword: true,
+                        onSubmit: (text) => GetPlatform.isWeb ? _login(authController) : null,
+                      ),
 
-                        SizedBox(height: 20),
-
-                        CustomTextField(
-                          hintText: 'password'.tr,
-                          controller: _passwordController,
-                          focusNode: _passwordFocus,
-                          inputAction: TextInputAction.done,
-                          inputType: TextInputType.visiblePassword,
-                          prefixIcon: Images.lock,
-                          isPassword: true,
-                          onSubmit: (text) => GetPlatform.isWeb ? _login(authController) : null,
-                        ),
-
-                      ]),
-                    ),
+                    ]),
                     SizedBox(height: 10),
 
                     Row(children: [
@@ -211,9 +202,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       buttonText: 'sign_in'.tr,
                       onPressed: () => _login(authController),
                     ) : Center(child: CircularProgressIndicator()),
-                    SizedBox(height: Get.find<SplashController>().configModel.toggleStoreRegistration ? Dimensions.PADDING_SIZE_SMALL : 0),
+                    SizedBox(height: Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel.toggleStoreRegistration ? Dimensions.PADDING_SIZE_SMALL : 0),
 
-                    Get.find<SplashController>().configModel.toggleStoreRegistration ? TextButton(
+                    Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel.toggleStoreRegistration ? TextButton(
                       style: TextButton.styleFrom(
                         minimumSize: Size(1, 40),
                       ),
@@ -227,7 +218,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         TextSpan(text: '${'join_as'.tr} ', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
                         TextSpan(
                           text: Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText ? 'restaurant'.tr : 'store'.tr,
-                          style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyText1.color),
+                          style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge.color),
                         ),
                       ])),
                     ) : SizedBox(),

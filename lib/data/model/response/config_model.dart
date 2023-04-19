@@ -10,9 +10,9 @@ class ConfigModel {
   DefaultLocation defaultLocation;
   String currencySymbol;
   String currencySymbolDirection;
-  int appMinimumVersionAndroid;
+  double appMinimumVersionAndroid;
   String appUrlAndroid;
-  int appMinimumVersionIos;
+  double appMinimumVersionIos;
   String appUrlIos;
   bool customerVerification;
   bool scheduleOrder;
@@ -93,10 +93,10 @@ class ConfigModel {
         : null;
     currencySymbol = json['currency_symbol'];
     currencySymbolDirection = json['currency_symbol_direction'];
-    appMinimumVersionAndroid = json['app_minimum_version_android'];
-    appUrlAndroid = json['app_url_android'];
-    appMinimumVersionIos = json['app_minimum_version_ios'];
-    appUrlIos = json['app_url_ios'];
+    appMinimumVersionAndroid = json['app_minimum_version_android_store'] != null ? json['app_minimum_version_android_store'].toDouble() : 0.0;
+    appUrlAndroid = json['app_url_android_store'];
+    appMinimumVersionIos = json['app_minimum_version_ios_store'] != null ? json['app_minimum_version_ios_store'].toDouble() : 0.0;
+    appUrlIos = json['app_url_ios_store'];
     customerVerification = json['customer_verification'];
     scheduleOrder = json['schedule_order'];
     orderDeliveryVerification = json['order_delivery_verification'];

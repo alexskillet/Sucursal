@@ -61,6 +61,7 @@ class StoreController extends GetxController implements GetxService {
   int _durationIndex = 0;
   List<VariationModelBody> _variationList;
   List<String> _tagList = [];
+  bool _isRecommended = false;
 
   List<Item> get itemList => _itemList;
   List<ReviewModel> get storeReviewList => _storeReviewList;
@@ -98,6 +99,23 @@ class StoreController extends GetxController implements GetxService {
   int get durationIndex => _durationIndex;
   List<VariationModelBody> get variationList => _variationList;
   List<String> get tagList => _tagList;
+  bool get isRecommended => _isRecommended;
+
+  void setRecommended(bool isRecommended) {
+    _isRecommended = isRecommended;
+  }
+
+  void toggleRecommendedProduct(int productID) async {
+    Response response = await storeRepo.updateRecommendedProductStatus(productID, _isRecommended ? 0 : 1);
+    if(response.statusCode == 200) {
+      getItemList('1', 'all');
+      _isRecommended = !_isRecommended;
+      showCustomSnackBar('food_status_updated_successfully'.tr, isError: false);
+    }else {
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
 
   void setTag(String name, {bool isUpdate = true}){
     _tagList.add(name);

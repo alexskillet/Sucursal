@@ -13,11 +13,12 @@ class ConfirmationDialog extends StatelessWidget {
   final String icon;
   final String title;
   final String description;
+  final String adminText;
   final Function onYesPressed;
   final Function onNoPressed;
   final bool isLogOut;
   ConfirmationDialog({
-    @required this.icon, this.title, @required this.description, @required this.onYesPressed,
+    @required this.icon, this.title, @required this.description, this.adminText, @required this.onYesPressed,
     this.onNoPressed, this.isLogOut = false,
   });
 
@@ -48,6 +49,11 @@ class ConfirmationDialog extends StatelessWidget {
             padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
             child: Text(description, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE), textAlign: TextAlign.center),
           ),
+
+          adminText != null && adminText.isNotEmpty ? Padding(
+            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+            child: Text('[$adminText]', style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE), textAlign: TextAlign.center),
+          ) : SizedBox(),
           SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
           GetBuilder<DeliveryManController>(builder: (dmController) {
@@ -66,7 +72,7 @@ class ConfirmationDialog extends StatelessWidget {
                           ),
                           child: Text(
                             isLogOut ? 'yes'.tr : 'no'.tr, textAlign: TextAlign.center,
-                            style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyText1.color),
+                            style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge.color),
                           ),
                         )),
                         SizedBox(width: Dimensions.PADDING_SIZE_LARGE),

@@ -23,7 +23,9 @@ class ItemDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('---------------->>> ${item.recommendedStatus} / ${item.recommendedStatus == 1}');
     Get.find<StoreController>().setAvailability(item.status == 1);
+    Get.find<StoreController>().setRecommended(item.recommendedStatus == 1);
     if(Get.find<AuthController>().profileModel.stores[0].reviewsSection) {
       Get.find<StoreController>().getItemReviewList(item.id);
     }
@@ -92,13 +94,13 @@ class ItemDetailsScreen extends StatelessWidget {
                   maxLines: 1,
                   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
                 )),
-                FlutterSwitch(
-                  width: 100, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
-                  activeText: 'available'.tr, inactiveText: 'unavailable'.tr, activeColor: Theme.of(context).primaryColor,
-                  value: storeController.isAvailable, onToggle: (bool isActive) {
-                    storeController.toggleAvailable(item.id);
-                  },
-                ),
+                // FlutterSwitch(
+                //   width: 100, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                //   activeText: 'available'.tr, inactiveText: 'unavailable'.tr, activeColor: Theme.of(context).primaryColor,
+                //   value: storeController.isAvailable, onToggle: (bool isActive) {
+                //     storeController.toggleAvailable(item.id);
+                //   },
+                // ),
               ]) : SizedBox(),
 
               Row(children: [
@@ -109,16 +111,51 @@ class ItemDetailsScreen extends StatelessWidget {
                   '${item.ratingCount} ${'ratings'.tr}',
                   style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
                 )),
-                _module.itemAvailableTime ? SizedBox() : FlutterSwitch(
-                  width: 100, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
-                  activeText: 'available'.tr, inactiveText: 'unavailable'.tr, activeColor: Theme.of(context).primaryColor,
-                  value: storeController.isAvailable, onToggle: (bool isActive) {
-                    storeController.toggleAvailable(item.id);
-                  },
-                ),
+                // _module.itemAvailableTime ? SizedBox() : FlutterSwitch(
+                //   width: 100, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                //   activeText: 'available'.tr, inactiveText: 'unavailable'.tr, activeColor: Theme.of(context).primaryColor,
+                //   value: storeController.isAvailable, onToggle: (bool isActive) {
+                //     storeController.toggleAvailable(item.id);
+                //   },
+                // ),
               ]),
               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
+              Row(children: [
+                Expanded(
+                  child: Text(
+                    'available'.tr,
+                    style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                  ),
+                ),
+
+               FlutterSwitch(
+                    width: 60, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                    activeColor: Theme.of(context).primaryColor,
+                    value: storeController.isAvailable, onToggle: (bool isActive) {
+                  storeController.toggleAvailable(item.id);
+                }),
+              ]),
+              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+              Row(children: [
+                Expanded(
+                  child: Text(
+                    'recommended'.tr,
+                    style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                  ),
+                ),
+
+                FlutterSwitch(
+                  width: 60, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                  activeColor: Theme.of(context).primaryColor,
+                  value: storeController.isRecommended, onToggle: (bool isActive) {
+                  storeController.toggleRecommendedProduct(item.id);
+                },
+                ),
+
+              ]),
+              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
               Get.find<SplashController>().getStoreModuleConfig().newVariation ? FoodVariationView(
                 item: item,

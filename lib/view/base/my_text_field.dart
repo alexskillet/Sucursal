@@ -25,6 +25,7 @@ class MyTextField extends StatefulWidget {
   final bool amountIcon;
   final bool title;
   final Function onComplete;
+  final bool readOnly;
 
   MyTextField(
       {this.hintText = '',
@@ -45,7 +46,9 @@ class MyTextField extends StatefulWidget {
         this.isNumber = false,
         this.amountIcon = false,
         this.title = true,
-        this.onComplete});
+        this.onComplete,
+        this.readOnly = false,
+      });
 
   @override
   _MyTextFieldState createState() => _MyTextFieldState();
@@ -81,6 +84,7 @@ class _MyTextFieldState extends State<MyTextField> {
           maxLines: widget.maxLines,
           controller: widget.controller,
           focusNode: widget.focusNode,
+          readOnly: widget.readOnly,
           style: robotoRegular,
           textInputAction: widget.nextFocus != null ? widget.inputAction : TextInputAction.done,
           keyboardType: widget.isAmount ? TextInputType.numberWithOptions(decimal: true) : widget.isNumber ? TextInputType.number : widget.inputType,

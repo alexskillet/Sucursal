@@ -40,4 +40,9 @@ class Images {
   static const String send = 'assets/image/send.png';
   static const String chat = 'assets/image/chat.png';
   static const String pick_marker = 'assets/image/pick_marker.png';
+  static const String coupon_bg_dark = 'assets/image/coupon_bg_dark1.png';
+  static const String coupon_vertical = 'assets/image/cupon.png';
+  static const String coupon_details = 'assets/image/coupon_details.png';
+  static const String coupon = 'assets/image/coupon.png';
+  static const String expense = 'assets/image/expense.png';
 }

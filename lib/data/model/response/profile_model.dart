@@ -156,6 +156,7 @@ class Store {
   int selfDeliverySystem;
   bool posSystem;
   double minimumShippingCharge;
+  double maximumShippingCharge;
   double perKmShippingCharge;
   String deliveryTime;
   int veg;
@@ -194,6 +195,7 @@ class Store {
         this.selfDeliverySystem,
         this.posSystem,
         this.minimumShippingCharge,
+        this.maximumShippingCharge,
         this.perKmShippingCharge,
         this.deliveryTime,
         this.veg,
@@ -233,6 +235,7 @@ class Store {
     selfDeliverySystem = json['self_delivery_system'];
     posSystem = json['pos_system'];
     minimumShippingCharge = json['minimum_shipping_charge'] != null ? json['minimum_shipping_charge'].toDouble() : 0.0;
+    maximumShippingCharge = json['maximum_shipping_charge'] != null ? json['maximum_shipping_charge'].toDouble() : null;
     perKmShippingCharge = json['per_km_shipping_charge'] != null ? json['per_km_shipping_charge'].toDouble() : 0.0;
     deliveryTime = json['delivery_time'];
     veg = json['veg'];
@@ -278,6 +281,7 @@ class Store {
     data['self_delivery_system'] = this.selfDeliverySystem;
     data['pos_system'] = this.posSystem;
     data['minimum_shipping_charge'] = this.minimumShippingCharge;
+    data['maximum_shipping_charge'] = this.maximumShippingCharge;
     data['per_km_shipping_charge'] = this.perKmShippingCharge;
     data['delivery_time'] = this.deliveryTime;
     data['veg'] = this.veg;

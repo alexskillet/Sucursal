@@ -16,7 +16,7 @@ class LocationSearchDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController _controller = TextEditingController();
 
-    return Container(
+    return Scrollable(viewportBuilder: (context, viewPostOffset) => Container(
       margin: EdgeInsets.only(top:  0),
       padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
       alignment: Alignment.topCenter,
@@ -66,6 +66,6 @@ class LocationSearchDialog extends StatelessWidget {
           },
         )),
       ),
-    );
+    ));
   }
 }

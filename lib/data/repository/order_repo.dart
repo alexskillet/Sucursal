@@ -43,4 +43,8 @@ class OrderRepo extends GetxService {
     return apiClient.postData(AppConstants.UPDATE_ORDER_URI, body);
   }
 
+  Future<Response> getCancelReasons() async {
+    return await apiClient.getData('${AppConstants.ORDER_CANCELLATION_URI}?offset=1&limit=30&type=store');
+  }
+
 }

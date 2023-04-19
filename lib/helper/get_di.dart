@@ -5,7 +5,9 @@ import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/controller/bank_controller.dart';
 import 'package:sixam_mart_store/controller/campaign_controller.dart';
 import 'package:sixam_mart_store/controller/chat_controller.dart';
+import 'package:sixam_mart_store/controller/coupon_controller.dart';
 import 'package:sixam_mart_store/controller/delivery_man_controller.dart';
+import 'package:sixam_mart_store/controller/expense_controller.dart';
 import 'package:sixam_mart_store/controller/localization_controller.dart';
 import 'package:sixam_mart_store/controller/notification_controller.dart';
 import 'package:sixam_mart_store/controller/order_controller.dart';
@@ -18,7 +20,9 @@ import 'package:sixam_mart_store/data/repository/addon_repo.dart';
 import 'package:sixam_mart_store/data/repository/auth_repo.dart';
 import 'package:sixam_mart_store/data/repository/campaign_repo.dart';
 import 'package:sixam_mart_store/data/repository/chat_repo.dart';
+import 'package:sixam_mart_store/data/repository/coupon_repo.dart';
 import 'package:sixam_mart_store/data/repository/delivery_man_repo.dart';
+import 'package:sixam_mart_store/data/repository/expense_repo.dart';
 import 'package:sixam_mart_store/data/repository/language_repo.dart';
 import 'package:sixam_mart_store/data/repository/notification_repo.dart';
 import 'package:sixam_mart_store/data/repository/order_repo.dart';
@@ -51,6 +55,8 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => PosRepo(apiClient: Get.find()));
   Get.lazyPut(() => DeliveryManRepo(apiClient: Get.find()));
   Get.lazyPut(() => ChatRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut(() => CouponRepo(apiClient: Get.find()));
+  Get.lazyPut(() => ExpenseRepo(apiClient: Get.find()));
 
   // Controller
   Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
@@ -66,6 +72,8 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => PosController(posRepo: Get.find()));
   Get.lazyPut(() => DeliveryManController(deliveryManRepo: Get.find()));
   Get.lazyPut(() => ChatController(chatRepo: Get.find()));
+  Get.lazyPut(() => CouponController(couponRepo: Get.find()));
+  Get.lazyPut(() => ExpenseController(expenseRepo: Get.find()));
 
   // Retrieving localized data
   Map<String, Map<String, String>> _languages = Map();

@@ -32,7 +32,7 @@ class InVoicePrintScreen extends StatefulWidget {
 
 class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
   PrinterType _defaultPrinterType = PrinterType.bluetooth;
-  bool _isBle = false;
+  bool _isBle = GetPlatform.isIOS;
   PrinterManager _printerManager = PrinterManager.instance;
   List<BluetoothPrinter> _devices = <BluetoothPrinter>[];
   StreamSubscription<PrinterDevice> _subscription;
@@ -60,15 +60,10 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
       _currentStatus = status;
 
       if (status == BTStatus.connected && pendingTask != null) {
-        if (Platform.isAndroid) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask);
-            pendingTask = null;
-          });
-        } else if (Platform.isIOS) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
           PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask);
           pendingTask = null;
-        }
+        });
       }
     });
   }
@@ -135,10 +130,11 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
   }
 
   Future _printReceipt(i.Image image) async {
+    i.Image resized = i.copyResize(image, width: _paper80MM ? 500 : 365);
     CapabilityProfile _profile = await CapabilityProfile.load();
     Generator _generator = Generator(_paper80MM ? PaperSize.mm80 : PaperSize.mm58, _profile);
     List<int> _bytes = [];
-    _bytes += _generator.image(image);
+    _bytes += _generator.image(resized);
     _printEscPos(_bytes, _generator);
   }
 
@@ -185,9 +181,10 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
     }
     if (bluetoothPrinter.typePrinter == PrinterType.bluetooth) {
       try{
-        print('------$_currentStatus');
-        _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
-        pendingTask = null;
+        Future.delayed(Duration(seconds: GetPlatform.isIOS ? 2 : 1), () {
+          _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
+          pendingTask = null;
+        });
       }catch(e) {}
     } else {
       _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
@@ -323,7 +320,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
       ),
     ) : InvoiceDialog(
       order: widget.order, orderDetails: widget.orderDetails, isPrescriptionOrder: widget.isPrescriptionOrder,
-      onPrint: (i.Image image) => _printReceipt(image),
+      onPrint: (i.Image image) => _printReceipt(image), paper80MM: _paper80MM,
     );
   }
 }
@@ -333,7 +330,8 @@ class InvoiceDialog extends StatelessWidget {
   final List<OrderDetailsModel> orderDetails;
   final Function(i.Image image) onPrint;
   final bool isPrescriptionOrder;
-  const InvoiceDialog({@required this.order, @required this.orderDetails, @required this.onPrint, @required this.isPrescriptionOrder});
+  final bool paper80MM;
+  const InvoiceDialog({@required this.order, @required this.orderDetails, @required this.onPrint, @required this.isPrescriptionOrder, @required this.paper80MM});
 
   String _priceDecimal(double price) {
     return price.toStringAsFixed(Get.find<SplashController>().configModel.digitAfterDecimalPoint);
@@ -359,144 +357,149 @@ class InvoiceDialog extends StatelessWidget {
       for(AddOn addOn in orderDetails.addOns) {
         _addOns = _addOns + (addOn.price * addOn.quantity);
       }
-      if(!isPrescriptionOrder){
+      if(!isPrescriptionOrder) {
         _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
       }
     }
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
+    return OrientationBuilder(builder: (context, orientation) {
+      double _fixedSize = window.physicalSize.width / (orientation == Orientation.portrait ? 720 : 1400);
+      double _printWidth = (paper80MM ? 280 : 185) / _fixedSize;
 
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-            boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5)],
-          ),
-          width: context.width - ((window.physicalSize.width - 700) * 0.4),
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-          child: Screenshot(
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+
+          Screenshot(
             controller: _controller,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5)],
+              ),
+              width: _printWidth,
+              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
 
-              Text(_store.name, style: robotoMedium.copyWith(fontSize: _fontSize)),
-              Text(_store.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
-              Text(_store.phone, style: robotoRegular.copyWith(fontSize: _fontSize)),
-              Text(_store.email, style: robotoRegular.copyWith(fontSize: _fontSize)),
-              SizedBox(height: 10),
+                Text(_store.name, style: robotoMedium.copyWith(fontSize: _fontSize)),
+                Text(_store.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                Text(_store.phone, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                Text(_store.email, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                SizedBox(height: 10),
 
-              Row(children: [
-                Text('order_id'.tr + ':', style: robotoRegular.copyWith(fontSize: _fontSize)),
-                SizedBox(width: 5),
-                Expanded(child: Text(order.id.toString(), style: robotoMedium.copyWith(fontSize: _fontSize))),
-                Text(DateConverter.dateTimeStringToMonthAndTime(order.createdAt), style: robotoRegular.copyWith(fontSize: _fontSize)),
-              ]),
-              order.scheduled == 1 ? Text(
-                '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(order.scheduleAt)}',
-                style: robotoRegular.copyWith(fontSize: _fontSize),
-              ) : SizedBox(),
-              SizedBox(height: 5),
-
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(order.orderType.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                Text(order.paymentMethod.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
-              ]),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
-
-              Align(
-                alignment: Get.find<LocalizationController>().isLtr ? Alignment.topLeft : Alignment.topRight,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('${order.customer.fName} ${order.customer.lName}', style: robotoRegular.copyWith(fontSize: _fontSize)),
-                  Text(order.deliveryAddress.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                  Text(order.deliveryAddress.contactPersonNumber, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                Row(children: [
+                  Text('order_id'.tr + ':', style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  SizedBox(width: 5),
+                  Expanded(child: Text(order.id.toString(), style: robotoMedium.copyWith(fontSize: _fontSize))),
+                  Text(DateConverter.dateTimeStringToMonthAndTime(order.createdAt), style: robotoRegular.copyWith(fontSize: _fontSize)),
                 ]),
-              ),
-              SizedBox(height: 10),
-
-              Row(children: [
-                Expanded(flex: 1, child: Text('sl'.tr.toUpperCase(), style: robotoMedium.copyWith(fontSize: _fontSize))),
-                Expanded(flex: 6, child: Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: _fontSize))),
-                Expanded(flex: 1, child: Text(
-                  'qty'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
-                  textAlign: TextAlign.center,
-                )),
-                Expanded(flex: 2, child: Text(
-                  'price'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
-                  textAlign: TextAlign.right,
-                )),
-              ]),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
-
-              ListView.builder(
-                itemCount: orderDetails.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  return Row(children: [
-                    Expanded(flex: 1, child: Text(
-                      (index+1).toString(),
-                      style: robotoRegular.copyWith(fontSize: _fontSize),
-                    )),
-                    Expanded(flex: 6, child: Text(
-                      orderDetails[index].itemDetails.name,
-                      style: robotoRegular.copyWith(fontSize: _fontSize),
-                    )),
-                    Expanded(flex: 1, child: Text(
-                      orderDetails[index].quantity.toString(), textAlign: TextAlign.center,
-                      style: robotoRegular.copyWith(fontSize: _fontSize),
-                    )),
-                    Expanded(flex: 2, child: Text(
-                      _priceDecimal(orderDetails[index].price), textAlign: TextAlign.right,
-                      style: robotoRegular.copyWith(fontSize: _fontSize),
-                    )),
-                  ]);
-                },
-              ),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
-
-              PriceWidget(title: 'item_price'.tr, value: _priceDecimal(_itemsPrice), fontSize: _fontSize),
-              SizedBox(height: 5),
-              _addOns > 0 ? PriceWidget(title: 'add_ons'.tr, value: _priceDecimal(_addOns), fontSize: _fontSize) : SizedBox(),
-              SizedBox(height: _addOns > 0 ? 5 : 0),
-              PriceWidget(title: 'subtotal'.tr, value: _priceDecimal(_itemsPrice + _addOns), fontSize: _fontSize),
-              SizedBox(height: 5),
-              PriceWidget(title: 'discount'.tr, value: _priceDecimal(order.storeDiscountAmount), fontSize: _fontSize),
-              SizedBox(height: 5),
-              PriceWidget(title: 'coupon_discount'.tr, value: _priceDecimal(order.couponDiscountAmount), fontSize: _fontSize),
+                order.scheduled == 1 ? Text(
+                  '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(order.scheduleAt)}',
+                  style: robotoRegular.copyWith(fontSize: _fontSize),
+                ) : SizedBox(),
                 SizedBox(height: 5),
-              PriceWidget(title: 'vat_tax'.tr, value: _priceDecimal(order.totalTaxAmount), fontSize: _fontSize),
-              SizedBox(height: 5),
-              PriceWidget(title: 'delivery_fee'.tr, value: _priceDecimal(order.deliveryCharge), fontSize: _fontSize),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
-              PriceWidget(title: 'total_amount'.tr, value: _priceDecimal(order.orderAmount), fontSize: _fontSize+2),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
 
-              Text('thank_you'.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
-              Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(order.orderType.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  Text(order.paymentMethod.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                ]),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
 
-              Text(
-                '${Get.find<SplashController>().configModel.businessName}. ${Get.find<SplashController>().configModel.footerText}',
-                style: robotoRegular.copyWith(fontSize: _fontSize),
-              ),
+                Align(
+                  alignment: Get.find<LocalizationController>().isLtr ? Alignment.topLeft : Alignment.topRight,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('${order.customer.fName} ${order.customer.lName}', style: robotoRegular.copyWith(fontSize: _fontSize)),
+                    Text(order.deliveryAddress.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                    Text(order.deliveryAddress.contactPersonNumber, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  ]),
+                ),
+                SizedBox(height: 10),
 
-            ]),
+                Row(children: [
+                  Expanded(flex: 1, child: Text('sl'.tr.toUpperCase(), style: robotoMedium.copyWith(fontSize: _fontSize))),
+                  Expanded(flex: 6, child: Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: _fontSize))),
+                  Expanded(flex: 1, child: Text(
+                    'qty'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                    textAlign: TextAlign.center,
+                  )),
+                  Expanded(flex: 2, child: Text(
+                    'price'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                    textAlign: TextAlign.right,
+                  )),
+                ]),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+                ListView.builder(
+                  itemCount: orderDetails.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return Row(children: [
+                      Expanded(flex: 1, child: Text(
+                        (index+1).toString(),
+                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                      )),
+                      Expanded(flex: 6, child: Text(
+                        orderDetails[index].itemDetails.name,
+                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                      )),
+                      Expanded(flex: 1, child: Text(
+                        orderDetails[index].quantity.toString(), textAlign: TextAlign.center,
+                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                      )),
+                      Expanded(flex: 2, child: Text(
+                        _priceDecimal(orderDetails[index].price), textAlign: TextAlign.right,
+                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                      )),
+                    ]);
+                  },
+                ),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+                PriceWidget(title: 'item_price'.tr, value: _priceDecimal(_itemsPrice), fontSize: _fontSize),
+                SizedBox(height: 5),
+                _addOns > 0 ? PriceWidget(title: 'add_ons'.tr, value: _priceDecimal(_addOns), fontSize: _fontSize) : SizedBox(),
+                SizedBox(height: _addOns > 0 ? 5 : 0),
+                PriceWidget(title: 'subtotal'.tr, value: _priceDecimal(_itemsPrice + _addOns), fontSize: _fontSize),
+                SizedBox(height: 5),
+                PriceWidget(title: 'discount'.tr, value: _priceDecimal(order.storeDiscountAmount), fontSize: _fontSize),
+                SizedBox(height: 5),
+                PriceWidget(title: 'coupon_discount'.tr, value: _priceDecimal(order.couponDiscountAmount), fontSize: _fontSize),
+                SizedBox(height: 5),
+                PriceWidget(title: 'vat_tax'.tr, value: _priceDecimal(order.totalTaxAmount), fontSize: _fontSize),
+                SizedBox(height: 5),
+                PriceWidget(title: 'delivery_fee'.tr, value: _priceDecimal(order.deliveryCharge), fontSize: _fontSize),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                PriceWidget(title: 'total_amount'.tr, value: _priceDecimal(order.orderAmount), fontSize: _fontSize+2),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+                Text('thank_you'.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+
+                Text(
+                  '${Get.find<SplashController>().configModel.businessName}. ${Get.find<SplashController>().configModel.footerText}',
+                  style: robotoRegular.copyWith(fontSize: _fontSize),
+                ),
+
+              ]),
+            ),
           ),
-        ),
-        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
-        CustomButton(buttonText: 'print_invoice'.tr, height: 40, onPressed: () {
-          _controller.capture(delay: const Duration(milliseconds: 10)).then((capturedImage) async {
-            Get.back();
-            onPrint(i.decodeImage(capturedImage));
-          }).catchError((onError) {
-            print(onError);
-          });
-        }),
+          CustomButton(buttonText: 'print_invoice'.tr, height: 40, onPressed: () {
+            _controller.capture(delay: const Duration(milliseconds: 10)).then((capturedImage) async {
+              Get.back();
+              onPrint(i.decodeImage(capturedImage));
+            }).catchError((onError) {
+              print(onError);
+            });
+          }),
 
-      ]),
-    );
+        ]),
+      );
+    });
   }
 
 }

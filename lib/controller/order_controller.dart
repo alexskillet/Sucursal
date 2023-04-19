@@ -2,6 +2,7 @@ import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/controller/splash_controller.dart';
 import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/body/update_status_body.dart';
+import 'package:sixam_mart_store/data/model/response/order_cancellation_body.dart';
 import 'package:sixam_mart_store/data/model/response/order_details_model.dart';
 import 'package:sixam_mart_store/data/model/response/order_model.dart';
 import 'package:sixam_mart_store/data/model/response/running_order_model.dart';
@@ -32,6 +33,8 @@ class OrderController extends GetxController implements GetxService {
   int _offset = 1;
   String _orderType = 'all';
   OrderModel _orderModel;
+  List<Data> _orderCancelReasons;
+  String _cancelReason = '';
 
   List<OrderModel> get orderList => _orderList;
   List<OrderModel> get runningOrderList => _runningOrderList;
@@ -49,6 +52,30 @@ class OrderController extends GetxController implements GetxService {
   int get offset => _offset;
   String get orderType => _orderType;
   OrderModel get orderModel => _orderModel;
+  List<Data> get orderCancelReasons => _orderCancelReasons;
+  String get cancelReason => _cancelReason;
+
+  void setOrderCancelReason(String reason){
+    _cancelReason = reason;
+    update();
+  }
+
+  Future<void> getOrderCancelReasons()async {
+    Response response = await orderRepo.getCancelReasons();
+    if (response.statusCode == 200) {
+      OrderCancellationBody orderCancellationBody = OrderCancellationBody.fromJson(response.body);
+      _orderCancelReasons = [];
+      if(orderCancellationBody != null){
+        orderCancellationBody.data.forEach((element) {
+          _orderCancelReasons.add(element);
+        });
+      }
+
+    }else{
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
 
   void clearPreviousData(){
     _orderDetailsModel = null;
@@ -166,12 +193,13 @@ class OrderController extends GetxController implements GetxService {
     getPaginatedOrders(1, true);
   }
 
-  Future<bool> updateOrderStatus(int orderID, String status, {bool back = false}) async {
+  Future<bool> updateOrderStatus(int orderID, String status, {bool back = false, String reason}) async {
     _isLoading = true;
     update();
     UpdateStatusBody _updateStatusBody = UpdateStatusBody(
       orderId: orderID, status: status,
       otp: status == 'delivered' ? _otp : null,
+      reason: reason,
     );
     Response response = await orderRepo.updateOrderStatus(_updateStatusBody);
     Get.back();

@@ -115,4 +115,8 @@ class StoreRepo {
     return await apiClient.getData(AppConstants.UNIT_LIST_URI);
   }
 
+  Future<Response> updateRecommendedProductStatus(int productID, int status) async {
+    return await apiClient.getData('${AppConstants.UPDATE_PRODUCT_RECOMMENDED_URI}?id=$productID&status=$status');
+  }
+
 }

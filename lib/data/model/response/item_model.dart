@@ -78,6 +78,7 @@ class Item {
   int stock;
   List<Translation> translations;
   List<Tag> tags;
+  int recommendedStatus;
 
   Item(
       {this.id,
@@ -113,6 +114,7 @@ class Item {
         this.stock,
         this.translations,
         this.tags,
+        this.recommendedStatus,
       });
 
   Item.fromJson(Map<String, dynamic> json) {
@@ -186,6 +188,7 @@ class Item {
         tags.add(new Tag.fromJson(v));
       });
     }
+    recommendedStatus = json['recommended'];
   }
 
   Map<String, dynamic> toJson() {
@@ -237,6 +240,7 @@ class Item {
     if (this.tags != null) {
       data['tags'] = this.tags.map((v) => v.toJson()).toList();
     }
+    data['recommended'] = this.recommendedStatus;
     return data;
   }
 }

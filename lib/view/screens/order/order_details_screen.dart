@@ -23,6 +23,7 @@ import 'package:sixam_mart_store/view/base/custom_image.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
 import 'package:sixam_mart_store/view/screens/order/invoice_print_screen.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/amount_input_dialogue.dart';
+import 'package:sixam_mart_store/view/screens/order/widget/cancellation_dialogue.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/order_item_widget.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/slider_button.dart';
 import 'package:sixam_mart_store/view/screens/order/widget/verify_delivery_sheet.dart';
@@ -150,7 +151,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
             }
           }
           double _subTotal = _itemsPrice + _addOns;
-          double _total = _itemsPrice + _addOns - _discount + _tax + _deliveryCharge - _couponDiscount + _dmTips;
+          double _total = _itemsPrice + _addOns - _discount + (_taxIncluded ? 0 : _tax) + _deliveryCharge - _couponDiscount + _dmTips;
 
           return (orderController.orderDetailsModel != null && _controllerOrderModer != null) ? Column(children: [
 
@@ -455,7 +456,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 Get.find<SplashController>().getModuleConfig(_order.moduleType).addOn ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('subtotal'.tr+ ' ${_taxIncluded ? 'tax_included'.tr : ''}', style: robotoMedium),
+                    Text('subtotal'.tr+ ' ${_taxIncluded ? '(${'tax_included'.tr})' : ''}', style: robotoMedium),
                     Text(PriceConverter.convertPrice(_subTotal), style: robotoMedium),
                   ],
                 ) : SizedBox(),
@@ -535,12 +536,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
               child: Row(children: [
 
                 Expanded(child: TextButton(
-                  onPressed: () => Get.dialog(ConfirmationDialog(
+                  /*onPressed: () => Get.dialog(ConfirmationDialog(
                     icon: Images.warning, title: 'are_you_sure_to_cancel'.tr, description: 'you_want_to_cancel_this_order'.tr,
                     onYesPressed: () {
                       orderController.updateOrderStatus(widget.orderId, AppConstants.CANCELED, back: true);
                     },
-                  ), barrierDismissible: false),
+                  ), barrierDismissible: false),*/
+                  onPressed: (){
+                    orderController.setOrderCancelReason('');
+                    Get.dialog(CancellationDialogue(orderId: _order.id));
+                  },
                   style: TextButton.styleFrom(
                     minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(

@@ -3,7 +3,7 @@ import 'package:sixam_mart_store/util/images.dart';
 
 class AppConstants {
   static const String APP_NAME = 'LavaGo Socio';
-  static const double APP_VERSION = 2.0;
+  static const double APP_VERSION = 2.1;
 
   static const String BASE_URL = 'https://socio.lavago.app';
   static const String CONFIG_URI = '/api/v1/config';
@@ -67,6 +67,14 @@ class AppConstants {
   static const String CURRENT_ORDER_DETAILS_URI = '/api/v1/vendor/order?order_id=';
   static const String MODULES_URI = '/api/v1/module';
   static const String UPDATE_ORDER_URI = '/api/v1/vendor/update-order-amount';
+  static const String ORDER_CANCELLATION_URI = '/api/v1/customer/order/cancellation-reasons';
+  static const String ADD_COUPON_URI = '/api/v1/vendor/coupon/store';
+  static const String COUPON_LIST_URI = '/api/v1/vendor/coupon/list';
+  static const String COUPON_CHANGE_STATUS_URI = '/api/v1/vendor/coupon/status';
+  static const String COUPON_DELETE_URI = '/api/v1/vendor/coupon/delete';
+  static const String COUPON_UPDATE_URI = '/api/v1/vendor/coupon/update';
+  static const String EXPENSE_LIST_URI = '/api/v1/vendor/get-expense';
+  static const String UPDATE_PRODUCT_RECOMMENDED_URI = '/api/v1/vendor/item/recommended';
 
   //chat url
   static const String GET_CONVERSATION_LIST = '/api/v1/vendor/message/list';

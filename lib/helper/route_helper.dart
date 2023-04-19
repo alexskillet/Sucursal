@@ -19,10 +19,12 @@ import 'package:sixam_mart_store/view/screens/campaign/campaign_screen.dart';
 import 'package:sixam_mart_store/view/screens/category/category_screen.dart';
 import 'package:sixam_mart_store/view/screens/chat/chat_screen.dart';
 import 'package:sixam_mart_store/view/screens/chat/conversation_screen.dart';
+import 'package:sixam_mart_store/view/screens/coupon/coupon_screen.dart';
 import 'package:sixam_mart_store/view/screens/dashboard/dashboard_screen.dart';
 import 'package:sixam_mart_store/view/screens/deliveryman/add_delivery_man_screen.dart';
 import 'package:sixam_mart_store/view/screens/deliveryman/delivery_man_details_screen.dart';
 import 'package:sixam_mart_store/view/screens/deliveryman/delivery_man_screen.dart';
+import 'package:sixam_mart_store/view/screens/expence/expense_screen.dart';
 import 'package:sixam_mart_store/view/screens/forget/forget_pass_screen.dart';
 import 'package:sixam_mart_store/view/screens/forget/new_pass_screen.dart';
 import 'package:sixam_mart_store/view/screens/forget/verification_screen.dart';
@@ -80,6 +82,8 @@ class RouteHelper {
   static const String chatScreen = '/chat-screen';
   static const String conversationListScreen = '/chat-list-screen';
   static const String restaurantRegistration = '/restaurant-registration';
+  static const String coupon = '/coupon';
+  static const String expense = '/expense';
 
   static String getInitialRoute() => '$initial';
   static String getSplashRoute(NotificationBody body) {
@@ -175,6 +179,8 @@ class RouteHelper {
   }
   static String getConversationListRoute() => '$conversationListScreen';
   static String getRestaurantRegistrationRoute() => '$restaurantRegistration';
+  static String getCouponRoute() => '$coupon';
+  static String getExpenseRoute() => '$expense';
 
   static List<GetPage> routes = [
     GetPage(name: initial, page: () => DashboardScreen(pageIndex: 0)),
@@ -289,5 +295,7 @@ class RouteHelper {
     }),
     GetPage(name: conversationListScreen, page: () => ConversationScreen()),
     GetPage(name: restaurantRegistration, page: () => StoreRegistrationScreen()),
+    GetPage(name: coupon, page: () => CouponScreen()),
+    GetPage(name: expense, page: () => ExpenseScreen()),
   ];
 }

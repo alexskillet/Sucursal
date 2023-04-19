@@ -60,6 +60,10 @@ class DateConverter {
     return DateFormat('dd MMM yyyy HH:mm').format(dateTimeStringToDate(dateTime));
   }
 
+  static String dateTimeForCoupon(DateTime dateTime) {
+    return DateFormat('yyyy-MM-dd').format(dateTime);
+  }
+
   static bool isAvailable(String start, String end, {DateTime time, bool isoTime = false}) {
     DateTime _currentTime;
     if(time != null) {

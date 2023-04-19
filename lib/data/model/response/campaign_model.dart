@@ -9,6 +9,7 @@ class CampaignModel {
   String endTime;
   String availableDateStarts;
   String availableDateEnds;
+  String vendorStatus;
   bool isJoined;
 
   CampaignModel(
@@ -22,6 +23,7 @@ class CampaignModel {
         this.endTime,
         this.availableDateStarts,
         this.availableDateEnds,
+        this.vendorStatus,
         this.isJoined});
 
   CampaignModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class CampaignModel {
     endTime = json['end_time'];
     availableDateStarts = json['available_date_starts'];
     availableDateEnds = json['available_date_ends'];
+    vendorStatus = json['vendor_status'];
     isJoined = json['is_joined'];
   }
 
@@ -50,6 +53,7 @@ class CampaignModel {
     data['end_time'] = this.endTime;
     data['available_date_starts'] = this.availableDateStarts;
     data['available_date_ends'] = this.availableDateEnds;
+    data['vendor_status'] = this.vendorStatus;
     data['is_joined'] = this.isJoined;
     return data;
   }

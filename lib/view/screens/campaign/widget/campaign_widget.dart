@@ -57,24 +57,33 @@ class CampaignWidget extends StatelessWidget {
 
               InkWell(
                 onTap: () {
-                  Get.dialog(ConfirmationDialog(
-                    icon: Images.warning, description: campaignModel.isJoined ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
-                    onYesPressed: () {
-                      if(campaignModel.isJoined) {
-                        Get.find<CampaignController>().leaveCampaign(campaignModel.id, false);
-                      }else {
+                  if(campaignModel.vendorStatus == null){
+                    Get.dialog(ConfirmationDialog(
+                      icon: Images.warning, description: campaignModel.isJoined ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
+                      adminText: '' ,
+                      onYesPressed: () {
                         Get.find<CampaignController>().joinCampaign(campaignModel.id, false);
-                      }
-                    },
-                  ));
+                      },
+                    ));
+                  }else if(campaignModel.vendorStatus == 'confirmed'){
+                    Get.dialog(ConfirmationDialog(
+                      icon: Images.warning, description: campaignModel.isJoined ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
+                      adminText: '' ,
+                      onYesPressed: () {
+                        Get.find<CampaignController>().leaveCampaign(campaignModel.id, false);
+                      },
+                    ));
+                  }
+
                 },
                 child: Container(
                   height: 25, width: 70, alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: campaignModel.isJoined ? Theme.of(context).secondaryHeaderColor : Theme.of(context).primaryColor,
+                    color: campaignModel.vendorStatus == null ? Theme.of(context).primaryColor : campaignModel.vendorStatus == 'rejected' ? Theme.of(context).colorScheme.error : Theme.of(context).secondaryHeaderColor,
                     borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
                   ),
-                  child: Text(campaignModel.isJoined ? 'leave_now'.tr : 'join_now'.tr, textAlign: TextAlign.center, style: robotoBold.copyWith(
+                  child: Text(campaignModel.vendorStatus == null ? 'join_now'.tr : campaignModel.vendorStatus != 'confirmed'
+                      ? campaignModel.vendorStatus.tr : 'leave_now'.tr, textAlign: TextAlign.center, style: robotoBold.copyWith(
                     color: Theme.of(context).cardColor,
                     fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
                   )),

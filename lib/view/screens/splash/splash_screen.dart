@@ -68,8 +68,14 @@ class _SplashScreenState extends State<SplashScreen> {
     Get.find<SplashController>().getConfigData().then((isSuccess) {
       if(isSuccess) {
         Timer(Duration(seconds: 1), () async {
-          if(Get.find<SplashController>().configModel.maintenanceMode) {
-            Get.offNamed(RouteHelper.getUpdateRoute(false));
+          double _minimumVersion = 0;
+          if(GetPlatform.isAndroid) {
+            _minimumVersion = Get.find<SplashController>().configModel.appMinimumVersionAndroid;
+          }else if(GetPlatform.isIOS) {
+            _minimumVersion = Get.find<SplashController>().configModel.appMinimumVersionIos;
+          }
+          if(AppConstants.APP_VERSION < _minimumVersion || Get.find<SplashController>().configModel.maintenanceMode) {
+            Get.offNamed(RouteHelper.getUpdateRoute(AppConstants.APP_VERSION < _minimumVersion));
           }else{
             if(widget.body != null){
               if (widget.body.notificationType == NotificationType.order) {

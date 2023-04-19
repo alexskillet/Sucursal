@@ -30,7 +30,8 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
   final TextEditingController _contactController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _orderAmountController = TextEditingController();
-  final TextEditingController _deliveryFeeController = TextEditingController();
+  final TextEditingController _minimumDeliveryFeeController = TextEditingController();
+  final TextEditingController _maximumDeliveryFeeController = TextEditingController();
   final TextEditingController _processingTimeController = TextEditingController();
   final TextEditingController _gstController = TextEditingController();
   final TextEditingController _minimumController = TextEditingController();
@@ -40,7 +41,8 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
   final FocusNode _contactNode = FocusNode();
   final FocusNode _addressNode = FocusNode();
   final FocusNode _orderAmountNode = FocusNode();
-  final FocusNode _deliveryFeeNode = FocusNode();
+  final FocusNode _minimumDeliveryFeeNode = FocusNode();
+  final FocusNode _maximumDeliveryFeeNode = FocusNode();
   final FocusNode _minimumNode = FocusNode();
   final FocusNode _maximumNode = FocusNode();
   final FocusNode _minimumProcessingTimeNode = FocusNode();
@@ -58,7 +60,8 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
     _contactController.text = widget.store.phone;
     _addressController.text = widget.store.address;
     _orderAmountController.text = widget.store.minimumOrder.toString();
-    _deliveryFeeController.text = widget.store.minimumShippingCharge.toString();
+    _minimumDeliveryFeeController.text = widget.store.minimumShippingCharge.toString();
+    _maximumDeliveryFeeController.text = widget.store.maximumShippingCharge != null ? widget.store.maximumShippingCharge.toString() : '';
     _deliveryChargePerKmController.text = widget.store.perKmShippingCharge.toString();
     _gstController.text = widget.store.gstCode;
     _processingTimeController.text = widget.store.orderPlaceToScheduleInterval.toString();
@@ -94,7 +97,7 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                 SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                 Text(
                   '(${'max_size_2_mb'.tr})',
-                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).errorColor),
+                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).colorScheme.error),
                 ),
               ]),
               SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
@@ -168,29 +171,48 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                   hintText: 'minimum_order_amount'.tr,
                   controller: _orderAmountController,
                   focusNode: _orderAmountNode,
-                  nextFocus: _store.selfDeliverySystem == 1 ? _deliveryFeeNode : _minimumNode,
+                  nextFocus: _store.selfDeliverySystem == 1 ? _deliveryChargePerKmNode : _minimumNode,
                   inputType: TextInputType.number,
                   isAmount: true,
                 )),
                 SizedBox(width: _store.selfDeliverySystem == 1 ? Dimensions.PADDING_SIZE_SMALL : 0),
                 _store.selfDeliverySystem == 1 ? Expanded(child: MyTextField(
-                  hintText: 'delivery_fee'.tr,
-                  controller: _deliveryFeeController,
-                  focusNode: _deliveryFeeNode,
-                  nextFocus: _deliveryChargePerKmNode,
+                  hintText: 'delivery_charge_per_km'.tr,
+                  controller: _deliveryChargePerKmController,
+                  focusNode: _deliveryChargePerKmNode,
+                  nextFocus: _minimumDeliveryFeeNode,
                   inputType: TextInputType.number,
                   isAmount: true,
                 )) : SizedBox(),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              SizedBox(height: _store.selfDeliverySystem == 1 ? Dimensions.PADDING_SIZE_LARGE : 0),
 
-              _store.selfDeliverySystem == 1 ? MyTextField(
-                hintText: 'delivery_charge_per_km'.tr,
-                controller: _deliveryChargePerKmController,
-                focusNode: _deliveryChargePerKmNode,
-                nextFocus: _minimumNode,
-                inputType: TextInputType.number,
-                isAmount: true,
+              _store.selfDeliverySystem == 1 ? Row(children: [
+                  Expanded(
+                    child: MyTextField(
+                      hintText: 'minimum_delivery_charge'.tr,
+                      controller: _minimumDeliveryFeeController,
+                      focusNode: _minimumDeliveryFeeNode,
+                      nextFocus: _maximumDeliveryFeeNode,
+                      inputType: TextInputType.number,
+                      isAmount: true,
+                    ),
+                  ),
+
+                  SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+
+                  Expanded(
+                      child: MyTextField(
+                      hintText: 'maximum_delivery_charge'.tr,
+                      controller: _maximumDeliveryFeeController,
+                      focusNode: _maximumDeliveryFeeNode,
+                      inputAction: TextInputAction.done,
+                      inputType: TextInputType.number,
+                      nextFocus: _minimumNode,
+                      isAmount: true,
+                    ),
+                  ),
+                ],
               ) : SizedBox(),
               SizedBox(height: _store.selfDeliverySystem == 1 ? Dimensions.PADDING_SIZE_LARGE : 0),
 
@@ -199,6 +221,7 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                 style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
               )),
               SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+
               Row(children: [
                 Expanded(child: MyTextField(
                   hintText: 'minimum'.tr,
@@ -210,6 +233,7 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                   title: false,
                 )),
                 SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+
                 Expanded(child: MyTextField(
                   hintText: 'maximum'.tr,
                   controller: _maximumController,
@@ -370,12 +394,13 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
               String _contact = _contactController.text.trim();
               String _address = _addressController.text.trim();
               String _minimumOrder = _orderAmountController.text.trim();
-              String _deliveryFee = _deliveryFeeController.text.trim();
+              String _deliveryFee = _minimumDeliveryFeeController.text.trim();
               String _minimum = _minimumController.text.trim();
               String _maximum = _maximumController.text.trim();
               String _processingTime = _processingTimeController.text.trim();
               String _deliveryChargePerKm = _deliveryChargePerKmController.text.trim();
               String _gstCode = _gstController.text.trim();
+              String _maximumFee = _maximumDeliveryFeeController.text.trim();
               bool _showRestaurantText = _module.showRestaurantText;
               if(_name.isEmpty) {
                 showCustomSnackBar(_showRestaurantText ? 'enter_your_restaurant_name'.tr : 'enter_your_store_name');
@@ -385,8 +410,10 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                 showCustomSnackBar(_showRestaurantText ? 'enter_restaurant_address'.tr : 'enter_store_address'.tr);
               }else if(_minimumOrder.isEmpty) {
                 showCustomSnackBar('enter_minimum_order_amount'.tr);
-              }else if(_store.selfDeliverySystem == 1 && _deliveryFee.isEmpty) {
+              }else if(_store.selfDeliverySystem == 1 && _deliveryFee.isEmpty && _maximumFee.isNotEmpty) {
                 showCustomSnackBar('enter_delivery_fee'.tr);
+              }else if(_store.selfDeliverySystem == 1 && _deliveryFee.isNotEmpty && _maximumFee.isNotEmpty && (double.parse(_deliveryFee) > double.parse(_maximumFee))) {
+                showCustomSnackBar('minimum_charge_can_not_be_more_then_maximum_charge'.tr);
               }else if(_minimum.isEmpty) {
                 showCustomSnackBar('enter_minimum_delivery_time'.tr);
               }else if(_maximum.isEmpty) {
@@ -404,6 +431,8 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                 showCustomSnackBar('enter_minimum_processing_time'.tr);
               }else if(storeController.isGstEnabled && _gstCode.isEmpty) {
                 showCustomSnackBar('enter_gst_code'.tr);
+              }else if(_store.selfDeliverySystem == 1 && _deliveryFee.isNotEmpty && _deliveryChargePerKm.isNotEmpty && _maximumFee.isEmpty) {
+                showCustomSnackBar('enter_maximum_delivery_fee'.tr);
               }else {
                 _store.name = _name;
                 _store.phone = _contact;
@@ -414,6 +443,7 @@ class _StoreSettingsScreenState extends State<StoreSettingsScreen> {
                 _store.orderPlaceToScheduleInterval = _module.orderPlaceToScheduleInterval
                     ? double.parse(_processingTimeController.text).toInt() : 0;
                 _store.minimumShippingCharge = double.parse(_deliveryFee);
+                _store.maximumShippingCharge = double.parse(_maximumFee);
                 _store.perKmShippingCharge = double.parse(_deliveryChargePerKm);
                 _store.veg = (_module.vegNonVeg && storeController.isStoreVeg) ? 1 : 0;
                 _store.nonVeg = (!_module.vegNonVeg || storeController.isStoreNonVeg) ? 1 : 0;
