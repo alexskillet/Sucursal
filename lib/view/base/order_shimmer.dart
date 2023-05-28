@@ -4,22 +4,22 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 
 class OrderShimmer extends StatelessWidget {
   final bool isEnabled;
-  OrderShimmer({@required this.isEnabled});
+  const OrderShimmer({Key? key, required this.isEnabled}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Shimmer(
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       enabled: isEnabled,
       child: Column(children: [
 
         Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Container(height: 15, width: 100, color: Colors.grey[300]),
-              SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
               Container(height: 10, width: 150, color: Colors.grey[300]),
             ]),
 

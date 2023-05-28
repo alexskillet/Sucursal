@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class MenuModel {
   String icon;
@@ -6,5 +5,5 @@ class MenuModel {
   String route;
   bool isBlocked;
 
-  MenuModel({@required this.icon, @required this.title, @required this.route, this.isBlocked = false});
+  MenuModel({required this.icon, required this.title, required this.route, this.isBlocked = false});
 }

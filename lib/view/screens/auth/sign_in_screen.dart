@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({Key? key}) : super(key: key);
+
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
@@ -24,8 +26,8 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
     super.initState();
-    _emailController.text = Get.find<AuthController>().getUserNumber() ?? '';
-    _passwordController.text = Get.find<AuthController>().getUserPassword() ?? '';
+    _emailController.text = Get.find<AuthController>().getUserNumber();
+    _passwordController.text = Get.find<AuthController>().getUserPassword();
     if(Get.find<AuthController>().getUserType() == 'employee'){
       Get.find<AuthController>().changeVendorType(1, isUpdate: false);
     }else{
@@ -40,8 +42,8 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SafeArea(child: Center(
         child: Scrollbar(
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
             child: Center(
               child: SizedBox(
                 width: 1170,
@@ -52,10 +54,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     Image.asset(Images.logo, width: 200),
                     // SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
                     // Center(child: Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE))),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+                    const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-                    Text('sign_in'.tr.toUpperCase(), style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_OVER_LARGE)),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    Text('sign_in'.tr.toUpperCase(), style: robotoBold.copyWith(fontSize: Dimensions.fontSizeOverLarge)),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                     // Text(
                     //   Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText
@@ -63,11 +65,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     //   textAlign: TextAlign.center,
                     //   style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).primaryColor),
                     // ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
 
                     Container(
                       height: 50,
-                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      padding: const EdgeInsets.symmetric(horizontal: 50),
                       child: Row(children: [
                         Expanded(
                           child: InkWell(
@@ -77,7 +79,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Center(child: Text(
                                   'store_owner'.tr,
                                   style: robotoMedium.copyWith(color: authController.vendorTypeIndex == 0
-                                      ? Theme.of(context).textTheme.bodyLarge.color : Theme.of(context).textTheme.bodyLarge.color.withOpacity(0.3)),
+                                      ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.3)),
                                 )),
                               ),
                               Container(
@@ -95,7 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Center(child: Text(
                                   'store_employee'.tr,
                                   style: robotoMedium.copyWith(color: authController.vendorTypeIndex == 1
-                                      ? Theme.of(context).textTheme.bodyLarge.color : Theme.of(context).textTheme.bodyLarge.color.withOpacity(0.3)),
+                                      ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.3)),
                                 )),
                               ),
                               Container(
@@ -107,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ]),
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
 
                     Column(children: [
 
@@ -120,7 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         prefixIcon: Images.mail,
                       ),
 
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       CustomTextField(
                         hintText: 'password'.tr,
@@ -134,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
 
                     ]),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     Row(children: [
                       Expanded(
@@ -143,7 +145,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           leading: Checkbox(
                             activeColor: Theme.of(context).primaryColor,
                             value: authController.isActiveRememberMe,
-                            onChanged: (bool isChecked) => authController.toggleRememberMe(),
+                            onChanged: (bool? isChecked) => authController.toggleRememberMe(),
                           ),
                           title: Text('remember_me'.tr),
                           contentPadding: EdgeInsets.zero,
@@ -151,12 +153,12 @@ class _SignInScreenState extends State<SignInScreen> {
                           horizontalTitleGap: 0,
                         ),
                       ),
-                      authController.vendorTypeIndex == 1 ? SizedBox() : TextButton(
+                      authController.vendorTypeIndex == 1 ? const SizedBox() : TextButton(
                         onPressed: () => Get.toNamed(RouteHelper.getForgotPassRoute()),
                         child: Text('${'forgot_password'.tr}?'),
                       ),
                     ]),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+                    const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
                     // Row(children: [
                     //
@@ -201,12 +203,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     !authController.isLoading ? CustomButton(
                       buttonText: 'sign_in'.tr,
                       onPressed: () => _login(authController),
-                    ) : Center(child: CircularProgressIndicator()),
-                    SizedBox(height: Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel.toggleStoreRegistration ? Dimensions.PADDING_SIZE_SMALL : 0),
+                    ) : const Center(child: CircularProgressIndicator()),
+                    SizedBox(height: Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel!.toggleStoreRegistration! ? Dimensions.paddingSizeSmall : 0),
 
-                    Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel.toggleStoreRegistration ? TextButton(
+                    Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel!.toggleStoreRegistration! ? TextButton(
                       style: TextButton.styleFrom(
-                        minimumSize: Size(1, 40),
+                        minimumSize: const Size(1, 40),
                       ),
                       onPressed: () async {
                         // if(await canLaunchUrlString('${AppConstants.BASE_URL}/store/apply')) {
@@ -217,11 +219,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: RichText(text: TextSpan(children: [
                         TextSpan(text: '${'join_as'.tr} ', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
                         TextSpan(
-                          text: Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText ? 'restaurant'.tr : 'store'.tr,
-                          style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge.color),
+                          text: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ? 'restaurant'.tr : 'store'.tr,
+                          style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color),
                         ),
                       ])),
-                    ) : SizedBox(),
+                    ) : const SizedBox(),
 
                   ]);
                 }),
@@ -234,22 +236,22 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _login(AuthController authController) async {
-    String _email = _emailController.text.trim();
-    String _password = _passwordController.text.trim();
-    String _type = authController.vendorTypeIndex == 0 ? 'owner' : 'employee';
-    if (_email.isEmpty) {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String type = authController.vendorTypeIndex == 0 ? 'owner' : 'employee';
+    if (email.isEmpty) {
       showCustomSnackBar('enter_email_address'.tr);
-    }else if (!GetUtils.isEmail(_email)) {
+    }else if (!GetUtils.isEmail(email)) {
       showCustomSnackBar('enter_a_valid_email_address'.tr);
-    }else if (_password.isEmpty) {
+    }else if (password.isEmpty) {
       showCustomSnackBar('enter_password'.tr);
-    }else if (_password.length < 6) {
+    }else if (password.length < 6) {
       showCustomSnackBar('password_should_be'.tr);
     }else {
-      authController.login(_email, _password, _type).then((status) async {
+      authController.login(email, password, type).then((status) async {
         if (status.isSuccess) {
           if (authController.isActiveRememberMe) {
-            authController.saveUserNumberAndPassword(_email, _password, _type);
+            authController.saveUserNumberAndPassword(email, password, type);
           } else {
             authController.clearUserNumberAndPassword();
           }

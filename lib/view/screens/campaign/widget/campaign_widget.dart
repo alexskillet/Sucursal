@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 
 class CampaignWidget extends StatelessWidget {
   final CampaignModel campaignModel;
-  CampaignWidget({@required this.campaignModel});
+  const CampaignWidget({Key? key, required this.campaignModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +24,34 @@ class CampaignWidget extends StatelessWidget {
         arguments: CampaignDetailsScreen(campaignModel: campaignModel),
       ),
       child: Container(
-        margin: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+        margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-          boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5)],
+          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+          boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, spreadRadius: 1, blurRadius: 5)],
         ),
         child: Row(children: [
 
           ClipRRect(
-            borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
             child: CustomImage(
-              image: '${Get.find<SplashController>().configModel.baseUrls.campaignImageUrl}/${campaignModel.image}',
+              image: '${Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl}/${campaignModel.image}',
               height: 85, width: 100, fit: BoxFit.cover,
             ),
           ),
-          SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
 
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 
-            Text(campaignModel.title, style: robotoMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
-            SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            Text(campaignModel.title!, style: robotoMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Text(
               campaignModel.description ?? 'no_description_found'.tr, maxLines: 2, overflow: TextOverflow.ellipsis,
-              style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).disabledColor),
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
             ),
-            SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Row(children: [
 
@@ -59,7 +59,7 @@ class CampaignWidget extends StatelessWidget {
                 onTap: () {
                   if(campaignModel.vendorStatus == null){
                     Get.dialog(ConfirmationDialog(
-                      icon: Images.warning, description: campaignModel.isJoined ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
+                      icon: Images.warning, description: campaignModel.isJoined! ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
                       adminText: '' ,
                       onYesPressed: () {
                         Get.find<CampaignController>().joinCampaign(campaignModel.id, false);
@@ -67,7 +67,7 @@ class CampaignWidget extends StatelessWidget {
                     ));
                   }else if(campaignModel.vendorStatus == 'confirmed'){
                     Get.dialog(ConfirmationDialog(
-                      icon: Images.warning, description: campaignModel.isJoined ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
+                      icon: Images.warning, description: campaignModel.isJoined! ? 'are_you_sure_to_leave'.tr : 'are_you_sure_to_join'.tr,
                       adminText: '' ,
                       onYesPressed: () {
                         Get.find<CampaignController>().leaveCampaign(campaignModel.id, false);
@@ -80,22 +80,22 @@ class CampaignWidget extends StatelessWidget {
                   height: 25, width: 70, alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: campaignModel.vendorStatus == null ? Theme.of(context).primaryColor : campaignModel.vendorStatus == 'rejected' ? Theme.of(context).colorScheme.error : Theme.of(context).secondaryHeaderColor,
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                   ),
                   child: Text(campaignModel.vendorStatus == null ? 'join_now'.tr : campaignModel.vendorStatus != 'confirmed'
-                      ? campaignModel.vendorStatus.tr : 'leave_now'.tr, textAlign: TextAlign.center, style: robotoBold.copyWith(
+                      ? campaignModel.vendorStatus!.tr : 'leave_now'.tr, textAlign: TextAlign.center, style: robotoBold.copyWith(
                     color: Theme.of(context).cardColor,
-                    fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
+                    fontSize: Dimensions.fontSizeExtraSmall,
                   )),
                 ),
               ),
-              Expanded(child: SizedBox()),
+              const Expanded(child: SizedBox()),
 
               Icon(Icons.date_range, size: 15, color: Theme.of(context).disabledColor),
-              SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
               Text(
-                DateConverter.convertDateToDate(campaignModel.availableDateStarts),
-                style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).disabledColor),
+                DateConverter.convertDateToDate(campaignModel.availableDateStarts!),
+                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
               ),
 
             ]),

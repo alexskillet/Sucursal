@@ -1,8 +1,8 @@
 class PaginatedOrderModel {
-  int totalSize;
-  String limit;
-  String offset;
-  List<OrderModel> orders;
+  int? totalSize;
+  String? limit;
+  String? offset;
+  List<OrderModel>? orders;
 
   PaginatedOrderModel({this.totalSize, this.limit, this.offset, this.orders});
 
@@ -13,18 +13,18 @@ class PaginatedOrderModel {
     if (json['orders'] != null) {
       orders = [];
       json['orders'].forEach((v) {
-        orders.add(new OrderModel.fromJson(v));
+        orders!.add(OrderModel.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_size'] = this.totalSize;
-    data['limit'] = this.limit;
-    data['offset'] = this.offset;
-    if (this.orders != null) {
-      data['orders'] = this.orders.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total_size'] = totalSize;
+    data['limit'] = limit;
+    data['offset'] = offset;
+    if (orders != null) {
+      data['orders'] = orders!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -32,50 +32,50 @@ class PaginatedOrderModel {
 }
 
 class OrderModel {
-  int id;
-  double orderAmount;
-  double couponDiscountAmount;
-  String couponDiscountTitle;
-  String paymentStatus;
-  String orderStatus;
-  double totalTaxAmount;
-  String paymentMethod;
-  String orderNote;
-  String orderType;
-  String createdAt;
-  String updatedAt;
-  double deliveryCharge;
-  String scheduleAt;
-  String otp;
-  String pending;
-  String accepted;
-  String confirmed;
-  String processing;
-  String handover;
-  String pickedUp;
-  String delivered;
-  String canceled;
-  String refundRequested;
-  String refunded;
-  DeliveryAddress deliveryAddress;
-  int scheduled;
-  double storeDiscountAmount;
-  String storeName;
-  String storeAddress;
-  String storePhone;
-  String storeLat;
-  String storeLng;
-  String storeLogo;
-  int itemCampaign;
-  int detailsCount;
-  List<String> orderAttachment;
-  String moduleType;
-  bool prescriptionOrder;
-  Customer customer;
-  double dmTips;
-  int processingTime;
-  DeliveryMan deliveryMan;
-  bool taxStatus;
+  int? id;
+  double? orderAmount;
+  double? couponDiscountAmount;
+  String? couponDiscountTitle;
+  String? paymentStatus;
+  String? orderStatus;
+  double? totalTaxAmount;
+  String? paymentMethod;
+  String? orderNote;
+  String? orderType;
+  String? createdAt;
+  String? updatedAt;
+  double? deliveryCharge;
+  String? scheduleAt;
+  String? otp;
+  String? pending;
+  String? accepted;
+  String? confirmed;
+  String? processing;
+  String? handover;
+  String? pickedUp;
+  String? delivered;
+  String? canceled;
+  String? refundRequested;
+  String? refunded;
+  DeliveryAddress? deliveryAddress;
+  int? scheduled;
+  double? storeDiscountAmount;
+  String? storeName;
+  String? storeAddress;
+  String? storePhone;
+  String? storeLat;
+  String? storeLng;
+  String? storeLogo;
+  int? itemCampaign;
+  int? detailsCount;
+  List<String>? orderAttachment;
+  String? moduleType;
+  bool? prescriptionOrder;
+  Customer? customer;
+  double? dmTips;
+  int? processingTime;
+  DeliveryMan? deliveryMan;
+  bool? taxStatus;
 
   OrderModel(
       {this.id,
@@ -151,7 +151,7 @@ class OrderModel {
     refundRequested = json['refund_requested'];
     refunded = json['refunded'];
     deliveryAddress = json['delivery_address'] != null
-        ? new DeliveryAddress.fromJson(json['delivery_address'])
+        ? DeliveryAddress.fromJson(json['delivery_address'])
         : null;
     scheduled = json['scheduled'];
     storeDiscountAmount = json['store_discount_amount'].toDouble();
@@ -167,89 +167,89 @@ class OrderModel {
       if(json['order_attachment'].toString().startsWith('[')){
         orderAttachment = [];
         json['order_attachment'].forEach((v) {
-          orderAttachment.add(v);
+          orderAttachment!.add(v);
         });
       }else{
         orderAttachment = [];
-        orderAttachment.add(json['order_attachment'].toString());
+        orderAttachment!.add(json['order_attachment'].toString());
       }
     }
     moduleType = json['module_type'];
     prescriptionOrder = json['prescription_order'];
     customer = json['customer'] != null
-        ? new Customer.fromJson(json['customer'])
+        ? Customer.fromJson(json['customer'])
         : null;
     dmTips = json['dm_tips'].toDouble();
     processingTime = json['processing_time'];
     deliveryMan = json['delivery_man'] != null
-        ? new DeliveryMan.fromJson(json['delivery_man'])
+        ? DeliveryMan.fromJson(json['delivery_man'])
         : null;
     taxStatus = json['tax_status'] == 'included' ? true : false;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['order_amount'] = this.orderAmount;
-    data['coupon_discount_amount'] = this.couponDiscountAmount;
-    data['coupon_discount_title'] = this.couponDiscountTitle;
-    data['payment_status'] = this.paymentStatus;
-    data['order_status'] = this.orderStatus;
-    data['total_tax_amount'] = this.totalTaxAmount;
-    data['payment_method'] = this.paymentMethod;
-    data['order_note'] = this.orderNote;
-    data['order_type'] = this.orderType;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['delivery_charge'] = this.deliveryCharge;
-    data['schedule_at'] = this.scheduleAt;
-    data['otp'] = this.otp;
-    data['pending'] = this.pending;
-    data['accepted'] = this.accepted;
-    data['confirmed'] = this.confirmed;
-    data['processing'] = this.processing;
-    data['handover'] = this.handover;
-    data['picked_up'] = this.pickedUp;
-    data['delivered'] = this.delivered;
-    data['canceled'] = this.canceled;
-    data['refund_requested'] = this.refundRequested;
-    data['refunded'] = this.refunded;
-    if (this.deliveryAddress != null) {
-      data['delivery_address'] = this.deliveryAddress.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['order_amount'] = orderAmount;
+    data['coupon_discount_amount'] = couponDiscountAmount;
+    data['coupon_discount_title'] = couponDiscountTitle;
+    data['payment_status'] = paymentStatus;
+    data['order_status'] = orderStatus;
+    data['total_tax_amount'] = totalTaxAmount;
+    data['payment_method'] = paymentMethod;
+    data['order_note'] = orderNote;
+    data['order_type'] = orderType;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['delivery_charge'] = deliveryCharge;
+    data['schedule_at'] = scheduleAt;
+    data['otp'] = otp;
+    data['pending'] = pending;
+    data['accepted'] = accepted;
+    data['confirmed'] = confirmed;
+    data['processing'] = processing;
+    data['handover'] = handover;
+    data['picked_up'] = pickedUp;
+    data['delivered'] = delivered;
+    data['canceled'] = canceled;
+    data['refund_requested'] = refundRequested;
+    data['refunded'] = refunded;
+    if (deliveryAddress != null) {
+      data['delivery_address'] = deliveryAddress!.toJson();
     }
-    data['scheduled'] = this.scheduled;
-    data['store_discount_amount'] = this.storeDiscountAmount;
-    data['store_name'] = this.storeName;
-    data['store_address'] = this.storeAddress;
-    data['store_phone'] = this.storePhone;
-    data['store_lat'] = this.storeLat;
-    data['store_lng'] = this.storeLng;
-    data['store_logo'] = this.storeLogo;
-    data['item_campaign'] = this.itemCampaign;
-    data['details_count'] = this.detailsCount;
-    data['order_attachment'] = this.orderAttachment;
-    data['module_type'] = this.moduleType;
-    data['prescription_order'] = this.prescriptionOrder;
-    if (this.customer != null) {
-      data['customer'] = this.customer.toJson();
+    data['scheduled'] = scheduled;
+    data['store_discount_amount'] = storeDiscountAmount;
+    data['store_name'] = storeName;
+    data['store_address'] = storeAddress;
+    data['store_phone'] = storePhone;
+    data['store_lat'] = storeLat;
+    data['store_lng'] = storeLng;
+    data['store_logo'] = storeLogo;
+    data['item_campaign'] = itemCampaign;
+    data['details_count'] = detailsCount;
+    data['order_attachment'] = orderAttachment;
+    data['module_type'] = moduleType;
+    data['prescription_order'] = prescriptionOrder;
+    if (customer != null) {
+      data['customer'] = customer!.toJson();
     }
-    data['dm_tips'] = this.dmTips;
-    data['dm_tips'] = this.dmTips;
-    data['processing_time'] = this.processingTime;
+    data['dm_tips'] = dmTips;
+    data['dm_tips'] = dmTips;
+    data['processing_time'] = processingTime;
     return data;
   }
 }
 
 class DeliveryMan {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String image;
-  int zoneId;
-  int active;
-  String status;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? image;
+  int? zoneId;
+  int? active;
+  String? status;
 
   DeliveryMan(
       {this.id,
@@ -276,30 +276,30 @@ class DeliveryMan {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['zone_id'] = this.zoneId;
-    data['active'] = this.active;
-    data['available'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['image'] = image;
+    data['zone_id'] = zoneId;
+    data['active'] = active;
+    data['available'] = status;
     return data;
   }
 }
 
 class DeliveryAddress {
-  String contactPersonName;
-  String contactPersonNumber;
-  String addressType;
-  String address;
-  String longitude;
-  String latitude;
-  String streetNumber;
-  String house;
-  String floor;
+  String? contactPersonName;
+  String? contactPersonNumber;
+  String? addressType;
+  String? address;
+  String? longitude;
+  String? latitude;
+  String? streetNumber;
+  String? house;
+  String? floor;
 
   DeliveryAddress(
       {this.contactPersonName,
@@ -325,29 +325,29 @@ class DeliveryAddress {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['contact_person_name'] = this.contactPersonName;
-    data['contact_person_number'] = this.contactPersonNumber;
-    data['address_type'] = this.addressType;
-    data['address'] = this.address;
-    data['longitude'] = this.longitude;
-    data['latitude'] = this.latitude;
-    data['road'] = this.streetNumber;
-    data['house'] = this.house;
-    data['floor'] = this.floor;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['contact_person_name'] = contactPersonName;
+    data['contact_person_number'] = contactPersonNumber;
+    data['address_type'] = addressType;
+    data['address'] = address;
+    data['longitude'] = longitude;
+    data['latitude'] = latitude;
+    data['road'] = streetNumber;
+    data['house'] = house;
+    data['floor'] = floor;
     return data;
   }
 }
 
 class Customer {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String image;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? image;
+  String? createdAt;
+  String? updatedAt;
 
   Customer(
       {this.id,
@@ -371,15 +371,15 @@ class Customer {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

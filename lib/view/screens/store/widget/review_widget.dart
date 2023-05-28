@@ -11,7 +11,7 @@ class ReviewWidget extends StatelessWidget {
   final ReviewModel review;
   final bool hasDivider;
   final bool fromStore;
-  ReviewWidget({@required this.review, @required this.hasDivider, @required this.fromStore});
+  const ReviewWidget({Key? key, required this.review, required this.hasDivider, required this.fromStore}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,44 +21,44 @@ class ReviewWidget extends StatelessWidget {
 
         ClipOval(
           child: CustomImage(
-            image: '${fromStore ? Get.find<SplashController>().configModel.baseUrls.itemImageUrl
-                : Get.find<SplashController>().configModel.baseUrls.customerImageUrl}/${fromStore
-                ? review.itemImage : review.customer != null ? review.customer.image : ''}',
+            image: '${fromStore ? Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl
+                : Get.find<SplashController>().configModel!.baseUrls!.customerImageUrl}/${fromStore
+                ? review.itemImage : review.customer != null ? review.customer!.image : ''}',
             height: 60, width: 60, fit: BoxFit.cover,
           ),
         ),
-        SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
 
         Expanded(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
 
           Text(
-            fromStore ? review.itemName : review.customer != null ?'${ review.customer.fName} ${ review.customer.lName}' : 'customer_not_found'.tr,
+            fromStore ? review.itemName! : review.customer != null ?'${ review.customer!.fName} ${ review.customer!.lName}' : 'customer_not_found'.tr,
             maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: review.customerName != null ? Theme.of(context).textTheme.headline1.color : Theme.of(context).disabledColor),
+            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: review.customerName != null ? Theme.of(context).textTheme.displayLarge!.color : Theme.of(context).disabledColor),
           ),
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-          RatingBar(rating: review.rating.toDouble(), ratingCount: null, size: 15),
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+          RatingBar(rating: review.rating!.toDouble(), ratingCount: null, size: 15),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
           fromStore ? Text(
-            review.customerName != null ? review.customerName : 'customer_not_found'.tr,
+            review.customerName != null ? review.customerName! : 'customer_not_found'.tr,
             maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
-                color: review.customerName != null ? Theme.of(context).textTheme.headline1.color : Theme.of(context).disabledColor),
-          ) : SizedBox(),
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall,
+                color: review.customerName != null ? Theme.of(context).textTheme.displayLarge!.color : Theme.of(context).disabledColor),
+          ) : const SizedBox(),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-          Text(review.comment, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).disabledColor)),
+          Text(review.comment!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor)),
 
         ])),
 
       ]),
 
       hasDivider ? Padding(
-        padding: EdgeInsets.only(left: 70),
+        padding: const EdgeInsets.only(left: 70),
         child: Divider(color: Theme.of(context).disabledColor),
-      ) : SizedBox(),
+      ) : const SizedBox(),
 
     ]);
   }

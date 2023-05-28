@@ -10,11 +10,11 @@ class LocalizationController extends GetxController {
   final ApiClient apiClient;
   final SharedPreferences sharedPreferences;
 
-  LocalizationController({@required this.sharedPreferences, @required this.apiClient}) {
+  LocalizationController({required this.sharedPreferences, required this.apiClient}) {
     loadCurrentLanguage();
   }
 
-  Locale _locale = Locale(AppConstants.languages[0].languageCode, AppConstants.languages[0].countryCode);
+  Locale _locale = Locale(AppConstants.languages[0].languageCode!, AppConstants.languages[0].countryCode);
   bool _isLtr = true;
   int _selectedIndex = 0;
 
@@ -31,9 +31,9 @@ class LocalizationController extends GetxController {
       _isLtr = true;
     }
     apiClient.updateHeader(
-      sharedPreferences.getString(AppConstants.TOKEN), locale.languageCode,
-      Get.find<AuthController>().profileModel != null ? Get.find<AuthController>().profileModel.stores[0].module.id : null,
-        sharedPreferences.getString(AppConstants.TYPE)
+      sharedPreferences.getString(AppConstants.token), locale.languageCode,
+      Get.find<AuthController>().profileModel != null ? Get.find<AuthController>().profileModel!.stores![0].module!.id : null,
+        sharedPreferences.getString(AppConstants.type)
     );
     saveLanguage(_locale);
     if(Get.find<AuthController>().isLoggedIn()){
@@ -48,8 +48,8 @@ class LocalizationController extends GetxController {
   }
 
   void loadCurrentLanguage() async {
-    _locale = Locale(sharedPreferences.getString(AppConstants.LANGUAGE_CODE) ?? AppConstants.languages[0].languageCode,
-        sharedPreferences.getString(AppConstants.COUNTRY_CODE) ?? AppConstants.languages[0].countryCode);
+    _locale = Locale(sharedPreferences.getString(AppConstants.languageCode) ?? AppConstants.languages[0].languageCode!,
+        sharedPreferences.getString(AppConstants.countryCode) ?? AppConstants.languages[0].countryCode);
     _isLtr = _locale.languageCode != 'ar';
     for(int index = 0; index < AppConstants.languages.length; index++) {
       if(_locale.languageCode == AppConstants.languages[index].languageCode) {
@@ -61,7 +61,7 @@ class LocalizationController extends GetxController {
   }
 
   void saveLanguage(Locale locale) async {
-    sharedPreferences.setString(AppConstants.LANGUAGE_CODE, locale.languageCode);
-    sharedPreferences.setString(AppConstants.COUNTRY_CODE, locale.countryCode);
+    sharedPreferences.setString(AppConstants.languageCode, locale.languageCode);
+    sharedPreferences.setString(AppConstants.countryCode, locale.countryCode!);
   }
 }

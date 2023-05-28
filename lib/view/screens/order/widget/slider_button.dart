@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:vibration/vibration.dart';
 
 class SliderButton extends StatefulWidget {
   ///To make button more customizable add your child widget
-  final Widget child;
+  final Widget? child;
 
   ///Sets the radius of corners of a button.
   final double radius;
@@ -21,7 +22,7 @@ class SliderButton extends StatefulWidget {
   final Color buttonColor;
 
   ///Change it to gave a label on a widget of your choice.
-  final Text label;
+  final Text? label;
 
   ///Gives a alignment to a slidder icon.
   final Alignment alignLabel;
@@ -43,9 +44,9 @@ class SliderButton extends StatefulWidget {
   final double dismissThresholds;
 
   final bool disable;
-  final bool isLtr;
-  SliderButton({
-    @required this.action,
+  final bool? isLtr;
+  const SliderButton({Key? key, 
+    required this.action,
     this.radius = 100,
     this.boxShadow = const BoxShadow(
       color: Colors.black,
@@ -73,15 +74,15 @@ class SliderButton extends StatefulWidget {
     this.dismissible = true,
     this.dismissThresholds = 1.0,
     this.disable = false,
-  }) : assert(buttonSize <= height);
+  }) : assert(buttonSize <= height), super(key: key);
 
   @override
-  _SliderButtonState createState() => _SliderButtonState();
+  SliderButtonState createState() => SliderButtonState();
 }
 
-class _SliderButtonState extends State<SliderButton> {
-  bool flag;
-  Widget _child;
+class SliderButtonState extends State<SliderButton> {
+  bool? flag;
+  Widget? _child;
 
   @override
   void initState() {
@@ -117,7 +118,7 @@ class _SliderButtonState extends State<SliderButton> {
           child: widget.shimmer && !widget.disable
               ? Shimmer(
             color: widget.highlightedColor,
-            child: widget.label,
+            child: widget.label!,
           )
               : widget.label,
         ),
@@ -128,7 +129,7 @@ class _SliderButtonState extends State<SliderButton> {
           child: Container(
             width: widget.width - (widget.height),
             height: widget.height,
-            alignment: widget.isLtr ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: widget.isLtr! ? Alignment.centerLeft : Alignment.centerRight,
             padding: EdgeInsets.only(
               left: (widget.height - widget.buttonSize) / 2,
             ),
@@ -148,7 +149,7 @@ class _SliderButtonState extends State<SliderButton> {
           ),
         )
             : Dismissible(
-          key: Key("cancel"),
+          key: const Key("cancel"),
           direction: DismissDirection.startToEnd,
           dismissThresholds: {
             DismissDirection.startToEnd: widget.dismissThresholds
@@ -160,24 +161,26 @@ class _SliderButtonState extends State<SliderButton> {
               if (widget.dismissible) {
                 flag = false;
               } else {
-                flag = !flag;
+                flag = !flag!;
               }
             });
 
             widget.action();
             if (widget.vibrationFlag &&
-                await Vibration.hasVibrator()) {
+                (await Vibration.hasVibrator())!) {
               try {
                 Vibration.vibrate(duration: 200);
               } catch (e) {
-                print(e);
+                if (kDebugMode) {
+                  print(e);
+                }
               }
             }
           },
           child: Container(
             width: widget.width - (widget.height),
             height: widget.height,
-            alignment: widget.isLtr ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: widget.isLtr! ? Alignment.centerLeft : Alignment.centerRight,
             padding: EdgeInsets.only(
               left: (widget.height - widget.buttonSize) / 2,
             ),
@@ -196,9 +199,7 @@ class _SliderButtonState extends State<SliderButton> {
                 ),
           ),
         ),
-        Container(
-          child: SizedBox.expand(),
-        ),
+        const SizedBox.expand(),
       ],
     ),
   );

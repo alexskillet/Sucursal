@@ -2,36 +2,35 @@ import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/response/notification_model.dart';
 import 'package:sixam_mart_store/data/repository/notification_repo.dart';
 import 'package:sixam_mart_store/helper/date_converter.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NotificationController extends GetxController implements GetxService {
   final NotificationRepo notificationRepo;
-  NotificationController({@required this.notificationRepo});
+  NotificationController({required this.notificationRepo});
 
-  List<NotificationModel> _notificationList;
+  List<NotificationModel>? _notificationList;
   bool _hasNotification = false;
 
-  List<NotificationModel> get notificationList => _notificationList;
+  List<NotificationModel>? get notificationList => _notificationList;
   bool get hasNotification => _hasNotification;
 
   Future<void> getNotificationList() async {
     Response response = await notificationRepo.getNotificationList();
     if (response.statusCode == 200) {
       _notificationList = [];
-      response.body.forEach((notification) {
-        NotificationModel _notification = NotificationModel.fromJson(notification);
-        _notification.title = notification['data']['title'];
-        _notification.description = notification['data']['description'].toString();
-        _notification.image = notification['data']['image'];
-        _notificationList.add(_notification);
+      response.body.forEach((notify) {
+        NotificationModel notification = NotificationModel.fromJson(notify);
+        notification.title = notify['data']['title'];
+        notification.description = notify['data']['description'].toString();
+        notification.image = notify['data']['image'];
+        _notificationList!.add(notification);
       });
-      _notificationList.sort((NotificationModel n1, NotificationModel n2) {
-        return DateConverter.dateTimeStringToDate(n1.createdAt).compareTo(DateConverter.dateTimeStringToDate(n2.createdAt));
+      _notificationList!.sort((NotificationModel n1, NotificationModel n2) {
+        return DateConverter.dateTimeStringToDate(n1.createdAt!).compareTo(DateConverter.dateTimeStringToDate(n2.createdAt!));
       });
-      _notificationList = _notificationList.reversed.toList();
+      _notificationList = _notificationList!.reversed.toList();
 
-      _hasNotification = _notificationList.length != getSeenNotificationCount();
+      _hasNotification = _notificationList!.length != getSeenNotificationCount();
 
     } else {
       ApiChecker.checkApi(response);
@@ -43,7 +42,7 @@ class NotificationController extends GetxController implements GetxService {
     notificationRepo.saveSeenNotificationCount(count);
   }
 
-  int getSeenNotificationCount() {
+  int? getSeenNotificationCount() {
     return notificationRepo.getSeenNotificationCount();
   }
 

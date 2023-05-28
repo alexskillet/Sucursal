@@ -522,5 +522,6 @@
   "limit": "حد",
   "tax_included": "شامل الضريبة",
   "no_reasons_available": "لا توجد أسباب متاحة",
-  "rejected": "مرفوض"
+  "rejected": "مرفوض",
+  "enter_maximum_delivery_fee": "أدخل الحد الأقصى لرسوم التوصيل"
 }

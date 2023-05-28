@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String? title;
   final bool isBackButtonExist;
-  final Widget menuWidget;
-  final Function onTap;
-  CustomAppBar({@required this.title, this.isBackButtonExist = true, this.menuWidget, this.onTap});
+  final Widget? menuWidget;
+  final Function? onTap;
+  const CustomAppBar({Key? key, required this.title, this.isBackButtonExist = true, this.menuWidget, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: Theme.of(context).textTheme.bodyText1.color)),
+      title: Text(title!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge!.color)),
       centerTitle: true,
       leading: isBackButtonExist ? IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        color: Theme.of(context).textTheme.bodyText1.color,
-        onPressed: onTap ?? () => Get.back(),
-      ) : SizedBox(),
+        icon: const Icon(Icons.arrow_back_ios),
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+        onPressed: onTap as void Function()? ?? () => Get.back(),
+      ) : const SizedBox(),
       backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
-      actions: menuWidget != null ? [menuWidget] : null,
+      actions: menuWidget != null ? [menuWidget!] : null,
     );
   }
 

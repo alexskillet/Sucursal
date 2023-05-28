@@ -522,5 +522,6 @@
   "limit": "Limit",
   "tax_included": "Tax Included",
   "no_reasons_available": "No reasons available",
-  "rejected": "Rejected"
+  "rejected": "Rejected",
+  "enter_maximum_delivery_fee": "Enter maximum delivery fee"
 }

@@ -5,26 +5,26 @@ import 'package:flutter/material.dart';
 
 class CountWidget extends StatelessWidget {
   final String title;
-  final int count;
-  CountWidget({@required this.title, @required this.count});
+  final int? count;
+  const CountWidget({Key? key, required this.title, required this.count}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_SMALL),
+        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
         child: Column(children: [
 
-          Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).cardColor)),
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+          Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).cardColor)),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
 
             Image.asset(Images.order, color: Theme.of(context).cardColor, height: 12, width: 12),
-            SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
             Text(count.toString(), style: robotoMedium.copyWith(
-              fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Theme.of(context).cardColor,
+              fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).cardColor,
             )),
 
           ]),

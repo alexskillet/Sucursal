@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ForgetPassScreen extends StatefulWidget {
+  const ForgetPassScreen({Key? key}) : super(key: key);
+
   @override
   State<ForgetPassScreen> createState() => _ForgetPassScreenState();
 }
@@ -23,12 +25,12 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: 'forgot_password'.tr),
       body: SafeArea(child: Center(child: Scrollbar(child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
         child: Center(child: SizedBox(width: 1170, child: Column(children: [
 
           Text('please_enter_email'.tr, style: robotoRegular, textAlign: TextAlign.center),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
 
           CustomTextField(
             controller: _emailController,
@@ -38,13 +40,13 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
             prefixIcon: Images.mail,
             onSubmit: (text) => GetPlatform.isWeb ? _forgetPass() : null,
           ),
-          SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
 
           GetBuilder<AuthController>(builder: (authController) {
             return !authController.isLoading ? CustomButton(
               buttonText: 'next'.tr,
               onPressed: () => _forgetPass(),
-            ) : Center(child: CircularProgressIndicator());
+            ) : const Center(child: CircularProgressIndicator());
           }),
 
         ]))),
@@ -53,15 +55,15 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
   }
 
   void _forgetPass() {
-    String _email = _emailController.text.trim();
-    if (_email.isEmpty) {
+    String email = _emailController.text.trim();
+    if (email.isEmpty) {
       showCustomSnackBar('enter_email_address'.tr);
-    }else if (!GetUtils.isEmail(_email)) {
+    }else if (!GetUtils.isEmail(email)) {
       showCustomSnackBar('enter_a_valid_email_address'.tr);
     }else {
-      Get.find<AuthController>().forgetPassword(_email).then((status) async {
+      Get.find<AuthController>().forgetPassword(email).then((status) async {
         if (status.isSuccess) {
-          Get.toNamed(RouteHelper.getVerificationRoute(_email));
+          Get.toNamed(RouteHelper.getVerificationRoute(email));
         }else {
           showCustomSnackBar(status.message);
         }

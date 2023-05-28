@@ -7,5 +7,5 @@ class AttributeModel {
   TextEditingController controller;
   List<String> variants;
 
-  AttributeModel({@required this.attribute, @required this.active, @required this.controller, @required this.variants});
+  AttributeModel({required this.attribute, required this.active, required this.controller, required this.variants});
 }

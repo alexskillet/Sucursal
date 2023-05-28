@@ -11,7 +11,7 @@ class OrderWidget extends StatelessWidget {
   final bool hasDivider;
   final bool isRunning;
   final bool showStatus;
-  OrderWidget({@required this.orderModel, @required this.hasDivider, @required this.isRunning, this.showStatus = false});
+  const OrderWidget({Key? key, required this.orderModel, required this.hasDivider, required this.isRunning, this.showStatus = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,55 +22,54 @@ class OrderWidget extends StatelessWidget {
       child: Column(children: [
 
         Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('${'order_id'.tr}: #${orderModel.id}', style: robotoMedium),
-              SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
               Row(children: [
                 Text(
-                  DateConverter.dateTimeStringToDateTime(orderModel.createdAt),
-                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                  DateConverter.dateTimeStringToDateTime(orderModel.createdAt!),
+                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                 ),
                 Container(
                   height: 10, width: 1, color: Theme.of(context).disabledColor,
-                  margin: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
                 ),
                 Text(
-                  orderModel.orderType.tr,
-                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).primaryColor),
+                  orderModel.orderType!.tr,
+                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
                 ),
               ]),
             ])),
 
             showStatus ? Container(
-              padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
               ),
               alignment: Alignment.center,
               child: Builder(
                 builder: (context) {
-                  print('need translation---> ${orderModel.orderStatus}');
                   return Text(
-                    orderModel.orderStatus.tr,
-                    style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).primaryColor),
+                    orderModel.orderStatus!.tr,
+                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
                   );
                 }
               ),
             ) : Text(
-              '${orderModel.detailsCount} ${orderModel.detailsCount < 2 ? 'item'.tr : 'items'.tr}',
-              style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+              '${orderModel.detailsCount} ${orderModel.detailsCount! < 2 ? 'item'.tr : 'items'.tr}',
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
             ),
 
-            showStatus ? SizedBox() : Icon(Icons.keyboard_arrow_right, size: 30, color: Theme.of(context).primaryColor),
+            showStatus ? const SizedBox() : Icon(Icons.keyboard_arrow_right, size: 30, color: Theme.of(context).primaryColor),
 
           ]),
         ),
 
-        hasDivider ? Divider(color: Theme.of(context).disabledColor) : SizedBox(),
+        hasDivider ? Divider(color: Theme.of(context).disabledColor) : const SizedBox(),
 
       ]),
     );

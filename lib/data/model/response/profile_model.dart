@@ -1,30 +1,30 @@
 class ProfileModel {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String createdAt;
-  String updatedAt;
-  String bankName;
-  String branch;
-  String holderName;
-  String accountNo;
-  String image;
-  int orderCount;
-  int todaysOrderCount;
-  int thisWeekOrderCount;
-  int thisMonthOrderCount;
-  int memberSinceDays;
-  double cashInHands;
-  double balance;
-  double totalEarning;
-  double todaysEarning;
-  double thisWeekEarning;
-  double thisMonthEarning;
-  List<Store> stores;
-  List<String> roles;
-  EmployeeInfo employeeInfo;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? createdAt;
+  String? updatedAt;
+  String? bankName;
+  String? branch;
+  String? holderName;
+  String? accountNo;
+  String? image;
+  int? orderCount;
+  int? todaysOrderCount;
+  int? thisWeekOrderCount;
+  int? thisMonthOrderCount;
+  int? memberSinceDays;
+  double? cashInHands;
+  double? balance;
+  double? totalEarning;
+  double? todaysEarning;
+  double? thisWeekEarning;
+  double? thisMonthEarning;
+  List<Store>? stores;
+  List<String>? roles;
+  EmployeeInfo? employeeInfo;
 
   ProfileModel(
       {this.id,
@@ -82,12 +82,12 @@ class ProfileModel {
     if (json['stores'] != null) {
       stores = [];
       json['stores'].forEach((v) {
-        stores.add(new Store.fromJson(v));
+        stores!.add(Store.fromJson(v));
       });
     }
     if(json['roles'] != null) {
       roles = [];
-      json['roles'].forEach((v) => roles.add(v));
+      json['roles'].forEach((v) => roles!.add(v));
     }
     if(json['employee_info'] != null){
       employeeInfo = EmployeeInfo.fromJson(json['employee_info']);
@@ -95,76 +95,76 @@ class ProfileModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['bank_name'] = this.bankName;
-    data['branch'] = this.branch;
-    data['holder_name'] = this.holderName;
-    data['account_no'] = this.accountNo;
-    data['image'] = this.image;
-    data['order_count'] = this.orderCount;
-    data['todays_order_count'] = this.todaysOrderCount;
-    data['this_week_order_count'] = this.thisWeekOrderCount;
-    data['this_month_order_count'] = this.thisMonthOrderCount;
-    data['member_since_days'] = this.memberSinceDays;
-    data['cash_in_hands'] = this.cashInHands;
-    data['balance'] = this.balance;
-    data['total_earning'] = this.totalEarning;
-    data['todays_earning'] = this.todaysEarning;
-    data['this_week_earning'] = this.thisWeekEarning;
-    data['this_month_earning'] = this.thisMonthEarning;
-    if (this.stores != null) {
-      data['stores'] = this.stores.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['bank_name'] = bankName;
+    data['branch'] = branch;
+    data['holder_name'] = holderName;
+    data['account_no'] = accountNo;
+    data['image'] = image;
+    data['order_count'] = orderCount;
+    data['todays_order_count'] = todaysOrderCount;
+    data['this_week_order_count'] = thisWeekOrderCount;
+    data['this_month_order_count'] = thisMonthOrderCount;
+    data['member_since_days'] = memberSinceDays;
+    data['cash_in_hands'] = cashInHands;
+    data['balance'] = balance;
+    data['total_earning'] = totalEarning;
+    data['todays_earning'] = todaysEarning;
+    data['this_week_earning'] = thisWeekEarning;
+    data['this_month_earning'] = thisMonthEarning;
+    if (stores != null) {
+      data['stores'] = stores!.map((v) => v.toJson()).toList();
     }
-    data['employee_info'] = this.employeeInfo;
+    data['employee_info'] = employeeInfo;
     return data;
   }
 }
 
 class Store {
-  int id;
-  String name;
-  String phone;
-  String email;
-  String logo;
-  String latitude;
-  String longitude;
-  String address;
-  double minimumOrder;
-  bool scheduleOrder;
-  String currency;
-  String createdAt;
-  String updatedAt;
-  bool freeDelivery;
-  String coverPhoto;
-  bool delivery;
-  bool takeAway;
-  double tax;
-  bool reviewsSection;
-  bool itemSection;
-  double avgRating;
-  int ratingCount;
-  bool active;
-  bool gstStatus;
-  String gstCode;
-  int selfDeliverySystem;
-  bool posSystem;
-  double minimumShippingCharge;
-  double maximumShippingCharge;
-  double perKmShippingCharge;
-  String deliveryTime;
-  int veg;
-  int nonVeg;
-  int orderPlaceToScheduleInterval;
-  Module module;
-  Discount discount;
-  List<Schedules> schedules;
+  int? id;
+  String? name;
+  String? phone;
+  String? email;
+  String? logo;
+  String? latitude;
+  String? longitude;
+  String? address;
+  double? minimumOrder;
+  bool? scheduleOrder;
+  String? currency;
+  String? createdAt;
+  String? updatedAt;
+  bool? freeDelivery;
+  String? coverPhoto;
+  bool? delivery;
+  bool? takeAway;
+  double? tax;
+  bool? reviewsSection;
+  bool? itemSection;
+  double? avgRating;
+  int? ratingCount;
+  bool? active;
+  bool? gstStatus;
+  String? gstCode;
+  int? selfDeliverySystem;
+  bool? posSystem;
+  double? minimumShippingCharge;
+  double? maximumShippingCharge;
+  double? perKmShippingCharge;
+  String? deliveryTime;
+  int? veg;
+  int? nonVeg;
+  int? orderPlaceToScheduleInterval;
+  Module? module;
+  Discount? discount;
+  List<Schedules>? schedules;
 
   Store(
       {this.id,
@@ -235,79 +235,79 @@ class Store {
     selfDeliverySystem = json['self_delivery_system'];
     posSystem = json['pos_system'];
     minimumShippingCharge = json['minimum_shipping_charge'] != null ? json['minimum_shipping_charge'].toDouble() : 0.0;
-    maximumShippingCharge = json['maximum_shipping_charge'] != null ? json['maximum_shipping_charge'].toDouble() : null;
+    maximumShippingCharge = json['maximum_shipping_charge']?.toDouble();
     perKmShippingCharge = json['per_km_shipping_charge'] != null ? json['per_km_shipping_charge'].toDouble() : 0.0;
     deliveryTime = json['delivery_time'];
     veg = json['veg'];
     nonVeg = json['non_veg'];
     orderPlaceToScheduleInterval = json['order_place_to_schedule_interval'];
-    module = json['module'] != null ? new Module.fromJson(json['module']) : null;
-    discount = json['discount'] != null ? new Discount.fromJson(json['discount']) : null;
+    module = json['module'] != null ? Module.fromJson(json['module']) : null;
+    discount = json['discount'] != null ? Discount.fromJson(json['discount']) : null;
     if (json['schedules'] != null) {
       schedules = <Schedules>[];
       json['schedules'].forEach((v) {
-        schedules.add(new Schedules.fromJson(v));
+        schedules!.add(Schedules.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['logo'] = this.logo;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['address'] = this.address;
-    data['minimum_order'] = this.minimumOrder;
-    data['schedule_order'] = this.scheduleOrder;
-    data['currency'] = this.currency;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['free_delivery'] = this.freeDelivery;
-    data['cover_photo'] = this.coverPhoto;
-    data['delivery'] = this.delivery;
-    data['take_away'] = this.takeAway;
-    data['tax'] = this.tax;
-    data['reviews_section'] = this.reviewsSection;
-    data['item_section'] = this.itemSection;
-    data['avg_rating'] = this.avgRating;
-    data['rating_count '] = this.ratingCount;
-    data['active'] = this.active;
-    data['gst_status'] = this.gstStatus;
-    data['gst_code'] = this.gstCode;
-    data['self_delivery_system'] = this.selfDeliverySystem;
-    data['pos_system'] = this.posSystem;
-    data['minimum_shipping_charge'] = this.minimumShippingCharge;
-    data['maximum_shipping_charge'] = this.maximumShippingCharge;
-    data['per_km_shipping_charge'] = this.perKmShippingCharge;
-    data['delivery_time'] = this.deliveryTime;
-    data['veg'] = this.veg;
-    data['non_veg'] = this.nonVeg;
-    data['order_place_to_schedule_interval'] = this.orderPlaceToScheduleInterval;
-    if (this.module != null) {
-      data['module'] = this.module.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['logo'] = logo;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['address'] = address;
+    data['minimum_order'] = minimumOrder;
+    data['schedule_order'] = scheduleOrder;
+    data['currency'] = currency;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['free_delivery'] = freeDelivery;
+    data['cover_photo'] = coverPhoto;
+    data['delivery'] = delivery;
+    data['take_away'] = takeAway;
+    data['tax'] = tax;
+    data['reviews_section'] = reviewsSection;
+    data['item_section'] = itemSection;
+    data['avg_rating'] = avgRating;
+    data['rating_count '] = ratingCount;
+    data['active'] = active;
+    data['gst_status'] = gstStatus;
+    data['gst_code'] = gstCode;
+    data['self_delivery_system'] = selfDeliverySystem;
+    data['pos_system'] = posSystem;
+    data['minimum_shipping_charge'] = minimumShippingCharge;
+    data['maximum_shipping_charge'] = maximumShippingCharge;
+    data['per_km_shipping_charge'] = perKmShippingCharge;
+    data['delivery_time'] = deliveryTime;
+    data['veg'] = veg;
+    data['non_veg'] = nonVeg;
+    data['order_place_to_schedule_interval'] = orderPlaceToScheduleInterval;
+    if (module != null) {
+      data['module'] = module!.toJson();
     }
-    if (this.discount != null) {
-      data['discount'] = this.discount.toJson();
+    if (discount != null) {
+      data['discount'] = discount!.toJson();
     }
-    if (this.schedules != null) {
-      data['schedules'] = this.schedules.map((v) => v.toJson()).toList();
+    if (schedules != null) {
+      data['schedules'] = schedules!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 class EmployeeInfo {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String image;
-  int employeeRoleId;
-  int storeId;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? image;
+  int? employeeRoleId;
+  int? storeId;
 
   EmployeeInfo(
       {this.id,
@@ -332,32 +332,32 @@ class EmployeeInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['employee_role_id'] = this.employeeRoleId;
-    data['store_id'] = this.storeId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['image'] = image;
+    data['employee_role_id'] = employeeRoleId;
+    data['store_id'] = storeId;
     return data;
   }
 }
 
 class Discount {
-  int id;
-  String startDate;
-  String endDate;
-  String startTime;
-  String endTime;
-  double minPurchase;
-  double maxDiscount;
-  double discount;
-  String discountType;
-  int storeId;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? startDate;
+  String? endDate;
+  String? startTime;
+  String? endTime;
+  double? minPurchase;
+  double? maxDiscount;
+  double? discount;
+  String? discountType;
+  int? storeId;
+  String? createdAt;
+  String? updatedAt;
 
   Discount(
       {this.id,
@@ -389,29 +389,29 @@ class Discount {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['start_time'] = this.startTime;
-    data['end_time'] = this.endTime;
-    data['min_purchase'] = this.minPurchase;
-    data['max_discount'] = this.maxDiscount;
-    data['discount'] = this.discount;
-    data['discount_type'] = this.discountType;
-    data['store_id'] = this.storeId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['start_time'] = startTime;
+    data['end_time'] = endTime;
+    data['min_purchase'] = minPurchase;
+    data['max_discount'] = maxDiscount;
+    data['discount'] = discount;
+    data['discount_type'] = discountType;
+    data['store_id'] = storeId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
 
 class Schedules {
-  int id;
-  int storeId;
-  int day;
-  String openingTime;
-  String closingTime;
+  int? id;
+  int? storeId;
+  int? day;
+  String? openingTime;
+  String? closingTime;
 
   Schedules(
       {this.id,
@@ -429,25 +429,25 @@ class Schedules {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['store_id'] = this.storeId;
-    data['day'] = this.day;
-    data['opening_time'] = this.openingTime;
-    data['closing_time'] = this.closingTime;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['store_id'] = storeId;
+    data['day'] = day;
+    data['opening_time'] = openingTime;
+    data['closing_time'] = closingTime;
     return data;
   }
 }
 
 class Module {
-  int id;
-  String moduleName;
-  String moduleType;
-  String thumbnail;
-  String status;
-  int storesCount;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? moduleName;
+  String? moduleType;
+  String? thumbnail;
+  String? status;
+  int? storesCount;
+  String? createdAt;
+  String? updatedAt;
 
   Module(
       {this.id,
@@ -471,15 +471,15 @@ class Module {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['module_name'] = this.moduleName;
-    data['module_type'] = this.moduleType;
-    data['thumbnail'] = this.thumbnail;
-    data['status'] = this.status;
-    data['stores_count'] = this.storesCount;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['module_name'] = moduleName;
+    data['module_type'] = moduleType;
+    data['thumbnail'] = thumbnail;
+    data['status'] = status;
+    data['stores_count'] = storesCount;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

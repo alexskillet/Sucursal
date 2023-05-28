@@ -1,10 +1,10 @@
 class NotificationModel {
-  int id;
-  String title;
-  String description;
-  String image;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? title;
+  String? description;
+  String? image;
+  String? createdAt;
+  String? updatedAt;
 
   NotificationModel(
       {this.id,
@@ -24,13 +24,13 @@ class NotificationModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['description'] = description;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

@@ -2,33 +2,32 @@ import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/response/item_model.dart';
 import 'package:sixam_mart_store/data/repository/addon_repo.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddonController extends GetxController implements GetxService {
   final AddonRepo addonRepo;
-  AddonController({@required this.addonRepo});
+  AddonController({required this.addonRepo});
 
-  List<AddOns> _addonList;
+  List<AddOns>? _addonList;
   bool _isLoading = false;
 
-  List<AddOns> get addonList => _addonList;
+  List<AddOns>? get addonList => _addonList;
   bool get isLoading => _isLoading;
 
-  Future<List<int>> getAddonList() async {
+  Future<List<int?>> getAddonList() async {
     Response response = await addonRepo.getAddonList();
-    List<int> _addonsIds = [];
+    List<int?> addonsIds = [];
     if(response.statusCode == 200) {
       _addonList = [];
       response.body.forEach((addon) {
-        _addonList.add(AddOns.fromJson(addon));
-        _addonsIds.add(AddOns.fromJson(addon).id);
+        _addonList!.add(AddOns.fromJson(addon));
+        addonsIds.add(AddOns.fromJson(addon).id);
       });
     }else {
       ApiChecker.checkApi(response);
     }
     update();
-    return _addonsIds;
+    return addonsIds;
   }
 
   Future<void> addAddon(AddOns addonModel) async {
@@ -61,7 +60,7 @@ class AddonController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> deleteAddon(int addonID) async {
+  Future<void> deleteAddon(int? addonID) async {
     _isLoading = true;
     update();
     Response response = await addonRepo.deleteAddon(addonID);

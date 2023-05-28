@@ -1,8 +1,8 @@
 class OrderCancellationBody {
-  int totalSize;
-  String limit;
-  String offset;
-  List<Data> data;
+  int? totalSize;
+  String? limit;
+  String? offset;
+  List<Data>? data;
 
   OrderCancellationBody({this.totalSize, this.limit, this.offset, this.data});
 
@@ -13,30 +13,30 @@ class OrderCancellationBody {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_size'] = this.totalSize;
-    data['limit'] = this.limit;
-    data['offset'] = this.offset;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total_size'] = totalSize;
+    data['limit'] = limit;
+    data['offset'] = offset;
     if (this.data != null) {
-      data['data'] = this.data.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Data {
-  int id;
-  String reason;
-  String userType;
-  int status;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? reason;
+  String? userType;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
 
   Data(
       {this.id,
@@ -56,13 +56,13 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['reason'] = this.reason;
-    data['user_type'] = this.userType;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['reason'] = reason;
+    data['user_type'] = userType;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

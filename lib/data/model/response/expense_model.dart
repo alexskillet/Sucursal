@@ -1,8 +1,8 @@
 class ExpenseBody {
-  int totalSize;
-  int limit;
-  String offset;
-  List<Expense> expense;
+  int? totalSize;
+  int? limit;
+  String? offset;
+  List<Expense>? expense;
 
   ExpenseBody({this.totalSize, this.limit, this.offset, this.expense});
 
@@ -13,33 +13,33 @@ class ExpenseBody {
     if (json['expense'] != null) {
       expense = <Expense>[];
       json['expense'].forEach((v) {
-        expense.add(new Expense.fromJson(v));
+        expense!.add(Expense.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_size'] = this.totalSize;
-    data['limit'] = this.limit;
-    data['offset'] = this.offset;
-    if (this.expense != null) {
-      data['expense'] = this.expense.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total_size'] = totalSize;
+    data['limit'] = limit;
+    data['offset'] = offset;
+    if (expense != null) {
+      data['expense'] = expense!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Expense {
-  int id;
-  String type;
-  double amount;
-  String description;
-  String createdAt;
-  String updatedAt;
-  String createdBy;
-  int restaurantId;
-  int orderId;
+  int? id;
+  String? type;
+  double? amount;
+  String? description;
+  String? createdAt;
+  String? updatedAt;
+  String? createdBy;
+  int? restaurantId;
+  int? orderId;
 
   Expense(
       {this.id,
@@ -66,16 +66,16 @@ class Expense {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['type'] = this.type;
-    data['amount'] = this.amount;
-    data['description'] = this.description;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['created_by'] = this.createdBy;
-    data['restaurant_id'] = this.restaurantId;
-    data['order_id'] = this.orderId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['type'] = type;
+    data['amount'] = amount;
+    data['description'] = description;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['created_by'] = createdBy;
+    data['restaurant_id'] = restaurantId;
+    data['order_id'] = orderId;
     return data;
   }
 }

@@ -1,9 +1,9 @@
 
 class ChatListModel {
-  int totalSize;
-  int limit;
-  int offset;
-  MessagesData messagesData;
+  int? totalSize;
+  int? limit;
+  int? offset;
+  MessagesData? messagesData;
 
   ChatListModel({this.totalSize, this.limit, this.offset, this.messagesData});
 
@@ -12,25 +12,25 @@ class ChatListModel {
     limit = json['limit'];
     offset = json['offset'];
     messagesData = json['messages'] != null
-        ? new MessagesData.fromJson(json['messages'])
+        ? MessagesData.fromJson(json['messages'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_size'] = this.totalSize;
-    data['limit'] = this.limit;
-    data['offset'] = this.offset;
-    if (this.messagesData != null) {
-      data['messages'] = this.messagesData.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total_size'] = totalSize;
+    data['limit'] = limit;
+    data['offset'] = offset;
+    if (messagesData != null) {
+      data['messages'] = messagesData!.toJson();
     }
     return data;
   }
 }
 
 class MessagesData {
-  int currentPage;
-  List<Data> data;
+  int? currentPage;
+  List<Data>? data;
 
   MessagesData({this.currentPage, this.data});
 
@@ -39,26 +39,26 @@ class MessagesData {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['current_page'] = this.currentPage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['current_page'] = currentPage;
     if (this.data != null) {
-      data['data'] = this.data.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Data {
-  int orderId;
-  int userId;
-  int conversationsCount;
-  Customer customer;
+  int? orderId;
+  int? userId;
+  int? conversationsCount;
+  Customer? customer;
 
   Data({this.orderId, this.userId, this.conversationsCount, this.customer});
 
@@ -67,33 +67,33 @@ class Data {
     userId = json['user_id'];
     conversationsCount = json['conversations_count'];
     customer = json['customer'] != null
-        ? new Customer.fromJson(json['customer'])
+        ? Customer.fromJson(json['customer'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.orderId;
-    data['user_id'] = this.userId;
-    data['conversations_count'] = this.conversationsCount;
-    if (this.customer != null) {
-      data['customer'] = this.customer.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = orderId;
+    data['user_id'] = userId;
+    data['conversations_count'] = conversationsCount;
+    if (customer != null) {
+      data['customer'] = customer!.toJson();
     }
     return data;
   }
 }
 
 class Customer {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String image;
-  String createdAt;
-  String updatedAt;
-  int loyaltyPoint;
-  String refCode;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? image;
+  String? createdAt;
+  String? updatedAt;
+  int? loyaltyPoint;
+  String? refCode;
 
   Customer(
       {this.id,
@@ -121,17 +121,17 @@ class Customer {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['loyalty_point'] = this.loyaltyPoint;
-    data['ref_code'] = this.refCode;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['loyalty_point'] = loyaltyPoint;
+    data['ref_code'] = refCode;
     return data;
   }
 }

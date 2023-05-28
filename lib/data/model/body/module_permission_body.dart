@@ -1,17 +1,17 @@
 class ModulePermissionBody{
-  bool item;
-  bool order;
-  bool storeSetup;
-  bool addon;
-  bool wallet;
-  bool bankInfo;
-  bool employee;
-  bool myShop;
-  bool customRole;
-  bool campaign;
-  bool reviews;
-  bool pos;
-  bool chat;
+  bool? item;
+  bool? order;
+  bool? storeSetup;
+  bool? addon;
+  bool? wallet;
+  bool? bankInfo;
+  bool? employee;
+  bool? myShop;
+  bool? customRole;
+  bool? campaign;
+  bool? reviews;
+  bool? pos;
+  bool? chat;
 
   ModulePermissionBody({
     this.item,
@@ -45,21 +45,21 @@ class ModulePermissionBody{
     chat = json['chat'];
   }
 
-  Map<String, bool> toJson() {
-    final Map<String, bool> data = new Map<String, bool>();
-    data['item'] = this.item ;
-    data['order'] = this.order;
-    data['store_setup'] = this.storeSetup;
-    data['addon'] = this.addon;
-    data['wallet'] = this.wallet;
-    data['bank_info'] = this.bankInfo;
-    data['employee'] = this.employee;
-    data['my_shop'] = this.myShop;
-    data['custom_role'] = this.customRole;
-    data['campaign'] = this.campaign;
-    data['reviews'] = this.reviews;
-    data['pos'] = this.pos;
-    data['chat'] = this.chat;
+  Map<String, bool?> toJson() {
+    final Map<String, bool?> data = <String, bool?>{};
+    data['item'] = item ;
+    data['order'] = order;
+    data['store_setup'] = storeSetup;
+    data['addon'] = addon;
+    data['wallet'] = wallet;
+    data['bank_info'] = bankInfo;
+    data['employee'] = employee;
+    data['my_shop'] = myShop;
+    data['custom_role'] = customRole;
+    data['campaign'] = campaign;
+    data['reviews'] = reviews;
+    data['pos'] = pos;
+    data['chat'] = chat;
     return data;
   }
 }

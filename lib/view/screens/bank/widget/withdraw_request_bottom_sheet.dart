@@ -11,44 +11,46 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 
 class WithdrawRequestBottomSheet extends StatelessWidget {
+  const WithdrawRequestBottomSheet({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _amountController = TextEditingController();
+    final TextEditingController amountController = TextEditingController();
 
     return Container(
-      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.RADIUS_LARGE)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLarge)),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
 
         Text('withdraw'.tr, style: robotoMedium),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
         Image.asset(Images.bank, height: 30, width: 30),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-        Text(Get.find<AuthController>().profileModel.bankName, style: robotoRegular),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-
-        Text(
-          Get.find<AuthController>().profileModel.branch,
-          style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.FONT_SIZE_SMALL),
-        ),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+        Text(Get.find<AuthController>().profileModel!.bankName!, style: robotoRegular),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
         Text(
-          Get.find<AuthController>().profileModel.accountNo,
-          style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+          Get.find<AuthController>().profileModel!.branch!,
+          style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
         ),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+        Text(
+          Get.find<AuthController>().profileModel!.accountNo!,
+          style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
         Text('enter_amount'.tr, style: robotoRegular),
-        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
         TextField(
-          controller: _amountController,
+          controller: amountController,
           textAlign: TextAlign.center,
           style: robotoMedium,
           textInputAction: TextInputAction.done,
@@ -58,29 +60,29 @@ class WithdrawRequestBottomSheet extends StatelessWidget {
             hintText: 'enter_amount'.tr,
             hintStyle: robotoRegular.copyWith(color: Theme.of(context).hintColor),
             prefixIcon: Text(
-              Get.find<SplashController>().configModel.currencySymbol,
-              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+              Get.find<SplashController>().configModel!.currencySymbol!,
+              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
             ),
-            prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
           ),
         ),
-        SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
 
         GetBuilder<BankController>(builder: (bankController) {
           return !bankController.isLoading ? CustomButton(
             buttonText: 'withdraw'.tr,
             onPressed: () {
-              String _amount = _amountController.text.trim();
-              if(_amount.isEmpty) {
+              String amount = amountController.text.trim();
+              if(amount.isEmpty) {
                 showCustomSnackBar('enter_amount'.tr);
-              } else if(double.parse(_amount) > 999999){
+              } else if(double.parse(amount) > 999999){
                 showCustomSnackBar('you_cant_withdraw_more_then_1000000'.tr);
               }
               else {
-                bankController.requestWithdraw(_amount);
+                bankController.requestWithdraw(amount);
               }
             },
-          ) : Center(child: CircularProgressIndicator());
+          ) : const Center(child: CircularProgressIndicator());
         }),
 
       ]),

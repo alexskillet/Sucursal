@@ -1,16 +1,16 @@
 class CampaignModel {
-  int id;
-  String title;
-  String image;
-  String description;
-  String createdAt;
-  String updatedAt;
-  String startTime;
-  String endTime;
-  String availableDateStarts;
-  String availableDateEnds;
-  String vendorStatus;
-  bool isJoined;
+  int? id;
+  String? title;
+  String? image;
+  String? description;
+  String? createdAt;
+  String? updatedAt;
+  String? startTime;
+  String? endTime;
+  String? availableDateStarts;
+  String? availableDateEnds;
+  String? vendorStatus;
+  bool? isJoined;
 
   CampaignModel(
       {this.id,
@@ -42,19 +42,19 @@ class CampaignModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['image'] = this.image;
-    data['description'] = this.description;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['start_time'] = this.startTime;
-    data['end_time'] = this.endTime;
-    data['available_date_starts'] = this.availableDateStarts;
-    data['available_date_ends'] = this.availableDateEnds;
-    data['vendor_status'] = this.vendorStatus;
-    data['is_joined'] = this.isJoined;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['image'] = image;
+    data['description'] = description;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['start_time'] = startTime;
+    data['end_time'] = endTime;
+    data['available_date_starts'] = availableDateStarts;
+    data['available_date_ends'] = availableDateEnds;
+    data['vendor_status'] = vendorStatus;
+    data['is_joined'] = isJoined;
     return data;
   }
 }

@@ -1,8 +1,8 @@
 class BankInfoBody {
-  String bankName;
-  String branch;
-  String holderName;
-  String accountNo;
+  String? bankName;
+  String? branch;
+  String? holderName;
+  String? accountNo;
 
   BankInfoBody({this.bankName, this.branch, this.holderName, this.accountNo});
 
@@ -14,11 +14,11 @@ class BankInfoBody {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['bank_name'] = this.bankName;
-    data['branch'] = this.branch;
-    data['holder_name'] = this.holderName;
-    data['account_no'] = this.accountNo;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['bank_name'] = bankName;
+    data['branch'] = branch;
+    data['holder_name'] = holderName;
+    data['account_no'] = accountNo;
     return data;
   }
 }

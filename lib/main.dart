@@ -21,49 +21,49 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 
 Future<void> main() async {
   if(!GetPlatform.isWeb) {
-    HttpOverrides.global = new MyHttpOverrides();
+    HttpOverrides.global = MyHttpOverrides();
   }
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Map<String, Map<String, String>> _languages = await di.init();
+  Map<String, Map<String, String>> languages = await di.init();
 
-  NotificationBody _body;
+  NotificationBody? body;
   try {
     if (GetPlatform.isMobile) {
-      final RemoteMessage remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+      final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null) {
-        _body = NotificationHelper.convertNotification(remoteMessage.data);
+        body = NotificationHelper.convertNotification(remoteMessage.data);
       }
       await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
       FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
     }
-  }catch(e) {}
+  }catch(_) {}
 
-  runApp(MyApp(languages: _languages, body: _body));
+  runApp(MyApp(languages: languages, body: body));
 }
 
 class MyApp extends StatelessWidget {
-  final Map<String, Map<String, String>> languages;
-  final NotificationBody body;
-  MyApp({@required this.languages, @required this.body});
+  final Map<String, Map<String, String>>? languages;
+  final NotificationBody? body;
+  const MyApp({Key? key, required this.languages, required this.body}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ThemeController>(builder: (themeController) {
       return GetBuilder<LocalizationController>(builder: (localizeController) {
         return GetMaterialApp(
-          title: AppConstants.APP_NAME,
+          title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
           navigatorKey: Get.key,
           theme: themeController.darkTheme ? dark : light,
           locale: localizeController.locale,
           translations: Messages(languages: languages),
-          fallbackLocale: Locale(AppConstants.languages[0].languageCode, AppConstants.languages[0].countryCode),
+          fallbackLocale: Locale(AppConstants.languages[0].languageCode!, AppConstants.languages[0].countryCode),
           initialRoute: RouteHelper.getSplashRoute(body),
           getPages: RouteHelper.routes,
           defaultTransition: Transition.topLevel,
-          transitionDuration: Duration(milliseconds: 500),
+          transitionDuration: const Duration(milliseconds: 500),
         );
       });
     });
@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
 
 class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }

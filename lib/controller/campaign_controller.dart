@@ -2,18 +2,17 @@ import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/response/campaign_model.dart';
 import 'package:sixam_mart_store/data/repository/campaign_repo.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CampaignController extends GetxController implements GetxService {
   final CampaignRepo campaignRepo;
-  CampaignController({@required this.campaignRepo});
+  CampaignController({required this.campaignRepo});
 
-  List<CampaignModel> _campaignList;
-  List<CampaignModel> _allCampaignList;
+  List<CampaignModel>? _campaignList;
+  late List<CampaignModel> _allCampaignList;
   bool _isLoading = false;
 
-  List<CampaignModel> get campaignList => _campaignList;
+  List<CampaignModel>? get campaignList => _campaignList;
   bool get isLoading => _isLoading;
 
   Future<void> getCampaignList() async {
@@ -22,7 +21,7 @@ class CampaignController extends GetxController implements GetxService {
       _campaignList = [];
       _allCampaignList = [];
       response.body.forEach((campaign) {
-        _campaignList.add(CampaignModel.fromJson(campaign));
+        _campaignList!.add(CampaignModel.fromJson(campaign));
         _allCampaignList.add(CampaignModel.fromJson(campaign));
       });
     }else {
@@ -34,18 +33,18 @@ class CampaignController extends GetxController implements GetxService {
   void filterCampaign(String status) {
     _campaignList = [];
     if(status == 'joined') {
-      _allCampaignList.forEach((campaign) {
-        if(campaign.isJoined) {
-          _campaignList.add(campaign);
+      for (var campaign in _allCampaignList) {
+        if(campaign.isJoined!) {
+          _campaignList!.add(campaign);
         }
-      });
+      }
     }else {
-      _campaignList.addAll(_allCampaignList);
+      _campaignList!.addAll(_allCampaignList);
     }
     update();
   }
 
-  Future<void> joinCampaign(int campaignID, bool fromDetails) async {
+  Future<void> joinCampaign(int? campaignID, bool fromDetails) async {
     _isLoading = true;
     update();
     Response response = await campaignRepo.joinCampaign(campaignID);
@@ -63,7 +62,7 @@ class CampaignController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> leaveCampaign(int campaignID, bool fromDetails) async {
+  Future<void> leaveCampaign(int? campaignID, bool fromDetails) async {
     _isLoading = true;
     update();
     Response response = await campaignRepo.leaveCampaign(campaignID);

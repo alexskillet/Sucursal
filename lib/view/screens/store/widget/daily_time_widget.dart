@@ -13,106 +13,106 @@ import 'package:get/get.dart';
 
 class DailyTimeWidget extends StatelessWidget {
   final int weekDay;
-  DailyTimeWidget({@required this.weekDay});
+  const DailyTimeWidget({Key? key, required this.weekDay}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String _openingTime;
-    String _closingTime;
-    List<Schedules> _scheduleList = [];
-    Get.find<StoreController>().scheduleList.forEach((schedule) {
+    String? openingTime;
+    String? closingTime;
+    List<Schedules> scheduleList = [];
+    for (var schedule in Get.find<StoreController>().scheduleList!) {
       if(schedule.day == weekDay) {
-        _scheduleList.add(schedule);
+        scheduleList.add(schedule);
       }
-    });
-    String _dayString = weekDay == 1 ? 'monday' : weekDay == 2 ? 'tuesday' : weekDay == 3 ? 'wednesday' : weekDay == 4
+    }
+    String dayString = weekDay == 1 ? 'monday' : weekDay == 2 ? 'tuesday' : weekDay == 3 ? 'wednesday' : weekDay == 4
         ? 'thursday' : weekDay == 5 ? 'friday' : weekDay == 6 ? 'saturday' : 'sunday';
     return Padding(
-      padding: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
+      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
       child: Row(children: [
 
-        Expanded(flex: 2, child: Text(_dayString.tr)),
+        Expanded(flex: 2, child: Text(dayString.tr)),
 
-        Text(':'),
-        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+        const Text(':'),
+        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
         Expanded(flex: 8, child: SizedBox(height: 50, child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: _scheduleList.length+1,
+          itemCount: scheduleList.length+1,
           itemBuilder: (context, index) {
 
-            if(index == _scheduleList.length) {
+            if(index == scheduleList.length) {
               return InkWell(
                 onTap: () => Get.dialog(Dialog(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_LARGE)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
                   child: Padding(
-                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                     child: Column(mainAxisSize: MainAxisSize.min, children: [
 
                       Text(
-                        '${'schedule_for'.tr} ${_dayString.tr}',
-                        style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+                        '${'schedule_for'.tr} ${dayString.tr}',
+                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
                       ),
-                      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                      const SizedBox(height: Dimensions.paddingSizeLarge),
 
                       Row(children: [
 
                         Expanded(child: CustomTimePicker(
-                          title: 'open_time'.tr, time: _openingTime,
-                          onTimeChanged: (time) => _openingTime = time,
+                          title: 'open_time'.tr, time: openingTime,
+                          onTimeChanged: (time) => openingTime = time,
                         )),
-                        SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
 
                         Expanded(child: CustomTimePicker(
-                          title: 'close_time'.tr, time: _closingTime,
-                          onTimeChanged: (time) => _closingTime = time,
+                          title: 'close_time'.tr, time: closingTime,
+                          onTimeChanged: (time) => closingTime = time,
                         )),
 
                       ]),
-                      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                      const SizedBox(height: Dimensions.paddingSizeLarge),
 
                       GetBuilder<StoreController>(builder: (storeController) {
-                        return storeController.scheduleLoading ? Center(child: CircularProgressIndicator()) : Row(children: [
+                        return storeController.scheduleLoading ? const Center(child: CircularProgressIndicator()) : Row(children: [
 
                           Expanded(child: TextButton(
                             onPressed: () => Get.back(),
                             style: TextButton.styleFrom(
-                              backgroundColor: Theme.of(context).disabledColor.withOpacity(0.3), minimumSize: Size(1170, 40), padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+                              backgroundColor: Theme.of(context).disabledColor.withOpacity(0.3), minimumSize: const Size(1170, 40), padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
                             ),
                             child: Text(
                               'cancel'.tr, textAlign: TextAlign.center,
-                              style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyText1.color),
+                              style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color),
                             ),
                           )),
-                          SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                          const SizedBox(width: Dimensions.paddingSizeLarge),
 
                           Expanded(child: CustomButton(
                             buttonText: 'add'.tr,
                             onPressed: () {
-                              bool _overlapped = false;
-                              if(_openingTime != null && _closingTime != null) {
-                                for(int index=0; index<_scheduleList.length; index++) {
-                                  if(_isUnderTime(_scheduleList[index].openingTime, _openingTime, _closingTime)
-                                      || _isUnderTime(_scheduleList[index].closingTime, _openingTime, _closingTime)
-                                      || _isUnderTime(_openingTime, _scheduleList[index].openingTime, _scheduleList[index].closingTime)
-                                      || _isUnderTime(_closingTime, _scheduleList[index].openingTime, _scheduleList[index].closingTime)) {
-                                    _overlapped = true;
+                              bool overlapped = false;
+                              if(openingTime != null && closingTime != null) {
+                                for(int index=0; index<scheduleList.length; index++) {
+                                  if(_isUnderTime(scheduleList[index].openingTime!, openingTime!, closingTime)
+                                      || _isUnderTime(scheduleList[index].closingTime!, openingTime!, closingTime)
+                                      || _isUnderTime(openingTime!, scheduleList[index].openingTime!, scheduleList[index].closingTime)
+                                      || _isUnderTime(closingTime!, scheduleList[index].openingTime!, scheduleList[index].closingTime)) {
+                                    overlapped = true;
                                     break;
                                   }
                                 }
                               }
-                              if(_openingTime == null) {
+                              if(openingTime == null) {
                                 showCustomSnackBar('pick_start_time'.tr);
-                              }else if(_closingTime == null) {
+                              }else if(closingTime == null) {
                                 showCustomSnackBar('pick_end_time'.tr);
-                              }else if(DateConverter.convertTimeToDateTime(_openingTime).isAfter(DateConverter.convertTimeToDateTime(_openingTime))) {
+                              }else if(DateConverter.convertTimeToDateTime(openingTime!).isAfter(DateConverter.convertTimeToDateTime(openingTime!))) {
                                 showCustomSnackBar('closing_time_must_be_after_the_opening_time'.tr);
-                              }else if(_overlapped) {
+                              }else if(overlapped) {
                                 showCustomSnackBar('this_schedule_is_overlapped'.tr);
                               }else {
                                 storeController.addSchedule(Schedules(
-                                  day: weekDay, openingTime: _openingTime, closingTime: _closingTime,
+                                  day: weekDay, openingTime: openingTime, closingTime: closingTime,
                                 ));
                               }
                             },
@@ -128,36 +128,36 @@ class DailyTimeWidget extends StatelessWidget {
                 child: Container(
                   height: 40, width: 40,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                     color: Theme.of(context).secondaryHeaderColor,
                   ),
-                  child: Icon(Icons.add, color: Colors.white),
+                  child: const Icon(Icons.add, color: Colors.white),
                 ),
               );
             }
 
             return Padding(
-              padding: EdgeInsets.only(right: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).textTheme.bodyText1.color, width: 1),
+                  border: Border.all(color: Theme.of(context).textTheme.bodyLarge!.color!, width: 1),
                   color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
                 child: Row(children: [
 
                   Text(
-                    '${DateConverter.convertStringTimeToTime(_scheduleList[index].openingTime.substring(0, 5))} '
-                        '- ${DateConverter.convertStringTimeToTime(_scheduleList[index].closingTime.substring(0, 5))}',
+                    '${DateConverter.convertStringTimeToTime(scheduleList[index].openingTime!.substring(0, 5))} '
+                        '- ${DateConverter.convertStringTimeToTime(scheduleList[index].closingTime!.substring(0, 5))}',
                   ),
-                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                   InkWell(
                     onTap: () => Get.dialog(ConfirmationDialog(
                       icon: Images.warning, description: 'are_you_sure_to_delete_this_schedule'.tr,
-                      onYesPressed: () => Get.find<StoreController>().deleteSchedule(_scheduleList[index].id),
+                      onYesPressed: () => Get.find<StoreController>().deleteSchedule(scheduleList[index].id),
                     ), barrierDismissible: false),
-                    child: Icon(Icons.cancel, color: Colors.red),
+                    child: const Icon(Icons.cancel, color: Colors.red),
                   ),
                 ]),
               ),
@@ -170,8 +170,8 @@ class DailyTimeWidget extends StatelessWidget {
     );
   }
 
-  bool _isUnderTime(String time, String startTime, String endTime) {
+  bool _isUnderTime(String time, String startTime, String? endTime) {
     return DateConverter.convertTimeToDateTime(time).isAfter(DateConverter.convertTimeToDateTime(startTime))
-        && DateConverter.convertTimeToDateTime(time).isBefore(DateConverter.convertTimeToDateTime(endTime));
+        && DateConverter.convertTimeToDateTime(time).isBefore(DateConverter.convertTimeToDateTime(endTime!));
   }
 }

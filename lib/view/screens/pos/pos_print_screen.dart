@@ -2,33 +2,40 @@ import 'dart:async';
 
 import 'package:bluetooth_thermal_printer/bluetooth_thermal_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PosPrintScreen extends StatefulWidget {
+  const PosPrintScreen({Key? key}) : super(key: key);
+
   @override
-  _PosPrintScreenState createState() => _PosPrintScreenState();
+  PosPrintScreenState createState() => PosPrintScreenState();
 }
 
-class _PosPrintScreenState extends State<PosPrintScreen> {
+class PosPrintScreenState extends State<PosPrintScreen> {
   @override
   void initState() {
     super.initState();
   }
 
   bool connected = false;
-  List availableBluetoothDevices = [];
+  List? availableBluetoothDevices = [];
 
   Future<void> getBluetooth() async {
-    final List bluetooths = await BluetoothThermalPrinter.getBluetooths;
-    print("Print $bluetooths");
+    final List? bluetooths = await BluetoothThermalPrinter.getBluetooths;
+    if (kDebugMode) {
+      print("Print $bluetooths");
+    }
     setState(() {
       availableBluetoothDevices = bluetooths;
     });
   }
 
   Future<void> setConnect(String mac) async {
-    final String result = await BluetoothThermalPrinter.connect(mac);
-    print("state conneected $result");
+    final String? result = await BluetoothThermalPrinter.connect(mac);
+    if (kDebugMode) {
+      print("state conneected $result");
+    }
     if (result == "true") {
       setState(() {
         connected = true;
@@ -37,22 +44,26 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
   }
 
   Future<void> printTicket() async {
-    String isConnected = await BluetoothThermalPrinter.connectionStatus;
+    String? isConnected = await BluetoothThermalPrinter.connectionStatus;
     if (isConnected == "true") {
       List<int> bytes = await getTicket();
       final result = await BluetoothThermalPrinter.writeBytes(bytes);
-      print("Print $result");
+      if (kDebugMode) {
+        print("Print $result");
+      }
     } else {
       //Hadnle Not Connected Senario
     }
   }
 
   Future<void> printGraphics() async {
-    String isConnected = await BluetoothThermalPrinter.connectionStatus;
+    String? isConnected = await BluetoothThermalPrinter.connectionStatus;
     if (isConnected == "true") {
       List<int> bytes = await getGraphicsTicket();
       final result = await BluetoothThermalPrinter.writeBytes(bytes);
-      print("Print $result");
+      if (kDebugMode) {
+        print("Print $result");
+      }
     } else {
       //Hadnle Not Connected Senario
     }
@@ -84,7 +95,7 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
     final generator = Generator(PaperSize.mm80, profile);
 
     bytes += generator.text("Demo Shop",
-        styles: PosStyles(
+        styles: const PosStyles(
           align: PosAlign.center,
           height: PosTextSize.size2,
           width: PosTextSize.size2,
@@ -93,32 +104,32 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
 
     bytes += generator.text(
         "18th Main Road, 2nd Phase, J. P. Nagar, Bengaluru, Karnataka 560078",
-        styles: PosStyles(align: PosAlign.center));
+        styles: const PosStyles(align: PosAlign.center));
     bytes += generator.text('Tel: +919591708470',
-        styles: PosStyles(align: PosAlign.center));
+        styles: const PosStyles(align: PosAlign.center));
 
     bytes += generator.hr();
     bytes += generator.row([
       PosColumn(
           text: 'No',
           width: 1,
-          styles: PosStyles(align: PosAlign.left, bold: true)),
+          styles: const PosStyles(align: PosAlign.left, bold: true)),
       PosColumn(
           text: 'Item',
           width: 5,
-          styles: PosStyles(align: PosAlign.left, bold: true)),
+          styles: const PosStyles(align: PosAlign.left, bold: true)),
       PosColumn(
           text: 'Price',
           width: 2,
-          styles: PosStyles(align: PosAlign.center, bold: true)),
+          styles: const PosStyles(align: PosAlign.center, bold: true)),
       PosColumn(
           text: 'Qty',
           width: 2,
-          styles: PosStyles(align: PosAlign.center, bold: true)),
+          styles: const PosStyles(align: PosAlign.center, bold: true)),
       PosColumn(
           text: 'Total',
           width: 2,
-          styles: PosStyles(align: PosAlign.right, bold: true)),
+          styles: const PosStyles(align: PosAlign.right, bold: true)),
     ]);
 
     bytes += generator.row([
@@ -126,17 +137,17 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: "Tea",
           width: 5,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
           )),
       PosColumn(
           text: "10",
           width: 2,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.center,
           )),
-      PosColumn(text: "1", width: 2, styles: PosStyles(align: PosAlign.center)),
-      PosColumn(text: "10", width: 2, styles: PosStyles(align: PosAlign.right)),
+      PosColumn(text: "1", width: 2, styles: const PosStyles(align: PosAlign.center)),
+      PosColumn(text: "10", width: 2, styles: const PosStyles(align: PosAlign.right)),
     ]);
 
     bytes += generator.row([
@@ -144,17 +155,17 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: "Sada Dosa",
           width: 5,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
           )),
       PosColumn(
           text: "30",
           width: 2,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.center,
           )),
-      PosColumn(text: "1", width: 2, styles: PosStyles(align: PosAlign.center)),
-      PosColumn(text: "30", width: 2, styles: PosStyles(align: PosAlign.right)),
+      PosColumn(text: "1", width: 2, styles: const PosStyles(align: PosAlign.center)),
+      PosColumn(text: "30", width: 2, styles: const PosStyles(align: PosAlign.right)),
     ]);
 
     bytes += generator.row([
@@ -162,17 +173,17 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: "Masala Dosa",
           width: 5,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
           )),
       PosColumn(
           text: "50",
           width: 2,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.center,
           )),
-      PosColumn(text: "1", width: 2, styles: PosStyles(align: PosAlign.center)),
-      PosColumn(text: "50", width: 2, styles: PosStyles(align: PosAlign.right)),
+      PosColumn(text: "1", width: 2, styles: const PosStyles(align: PosAlign.center)),
+      PosColumn(text: "50", width: 2, styles: const PosStyles(align: PosAlign.right)),
     ]);
 
     bytes += generator.row([
@@ -180,17 +191,17 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: "Rova Dosa",
           width: 5,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
           )),
       PosColumn(
           text: "70",
           width: 2,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.center,
           )),
-      PosColumn(text: "1", width: 2, styles: PosStyles(align: PosAlign.center)),
-      PosColumn(text: "70", width: 2, styles: PosStyles(align: PosAlign.right)),
+      PosColumn(text: "1", width: 2, styles: const PosStyles(align: PosAlign.center)),
+      PosColumn(text: "70", width: 2, styles: const PosStyles(align: PosAlign.right)),
     ]);
 
     bytes += generator.hr();
@@ -199,7 +210,7 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: 'TOTAL',
           width: 6,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size4,
             width: PosTextSize.size4,
@@ -207,7 +218,7 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
       PosColumn(
           text: "160",
           width: 6,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.right,
             height: PosTextSize.size4,
             width: PosTextSize.size4,
@@ -218,14 +229,14 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
 
     // ticket.feed(2);
     bytes += generator.text('Thank you!',
-        styles: PosStyles(align: PosAlign.center, bold: true));
+        styles: const PosStyles(align: PosAlign.center, bold: true));
 
     bytes += generator.text("26-11-2020 15:22:45",
-        styles: PosStyles(align: PosAlign.center), linesAfter: 1);
+        styles: const PosStyles(align: PosAlign.center), linesAfter: 1);
 
     bytes += generator.text(
         'Note: Goods once sold will not be taken back or exchanged.',
-        styles: PosStyles(align: PosAlign.center, bold: false));
+        styles: const PosStyles(align: PosAlign.center, bold: false));
     bytes += generator.cut();
     return bytes;
   }
@@ -237,48 +248,48 @@ class _PosPrintScreenState extends State<PosPrintScreen> {
         title: const Text('Bluetooth Thermal Printer Demo'),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Search Paired Bluetooth"),
+            const Text("Search Paired Bluetooth"),
             TextButton(
               onPressed: () {
-                this.getBluetooth();
+                getBluetooth();
               },
-              child: Text("Search"),
+              child: const Text("Search"),
             ),
-            Container(
+            SizedBox(
               height: 200,
               child: ListView.builder(
-                itemCount: availableBluetoothDevices.length > 0
-                    ? availableBluetoothDevices.length
+                itemCount: availableBluetoothDevices!.isNotEmpty
+                    ? availableBluetoothDevices!.length
                     : 0,
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      String select = availableBluetoothDevices[index];
+                      String select = availableBluetoothDevices![index];
                       List list = select.split("#");
                       // String name = list[0];
                       String mac = list[1];
-                      this.setConnect(mac);
+                      setConnect(mac);
                     },
-                    title: Text('${availableBluetoothDevices[index]}'),
-                    subtitle: Text("Click to connect"),
+                    title: Text('${availableBluetoothDevices![index]}'),
+                    subtitle: const Text("Click to connect"),
                   );
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             TextButton(
-              onPressed: connected ? this.printGraphics : null,
-              child: Text("Print"),
+              onPressed: connected ? printGraphics : null,
+              child: const Text("Print"),
             ),
             TextButton(
-              onPressed: connected ? this.printTicket : null,
-              child: Text("Print Ticket"),
+              onPressed: connected ? printTicket : null,
+              child: const Text("Print Ticket"),
             ),
           ],
         ),

@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddonScreen extends StatelessWidget {
+  const AddonScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Get.find<AddonController>().getAddonList();
@@ -20,8 +22,8 @@ class AddonScreen extends StatelessWidget {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
-            Get.bottomSheet(AddAddonBottomSheet(addon: null), isScrollControlled: true, backgroundColor: Colors.transparent);
+          if(Get.find<AuthController>().profileModel!.stores![0].itemSection!) {
+            Get.bottomSheet(const AddAddonBottomSheet(addon: null), isScrollControlled: true, backgroundColor: Colors.transparent);
           }else {
             showCustomSnackBar('this_feature_is_blocked_by_admin'.tr);
           }
@@ -30,61 +32,61 @@ class AddonScreen extends StatelessWidget {
       ),
 
       body: GetBuilder<AddonController>(builder: (addonController) {
-        return addonController.addonList != null ? addonController.addonList.length > 0 ? RefreshIndicator(
+        return addonController.addonList != null ? addonController.addonList!.isNotEmpty ? RefreshIndicator(
           onRefresh: () async {
             await addonController.getAddonList();
           },
           child: ListView.builder(
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            itemCount: addonController.addonList.length,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+            itemCount: addonController.addonList!.length,
             itemBuilder: (context, index) {
               return Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Dimensions.PADDING_SIZE_SMALL,
-                  vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.paddingSizeSmall,
+                  vertical: Dimensions.paddingSizeExtraSmall,
                 ),
                 color: index % 2 == 0 ? Theme.of(context).cardColor : Theme.of(context).disabledColor.withOpacity(0.2),
                 child: Row(children: [
 
                   Expanded(child: Text(
-                    addonController.addonList[index].name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                    addonController.addonList![index].name!, maxLines: 1, overflow: TextOverflow.ellipsis,
                     style: robotoRegular,
                   )),
-                  SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
 
                   Text(
-                    addonController.addonList[index].price > 0
-                        ? PriceConverter.convertPrice(addonController.addonList[index].price) : 'free'.tr,
+                    addonController.addonList![index].price! > 0
+                        ? PriceConverter.convertPrice(addonController.addonList![index].price) : 'free'.tr,
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                     style: robotoRegular,
                   ),
-                  SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
 
                   PopupMenuButton(
                     itemBuilder: (context) {
                       return <PopupMenuEntry>[
                         PopupMenuItem(
-                          child: Text('edit'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
                           value: 'edit',
+                          child: Text('edit'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
                         ),
                         PopupMenuItem(
-                          child: Text('delete'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Colors.red)),
                           value: 'delete',
+                          child: Text('delete'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Colors.red)),
                         ),
                       ];
                     },
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-                    offset: Offset(-20, 20),
-                    child: Padding(
-                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+                    offset: const Offset(-20, 20),
+                    child: const Padding(
+                      padding: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                       child: Icon(Icons.more_vert, size: 25),
                     ),
-                    onSelected: (value) {
-                      if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
+                    onSelected: (dynamic value) {
+                      if(Get.find<AuthController>().profileModel!.stores![0].itemSection!) {
                         if (value == 'edit') {
                           Get.bottomSheet(
-                            AddAddonBottomSheet(addon: addonController.addonList[index]),
+                            AddAddonBottomSheet(addon: addonController.addonList![index]),
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
                           );
@@ -95,11 +97,11 @@ class AddonScreen extends StatelessWidget {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                             ),
-                            child: CircularProgressIndicator(),
+                            child: const CircularProgressIndicator(),
                           )), barrierDismissible: false);
-                          addonController.deleteAddon(addonController.addonList[index].id);
+                          addonController.deleteAddon(addonController.addonList![index].id);
                         }
                       }else {
                         showCustomSnackBar('this_feature_is_blocked_by_admin'.tr);
@@ -111,7 +113,7 @@ class AddonScreen extends StatelessWidget {
               );
             },
           ),
-        ) : Center(child: Text('no_addon_found'.tr)) : Center(child: CircularProgressIndicator());
+        ) : Center(child: Text('no_addon_found'.tr)) : const Center(child: CircularProgressIndicator());
       }),
     );
   }

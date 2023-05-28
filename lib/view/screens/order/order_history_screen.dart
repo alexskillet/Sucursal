@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
+  const OrderHistoryScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Get.find<OrderController>().getPaginatedOrders(1, true);
@@ -17,30 +19,30 @@ class OrderHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(title: 'order_history'.tr, isBackButtonExist: false),
       body: GetBuilder<OrderController>(builder: (orderController) {
-        return Get.find<AuthController>().modulePermission.order ? Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+        return Get.find<AuthController>().modulePermission!.order! ? Padding(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: Column(children: [
 
             GetBuilder<AuthController>(builder: (authController) {
               return authController.profileModel != null ? Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                 ),
                 child: Row(children: [
-                  CountWidget(title: 'today'.tr, count: authController.profileModel.todaysOrderCount),
-                  CountWidget(title: 'this_week'.tr, count: authController.profileModel.thisWeekOrderCount),
-                  CountWidget(title: 'this_month'.tr, count: authController.profileModel.thisMonthOrderCount),
+                  CountWidget(title: 'today'.tr, count: authController.profileModel!.todaysOrderCount),
+                  CountWidget(title: 'this_week'.tr, count: authController.profileModel!.thisWeekOrderCount),
+                  CountWidget(title: 'this_month'.tr, count: authController.profileModel!.thisMonthOrderCount),
                 ]),
-              ) : SizedBox();
+              ) : const SizedBox();
             }),
-            SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
 
             Container(
               height: 40,
               decoration: BoxDecoration(
                 border: Border.all(color: Theme.of(context).disabledColor, width: 1),
-                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
               ),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -52,11 +54,11 @@ class OrderHistoryScreen extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: orderController.historyOrderList != null ? Dimensions.PADDING_SIZE_SMALL : 0),
+            SizedBox(height: orderController.historyOrderList != null ? Dimensions.paddingSizeSmall : 0),
 
             Expanded(
-              child: orderController.historyOrderList != null ? orderController.historyOrderList.length > 0
-                  ? OrderView() : Center(child: Text('no_order_found'.tr)) : Center(child: CircularProgressIndicator()),
+              child: orderController.historyOrderList != null ? orderController.historyOrderList!.isNotEmpty
+                  ? const OrderView() : Center(child: Text('no_order_found'.tr)) : const Center(child: CircularProgressIndicator()),
             ),
 
           ]),

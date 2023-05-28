@@ -10,14 +10,14 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 class UpdateScreen extends StatelessWidget {
   final bool isUpdate;
-  UpdateScreen({@required this.isUpdate});
+  const UpdateScreen({Key? key, required this.isUpdate}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
             Image.asset(
@@ -42,18 +42,18 @@ class UpdateScreen extends StatelessWidget {
             SizedBox(height: isUpdate ? MediaQuery.of(context).size.height*0.04 : 0),
 
             isUpdate ? CustomButton(buttonText: 'update_now'.tr, onPressed: () async {
-              String _appUrl = 'https://google.com';
+              String? appUrl = 'https://google.com';
               if(GetPlatform.isAndroid) {
-                _appUrl = Get.find<SplashController>().configModel.appUrlAndroid;
+                appUrl = Get.find<SplashController>().configModel!.appUrlAndroid;
               }else if(GetPlatform.isIOS) {
-                _appUrl = Get.find<SplashController>().configModel.appUrlIos;
+                appUrl = Get.find<SplashController>().configModel!.appUrlIos;
               }
-              if(await canLaunchUrlString(_appUrl)) {
-                launchUrlString(_appUrl, mode: LaunchMode.externalApplication);
+              if(await canLaunchUrlString(appUrl!)) {
+                launchUrlString(appUrl, mode: LaunchMode.externalApplication);
               }else {
-                showCustomSnackBar('${'can_not_launch'.tr} $_appUrl');
+                showCustomSnackBar('${'can_not_launch'.tr} $appUrl');
               }
-            }) : SizedBox(),
+            }) : const SizedBox(),
 
           ]),
         ),

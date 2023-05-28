@@ -17,11 +17,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ItemBottomSheet extends StatelessWidget {
-  final Item item;
+  final Item? item;
   final bool isCampaign;
-  final CartModel cart;
-  final int cartIndex;
-  ItemBottomSheet({@required this.item, this.isCampaign = false, this.cart, this.cartIndex});
+  final CartModel? cart;
+  final int? cartIndex;
+  const ItemBottomSheet({Key? key, required this.item, this.isCampaign = false, this.cart, this.cartIndex}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,146 +31,148 @@ class ItemBottomSheet extends StatelessWidget {
 
     return Container(
       width: 550,
-      padding: EdgeInsets.only(left: Dimensions.PADDING_SIZE_DEFAULT, bottom: Dimensions.PADDING_SIZE_DEFAULT),
+      padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: ResponsiveHelper.isMobile(context) ? BorderRadius.vertical(top: Radius.circular(Dimensions.RADIUS_EXTRA_LARGE))
-            : BorderRadius.all(Radius.circular(Dimensions.RADIUS_EXTRA_LARGE)),
+        borderRadius: ResponsiveHelper.isMobile(context) ? const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge))
+            : const BorderRadius.all(Radius.circular(Dimensions.radiusExtraLarge)),
       ),
       child: GetBuilder<PosController>(builder: (posController) {
-        double _startingPrice;
-        double _endingPrice;
-        if (item.choiceOptions.length != 0) {
-          List<double> _priceList = [];
-          item.variations.forEach((variation) => _priceList.add(variation.price));
-          _priceList.sort((a, b) => a.compareTo(b));
-          _startingPrice = _priceList[0];
-          if (_priceList[0] < _priceList[_priceList.length - 1]) {
-            _endingPrice = _priceList[_priceList.length - 1];
+        double? startingPrice;
+        double? endingPrice;
+        if (item!.choiceOptions!.isNotEmpty) {
+          List<double?> priceList = [];
+          for (var variation in item!.variations!) {
+            priceList.add(variation.price);
+          }
+          priceList.sort((a, b) => a!.compareTo(b!));
+          startingPrice = priceList[0];
+          if (priceList[0]! < priceList[priceList.length - 1]!) {
+            endingPrice = priceList[priceList.length - 1];
           }
         } else {
-          _startingPrice = item.price;
+          startingPrice = item!.price;
         }
 
-        List<String> _variationList = [];
-        for (int index = 0; index < item.choiceOptions.length; index++) {
-          _variationList.add(item.choiceOptions[index].options[posController.variationIndex[index]].replaceAll(' ', ''));
+        List<String> variationList = [];
+        for (int index = 0; index < item!.choiceOptions!.length; index++) {
+          variationList.add(item!.choiceOptions![index].options![posController.variationIndex![index]].replaceAll(' ', ''));
         }
         String variationType = '';
         bool isFirst = true;
-        _variationList.forEach((variation) {
+        for (var variation in variationList) {
           if (isFirst) {
             variationType = '$variationType$variation';
             isFirst = false;
           } else {
             variationType = '$variationType-$variation';
           }
-        });
+        }
 
-        double price = item.price;
-        Variation _variation;
-        for (Variation variation in item.variations) {
+        double? price = item!.price;
+        Variation? variation;
+        for (Variation variation in item!.variations!) {
           if (variation.type == variationType) {
             price = variation.price;
-            _variation = variation;
+            variation = variation;
             break;
           }
         }
 
-        double _discount = (isCampaign || item.storeDiscount == 0) ? item.discount : item.storeDiscount;
-        String _discountType = (isCampaign || item.storeDiscount == 0) ? item.discountType : 'percent';
-        double priceWithDiscount = PriceConverter.convertWithDiscount(price, _discount, _discountType);
-        double priceWithQuantity = priceWithDiscount * posController.quantity;
+        double? discount = (isCampaign || item!.storeDiscount == 0) ? item!.discount : item!.storeDiscount;
+        String? discountType = (isCampaign || item!.storeDiscount == 0) ? item!.discountType : 'percent';
+        double priceWithDiscount = PriceConverter.convertWithDiscount(price, discount, discountType)!;
+        double priceWithQuantity = priceWithDiscount * posController.quantity!;
         double addonsCost = 0;
-        List<AddOn> _addOnIdList = [];
-        List<AddOns> _addOnsList = [];
-        for (int index = 0; index < item.addOns.length; index++) {
+        List<AddOn> addOnIdList = [];
+        List<AddOns> addOnsList = [];
+        for (int index = 0; index < item!.addOns!.length; index++) {
           if (posController.addOnActiveList[index]) {
-            addonsCost = addonsCost + (item.addOns[index].price * posController.addOnQtyList[index]);
-            _addOnIdList.add(AddOn(id: item.addOns[index].id, quantity: posController.addOnQtyList[index]));
-            _addOnsList.add(item.addOns[index]);
+            addonsCost = addonsCost + (item!.addOns![index].price! * posController.addOnQtyList[index]!);
+            addOnIdList.add(AddOn(id: item!.addOns![index].id, quantity: posController.addOnQtyList[index]));
+            addOnsList.add(item!.addOns![index]);
           }
         }
         double priceWithAddons = priceWithQuantity + addonsCost;
-        bool _isAvailable = DateConverter.isAvailable(item.availableTimeStarts, item.availableTimeEnds);
+        bool isAvailable = DateConverter.isAvailable(item!.availableTimeStarts, item!.availableTimeEnds);
 
-        CartModel _cartModel = CartModel(
-          price: price, discountedPrice: priceWithDiscount, variation: _variation != null ? [_variation] : [],
-          discountAmount: (price - PriceConverter.convertWithDiscount(price, _discount, _discountType)), item: item,
-          quantity: posController.quantity, addOnIds: _addOnIdList, addOns: _addOnsList, isCampaign: isCampaign,
+        CartModel cartModel = CartModel(
+          price: price, discountedPrice: priceWithDiscount, variation: variation != null ? [variation] : [],
+          discountAmount: (price! - PriceConverter.convertWithDiscount(price, discount, discountType)!), item: item,
+          quantity: posController.quantity, addOnIds: addOnIdList, addOns: addOnsList, isCampaign: isCampaign,
         );
         //bool isExistInCart = Get.find<CartController>().isExistInCart(_cartModel, fromCart, cartIndex);
 
         return SingleChildScrollView(
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
-            ResponsiveHelper.isDesktop(context) ? InkWell(onTap: () => Get.back(), child: Icon(Icons.close)) : SizedBox(),
+            ResponsiveHelper.isDesktop(context) ? InkWell(onTap: () => Get.back(), child: const Icon(Icons.close)) : const SizedBox(),
             Padding(
               padding: EdgeInsets.only(
-                right: Dimensions.PADDING_SIZE_DEFAULT, top: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.PADDING_SIZE_DEFAULT,
+                right: Dimensions.paddingSizeDefault, top: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeDefault,
               ),
               child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 //Product
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Stack(children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                       child: CustomImage(
-                        image: '${isCampaign ? Get.find<SplashController>().configModel.baseUrls.campaignImageUrl
-                            : Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${item.image}',
+                        image: '${isCampaign ? Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl
+                            : Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}/${item!.image}',
                         width: ResponsiveHelper.isMobile(context) ? 100 : 140,
                         height: ResponsiveHelper.isMobile(context) ? 100 : 140,
                         fit: BoxFit.cover,
                       ),
                     ),
-                    DiscountTag(discount: _discount, discountType: _discountType, fromTop: 20),
+                    DiscountTag(discount: discount, discountType: discountType, fromTop: 20),
                   ]),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
 
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
-                        item.name, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                        item!.name!, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
                         maxLines: 2, overflow: TextOverflow.ellipsis,
                       ),
-                      RatingBar(rating: item.avgRating, size: 15, ratingCount: item.ratingCount),
-                      SizedBox(height: 5),
+                      RatingBar(rating: item!.avgRating, size: 15, ratingCount: item!.ratingCount),
+                      const SizedBox(height: 5),
                       Text(
-                        '${PriceConverter.convertPrice(_startingPrice, discount: _discount, discountType: _discountType)}'
-                            '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice, discount: _discount,
-                            discountType: _discountType)}' : ''}',
-                        style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                        '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
+                            '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount,
+                            discountType: discountType)}' : ''}',
+                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       price > priceWithDiscount ? Text(
-                        '${PriceConverter.convertPrice(_startingPrice)}'
-                            '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice)}' : ''}',
+                        '${PriceConverter.convertPrice(startingPrice)}'
+                            '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
                         style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough),
-                      ) : SizedBox(),
+                      ) : const SizedBox(),
                     ]),
                   ),
                 ]),
 
-                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                (item.description != null && item.description.isNotEmpty) ? Column(
+                (item!.description != null && item!.description!.isNotEmpty) ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('description'.tr, style: robotoMedium),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                    Text(item.description, style: robotoRegular),
-                    SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    Text(item!.description!, style: robotoRegular),
+                    const SizedBox(height: Dimensions.paddingSizeLarge),
                   ],
-                ) : SizedBox(),
+                ) : const SizedBox(),
 
                 // Variation
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: item.choiceOptions.length,
-                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: item!.choiceOptions!.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(item.choiceOptions[index].title, style: robotoMedium),
-                      SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      Text(item!.choiceOptions![index].title!, style: robotoMedium),
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                       GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: ResponsiveHelper.isMobile(context) ? 3 : 4,
@@ -179,8 +181,8 @@ class ItemBottomSheet extends StatelessWidget {
                           childAspectRatio: (1 / 0.25),
                         ),
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: item.choiceOptions[index].options.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: item!.choiceOptions![index].options!.length,
                         itemBuilder: (context, i) {
                           return InkWell(
                             onTap: () {
@@ -188,66 +190,66 @@ class ItemBottomSheet extends StatelessWidget {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
                               decoration: BoxDecoration(
-                                color: posController.variationIndex[index] != i ? Theme.of(context).disabledColor.withOpacity(0.2)
+                                color: posController.variationIndex![index] != i ? Theme.of(context).disabledColor.withOpacity(0.2)
                                     : Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                                border: posController.variationIndex[index] != i
+                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                                border: posController.variationIndex![index] != i
                                     ? Border.all(color: Theme.of(context).disabledColor, width: 2) : null,
                               ),
                               child: Text(
-                                item.choiceOptions[index].options[i].trim(),
+                                item!.choiceOptions![index].options![i].trim(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: robotoRegular.copyWith(
-                                  color: posController.variationIndex[index] != i ? Colors.black : Colors.white,
+                                  color: posController.variationIndex![index] != i ? Colors.black : Colors.white,
                                 ),
                               ),
                             ),
                           );
                         },
                       ),
-                      SizedBox(height: index != item.choiceOptions.length - 1 ? Dimensions.PADDING_SIZE_LARGE : 0),
+                      SizedBox(height: index != item!.choiceOptions!.length - 1 ? Dimensions.paddingSizeLarge : 0),
                     ]);
                   },
                 ),
-                item.choiceOptions.length > 0 ? SizedBox(height: Dimensions.PADDING_SIZE_LARGE) : SizedBox(),
+                item!.choiceOptions!.isNotEmpty ? const SizedBox(height: Dimensions.paddingSizeLarge) : const SizedBox(),
 
                 // Quantity
                 Row(children: [
                   Text('quantity'.tr, style: robotoMedium),
-                  Expanded(child: SizedBox()),
+                  const Expanded(child: SizedBox()),
                   Row(children: [
                     QuantityButton(
                       onTap: () {
-                        if (posController.quantity > 1) {
+                        if (posController.quantity! > 1) {
                           posController.setProductQuantity(false);
                         }
                       },
                       isIncrement: false,
                     ),
-                    Text(posController.quantity.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE)),
+                    Text(posController.quantity.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
                     QuantityButton(
                       onTap: () => posController.setProductQuantity(true),
                       isIncrement: true,
                     ),
                   ]),
                 ]),
-                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                const SizedBox(height: Dimensions.paddingSizeLarge),
 
                 // Addons
-                item.addOns.length > 0 ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                item!.addOns!.isNotEmpty ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('addons'.tr, style: robotoMedium),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                   GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
                       crossAxisSpacing: 20, mainAxisSpacing: 10, childAspectRatio: (1 / 1.1),
                     ),
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: item.addOns.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: item!.addOns!.length,
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
@@ -261,100 +263,100 @@ class ItemBottomSheet extends StatelessWidget {
                           alignment: Alignment.center,
                           margin: EdgeInsets.only(bottom: posController.addOnActiveList[index] ? 2 : 20),
                           decoration: BoxDecoration(
-                            color: posController.addOnActiveList[index] ? Theme.of(context).primaryColor : Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                            color: posController.addOnActiveList[index] ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.background,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                             border: posController.addOnActiveList[index] ? null : Border.all(color: Theme.of(context).disabledColor, width: 2),
                             boxShadow: posController.addOnActiveList[index]
-                            ? [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], blurRadius: 5, spreadRadius: 1)] : null,
+                            ? [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, blurRadius: 5, spreadRadius: 1)] : null,
                           ),
                           child: Column(children: [
                             Expanded(
                               child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Text(item.addOns[index].name,
+                                Text(item!.addOns![index].name!,
                                   maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                                   style: robotoMedium.copyWith(
                                     color: posController.addOnActiveList[index] ? Colors.white : Colors.black,
-                                    fontSize: Dimensions.FONT_SIZE_SMALL,
+                                    fontSize: Dimensions.fontSizeSmall,
                                   ),
                                 ),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 Text(
-                                  PriceConverter.convertPrice(item.addOns[index].price),
+                                  PriceConverter.convertPrice(item!.addOns![index].price),
                                   maxLines: 1, overflow: TextOverflow.ellipsis,
                                   style: robotoRegular.copyWith(
                                     color: posController.addOnActiveList[index] ? Colors.white : Colors.black,
-                                    fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
+                                    fontSize: Dimensions.fontSizeExtraSmall,
                                   ),
                                 ),
                               ]),
                             ),
                             posController.addOnActiveList[index] ? Container(
                               height: 25,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), color: Theme.of(context).cardColor),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), color: Theme.of(context).cardColor),
                               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                 Expanded(
                                   child: InkWell(
                                     onTap: () {
-                                      if (posController.addOnQtyList[index] > 1) {
+                                      if (posController.addOnQtyList[index]! > 1) {
                                         posController.setAddOnQuantity(false, index);
                                       } else {
                                         posController.addAddOn(false, index);
                                       }
                                     },
-                                    child: Center(child: Icon(Icons.remove, size: 15)),
+                                    child: const Center(child: Icon(Icons.remove, size: 15)),
                                   ),
                                 ),
                                 Text(
                                   posController.addOnQtyList[index].toString(),
-                                  style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+                                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                                 ),
                                 Expanded(
                                   child: InkWell(
                                     onTap: () => posController.setAddOnQuantity(true, index),
-                                    child: Center(child: Icon(Icons.add, size: 15)),
+                                    child: const Center(child: Icon(Icons.add, size: 15)),
                                   ),
                                 ),
                               ]),
                             )
-                                : SizedBox(),
+                                : const SizedBox(),
                           ]),
                         ),
                       );
                     },
                   ),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                ]) : SizedBox(),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                ]) : const SizedBox(),
 
                 Row(children: [
                   Text('${'total_amount'.tr}:', style: robotoMedium),
-                  SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                   Text(PriceConverter.convertPrice(priceWithAddons), style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
                 ]),
-                SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                const SizedBox(height: Dimensions.paddingSizeLarge),
 
                 //Add to cart Button
 
-                _isAvailable ? SizedBox() : Container(
+                isAvailable ? const SizedBox() : Container(
                   alignment: Alignment.center,
-                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                  margin: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                  margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                     color: Theme.of(context).primaryColor.withOpacity(0.1),
                   ),
                   child: Column(children: [
                     Text('not_available_now'.tr, style: robotoMedium.copyWith(
-                      color: Theme.of(context).primaryColor, fontSize: Dimensions.FONT_SIZE_LARGE,
+                      color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge,
                     )),
                     Text(
-                      '${'available_will_be'.tr} ${DateConverter.convertStringTimeToTime(item.availableTimeStarts)} '
-                          '- ${DateConverter.convertStringTimeToTime(item.availableTimeEnds)}',
+                      '${'available_will_be'.tr} ${DateConverter.convertStringTimeToTime(item!.availableTimeStarts!)} '
+                          '- ${DateConverter.convertStringTimeToTime(item!.availableTimeEnds!)}',
                       style: robotoRegular,
                     ),
                   ]),
                 ),
 
-                (!item.scheduleOrder && !_isAvailable) ? SizedBox() : CustomButton(
+                (!item!.scheduleOrder! && !isAvailable) ? const SizedBox() : CustomButton(
                   width: ResponsiveHelper.isDesktop(context) ? size.width / 2.0 : null,
                   /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
                       ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
@@ -364,7 +366,7 @@ class ItemBottomSheet extends StatelessWidget {
                     if(isCampaign) {
 
                     }else {
-                      Get.find<PosController>().addToCart(_cartModel, cartIndex);
+                      Get.find<PosController>().addToCart(cartModel, cartIndex);
                       showCustomSnackBar(fromCart ? 'item_updated'.tr : 'item_added'.tr, isError: false);
                     }
                   },

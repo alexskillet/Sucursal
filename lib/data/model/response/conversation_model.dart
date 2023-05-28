@@ -1,8 +1,8 @@
 class ConversationsModel {
-  int totalSize;
-  int limit;
-  int offset;
-  List<Conversation> conversations;
+  int? totalSize;
+  int? limit;
+  int? offset;
+  List<Conversation>? conversations;
 
   ConversationsModel({this.totalSize, this.limit, this.offset, this.conversations});
 
@@ -13,18 +13,18 @@ class ConversationsModel {
     if (json['conversation'] != null) {
       conversations = <Conversation>[];
       json['conversation'].forEach((v) {
-        conversations.add(new Conversation.fromJson(v));
+        conversations!.add(Conversation.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_size'] = this.totalSize;
-    data['limit'] = this.limit;
-    data['offset'] = this.offset;
-    if (this.conversations != null) {
-      data['conversation'] = this.conversations.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total_size'] = totalSize;
+    data['limit'] = limit;
+    data['offset'] = offset;
+    if (conversations != null) {
+      data['conversation'] = conversations!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -32,19 +32,19 @@ class ConversationsModel {
 }
 
 class Conversation {
-  int id;
-  int senderId;
-  String senderType;
-  int receiverId;
-  String receiverType;
-  int unreadMessageCount;
-  int lastMessageId;
-  String lastMessageTime;
-  String createdAt;
-  String updatedAt;
-  User sender;
-  User receiver;
-  LastMessage lastMessage;
+  int? id;
+  int? senderId;
+  String? senderType;
+  int? receiverId;
+  String? receiverType;
+  int? unreadMessageCount;
+  int? lastMessageId;
+  String? lastMessageTime;
+  String? createdAt;
+  String? updatedAt;
+  User? sender;
+  User? receiver;
+  LastMessage? lastMessage;
 
 
   Conversation({
@@ -74,29 +74,29 @@ class Conversation {
     lastMessageTime = json['last_message_time'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    sender = json['sender'] != null ? new User.fromJson(json['sender']) : null;
-    receiver = json['receiver'] != null ? new User.fromJson(json['receiver']) : null;
-    lastMessage = json['last_message'] != null ? new LastMessage.fromJson(json['last_message']) : null;
+    sender = json['sender'] != null ? User.fromJson(json['sender']) : null;
+    receiver = json['receiver'] != null ? User.fromJson(json['receiver']) : null;
+    lastMessage = json['last_message'] != null ? LastMessage.fromJson(json['last_message']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['sender_id'] = this.senderId;
-    data['sender_type'] = this.senderType;
-    data['receiver_id'] = this.receiverId;
-    data['receiver_type'] = this.receiverType;
-    data['unread_message_count'] = this.unreadMessageCount;
-    data['last_message_id'] = this.lastMessageId;
-    data['last_message_time'] = this.lastMessageTime;
-    data['last_message'] = this.lastMessage;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    if (this.sender != null) {
-      data['sender'] = this.sender.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['sender_id'] = senderId;
+    data['sender_type'] = senderType;
+    data['receiver_id'] = receiverId;
+    data['receiver_type'] = receiverType;
+    data['unread_message_count'] = unreadMessageCount;
+    data['last_message_id'] = lastMessageId;
+    data['last_message_time'] = lastMessageTime;
+    data['last_message'] = lastMessage;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    if (sender != null) {
+      data['sender'] = sender!.toJson();
     }
-    if (this.receiver != null) {
-      data['receiver'] = this.receiver.toJson();
+    if (receiver != null) {
+      data['receiver'] = receiver!.toJson();
     }
 
     return data;
@@ -104,17 +104,17 @@ class Conversation {
 }
 
 class User {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String image;
-  int userId;
-  int vendorId;
-  int deliveryManId;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? image;
+  int? userId;
+  int? vendorId;
+  int? deliveryManId;
+  String? createdAt;
+  String? updatedAt;
 
   User(
       {this.id,
@@ -144,28 +144,28 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['user_id'] = this.userId;
-    data['vendor_id'] = this.vendorId;
-    data['deliveryman_id'] = this.deliveryManId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['image'] = image;
+    data['user_id'] = userId;
+    data['vendor_id'] = vendorId;
+    data['deliveryman_id'] = deliveryManId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
 
 class LastMessage {
-  int id;
-  int conversationId;
-  int senderId;
-  String message;
-  int isSeen;
+  int? id;
+  int? conversationId;
+  int? senderId;
+  String? message;
+  int? isSeen;
 
   LastMessage({
         this.id,
@@ -184,12 +184,12 @@ class LastMessage {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['conversation_id'] = this.conversationId;
-    data['sender_id'] = this.senderId;
-    data['message'] = this.message;
-    data['is_seen'] = this.isSeen;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['conversation_id'] = conversationId;
+    data['sender_id'] = senderId;
+    data['message'] = message;
+    data['is_seen'] = isSeen;
     return data;
   }
 }

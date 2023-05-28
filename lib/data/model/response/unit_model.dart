@@ -1,8 +1,8 @@
 class UnitModel {
-  int id;
-  String unit;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? unit;
+  String? createdAt;
+  String? updatedAt;
 
   UnitModel({this.id, this.unit, this.createdAt, this.updatedAt});
 
@@ -14,11 +14,11 @@ class UnitModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['unit'] = this.unit;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['unit'] = unit;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

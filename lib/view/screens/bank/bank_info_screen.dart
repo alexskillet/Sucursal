@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BankInfoScreen extends StatelessWidget {
+  const BankInfoScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     if(Get.find<AuthController>().profileModel == null) {
@@ -19,50 +21,50 @@ class BankInfoScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'bank_info'.tr),
       body: GetBuilder<AuthController>(builder: (authController) {
         return Center(child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-          child: authController.profileModel != null ? authController.profileModel.bankName != null ? Column(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+          child: authController.profileModel != null ? authController.profileModel!.bankName != null ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
 
-              InfoWidget(icon: Images.bank, title: 'bank_name'.tr, data: authController.profileModel.bankName),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              InfoWidget(icon: Images.bank, title: 'bank_name'.tr, data: authController.profileModel!.bankName),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              InfoWidget(icon: Images.branch, title: 'branch_name'.tr, data: authController.profileModel.branch),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              InfoWidget(icon: Images.branch, title: 'branch_name'.tr, data: authController.profileModel!.branch),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              InfoWidget(icon: Images.user, title: 'holder_name'.tr, data: authController.profileModel.holderName),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              InfoWidget(icon: Images.user, title: 'holder_name'.tr, data: authController.profileModel!.holderName),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              InfoWidget(icon: Images.credit_card, title: 'account_no'.tr, data: authController.profileModel.accountNo),
-              SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+              InfoWidget(icon: Images.creditCard, title: 'account_no'.tr, data: authController.profileModel!.accountNo),
+              const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
               CustomButton(
                 buttonText: 'edit'.tr,
                 onPressed: () => Get.bottomSheet(AddBankBottomSheet(
-                  bankName: authController.profileModel.bankName, branchName: authController.profileModel.branch,
-                  holderName: authController.profileModel.holderName, accountNo: authController.profileModel.accountNo,
+                  bankName: authController.profileModel!.bankName, branchName: authController.profileModel!.branch,
+                  holderName: authController.profileModel!.holderName, accountNo: authController.profileModel!.accountNo,
                 ), isScrollControlled: true, backgroundColor: Colors.transparent),
               ),
 
             ],
           ) : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
-            Image.asset(Images.bank_info, width: context.width-100),
-            SizedBox(height: 30),
+            Image.asset(Images.bankInfo, width: context.width-100),
+            const SizedBox(height: 30),
 
             Text(
               'currently_no_bank_account_added'.tr, textAlign: TextAlign.center,
-              style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             CustomButton(
               buttonText: 'add_bank'.tr,
               onPressed: () => Get.bottomSheet(AddBankBottomSheet(), isScrollControlled: true, backgroundColor: Colors.transparent),
             ),
 
-          ]) : Center(child: CircularProgressIndicator()),
+          ]) : const Center(child: CircularProgressIndicator()),
         ));
       }),
     );

@@ -19,17 +19,16 @@ import 'package:get/get.dart';
 
 class ItemDetailsScreen extends StatelessWidget {
   final Item item;
-  ItemDetailsScreen({@required this.item});
+  const ItemDetailsScreen({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('---------------->>> ${item.recommendedStatus} / ${item.recommendedStatus == 1}');
     Get.find<StoreController>().setAvailability(item.status == 1);
     Get.find<StoreController>().setRecommended(item.recommendedStatus == 1);
-    if(Get.find<AuthController>().profileModel.stores[0].reviewsSection) {
+    if(Get.find<AuthController>().profileModel!.stores![0].reviewsSection!) {
       Get.find<StoreController>().getItemReviewList(item.id);
     }
-    Module _module = Get.find<SplashController>().configModel.moduleConfig.module;
+    Module? module = Get.find<SplashController>().configModel!.moduleConfig!.module;
 
     return Scaffold(
       appBar: CustomAppBar(title: 'item_details'.tr),
@@ -37,25 +36,25 @@ class ItemDetailsScreen extends StatelessWidget {
         return Column(children: [
 
           Expanded(child: SingleChildScrollView(
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+            physics: const BouncingScrollPhysics(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
               Row(children: [
                 InkWell(
                   onTap: () => Get.toNamed(RouteHelper.getItemImagesRoute(item)),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                     child: CustomImage(
-                      image: '${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${item.image}',
+                      image: '${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}/${item.image}',
                       height: 70, width: 80, fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    item.name, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                    item.name!, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
                   Text(
@@ -65,32 +64,32 @@ class ItemDetailsScreen extends StatelessWidget {
                   Row(children: [
                     Expanded(child: Text(
                       '${'discount'.tr}: ${item.discount} ${item.discountType == 'percent' ? '%'
-                          : Get.find<SplashController>().configModel.currencySymbol}',
+                          : Get.find<SplashController>().configModel!.currencySymbol}',
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: robotoRegular,
                     )),
-                    (_module.unit || Get.find<SplashController>().configModel.toggleVegNonVeg) ? Container(
-                      padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL, horizontal: Dimensions.PADDING_SIZE_SMALL),
+                    (module!.unit! || Get.find<SplashController>().configModel!.toggleVegNonVeg!) ? Container(
+                      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                         color: Theme.of(context).primaryColor,
                       ),
                       child: Text(
-                        _module.unit ? item.unitType : item.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
-                        style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Colors.white),
+                        module.unit! ? item.unitType! : item.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
+                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white),
                       ),
-                    ) : SizedBox(),
+                    ) : const SizedBox(),
                   ]),
                 ])),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              _module.itemAvailableTime ? Row(children: [
+              module.itemAvailableTime! ? Row(children: [
                 Text('daily_time'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
-                SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Expanded(child: Text(
-                  '${DateConverter.convertStringTimeToTime(item.availableTimeStarts)}'
-                      ' - ${DateConverter.convertStringTimeToTime(item.availableTimeEnds)}',
+                  '${DateConverter.convertStringTimeToTime(item.availableTimeStarts!)}'
+                      ' - ${DateConverter.convertStringTimeToTime(item.availableTimeEnds!)}',
                   maxLines: 1,
                   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor),
                 )),
@@ -101,15 +100,15 @@ class ItemDetailsScreen extends StatelessWidget {
                 //     storeController.toggleAvailable(item.id);
                 //   },
                 // ),
-              ]) : SizedBox(),
+              ]) : const SizedBox(),
 
               Row(children: [
                 Icon(Icons.star, color: Theme.of(context).primaryColor, size: 20),
-                Text(item.avgRating.toStringAsFixed(1), style: robotoRegular),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                Text(item.avgRating!.toStringAsFixed(1), style: robotoRegular),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(child: Text(
                   '${item.ratingCount} ${'ratings'.tr}',
-                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                 )),
                 // _module.itemAvailableTime ? SizedBox() : FlutterSwitch(
                 //   width: 100, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
@@ -119,35 +118,35 @@ class ItemDetailsScreen extends StatelessWidget {
                 //   },
                 // ),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(children: [
                 Expanded(
                   child: Text(
                     'available'.tr,
-                    style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
                   ),
                 ),
 
                FlutterSwitch(
-                    width: 60, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                    width: 60, height: 30, valueFontSize: Dimensions.fontSizeExtraSmall, showOnOff: true,
                     activeColor: Theme.of(context).primaryColor,
                     value: storeController.isAvailable, onToggle: (bool isActive) {
                   storeController.toggleAvailable(item.id);
                 }),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
               Row(children: [
                 Expanded(
                   child: Text(
                     'recommended'.tr,
-                    style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
                   ),
                 ),
 
                 FlutterSwitch(
-                  width: 60, height: 30, valueFontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, showOnOff: true,
+                  width: 60, height: 30, valueFontSize: Dimensions.fontSizeExtraSmall, showOnOff: true,
                   activeColor: Theme.of(context).primaryColor,
                   value: storeController.isRecommended, onToggle: (bool isActive) {
                   storeController.toggleRecommendedProduct(item.id);
@@ -155,84 +154,84 @@ class ItemDetailsScreen extends StatelessWidget {
                 ),
 
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
-              Get.find<SplashController>().getStoreModuleConfig().newVariation ? FoodVariationView(
+              Get.find<SplashController>().getStoreModuleConfig().newVariation! ? FoodVariationView(
                 item: item,
-              ) : VariationView(item: item, stock: _module.stock),
+              ) : VariationView(item: item, stock: module.stock),
 
               Row(children: [
-                _module.stock ? Text('${'total_stock'.tr}:', style: robotoMedium) : SizedBox(),
-                SizedBox(width: _module.stock ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
-                _module.stock ? Text(
+                module.stock! ? Text('${'total_stock'.tr}:', style: robotoMedium) : const SizedBox(),
+                SizedBox(width: module.stock! ? Dimensions.paddingSizeExtraSmall : 0),
+                module.stock! ? Text(
                   item.stock.toString(),
-                  style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-                ) : SizedBox(),
+                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                ) : const SizedBox(),
               ]),
-              SizedBox(height: _module.stock ? Dimensions.PADDING_SIZE_LARGE : 0),
+              SizedBox(height: module.stock! ? Dimensions.paddingSizeLarge : 0),
 
-              (item.addOns.length > 0 && _module.addOn) ? Text('addons'.tr, style: robotoMedium) : SizedBox(),
-              SizedBox(height: (item.addOns.length > 0 && _module.addOn) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
-              (item.addOns.length > 0 && _module.addOn) ? ListView.builder(
-                itemCount: item.addOns.length,
-                physics: NeverScrollableScrollPhysics(),
+              (item.addOns!.isNotEmpty && module.addOn!) ? Text('addons'.tr, style: robotoMedium) : const SizedBox(),
+              SizedBox(height: (item.addOns!.isNotEmpty && module.addOn!) ? Dimensions.paddingSizeExtraSmall : 0),
+              (item.addOns!.isNotEmpty && module.addOn!) ? ListView.builder(
+                itemCount: item.addOns!.length,
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return Row(children: [
 
-                    Text(item.addOns[index].name+':', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-                    SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    Text('${item.addOns![index].name!}:', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                     Text(
-                      PriceConverter.convertPrice(item.addOns[index].price),
-                      style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+                      PriceConverter.convertPrice(item.addOns![index].price),
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                     ),
 
                   ]);
                 },
-              ) : SizedBox(),
-              SizedBox(height: item.addOns.length > 0 ? Dimensions.PADDING_SIZE_LARGE : 0),
+              ) : const SizedBox(),
+              SizedBox(height: item.addOns!.isNotEmpty ? Dimensions.paddingSizeLarge : 0),
 
-              (item.description != null && item.description.isNotEmpty) ? Column(
+              (item.description != null && item.description!.isNotEmpty) ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('description'.tr, style: robotoMedium),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                  Text(item.description, style: robotoRegular),
-                  SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  Text(item.description!, style: robotoRegular),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
                 ],
-              ) : SizedBox(),
+              ) : const SizedBox(),
 
-              Get.find<AuthController>().profileModel.stores[0].reviewsSection ? Column(
+              Get.find<AuthController>().profileModel!.stores![0].reviewsSection! ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('reviews'.tr, style: robotoMedium),
-                  SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                  storeController.itemReviewList != null ? storeController.itemReviewList.length > 0 ? ListView.builder(
-                    itemCount: storeController.itemReviewList.length,
-                    physics: NeverScrollableScrollPhysics(),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                  storeController.itemReviewList != null ? storeController.itemReviewList!.isNotEmpty ? ListView.builder(
+                    itemCount: storeController.itemReviewList!.length,
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return ReviewWidget(
-                        review: storeController.itemReviewList[index], fromStore: false,
-                        hasDivider: index != storeController.itemReviewList.length-1,
+                        review: storeController.itemReviewList![index], fromStore: false,
+                        hasDivider: index != storeController.itemReviewList!.length-1,
                       );
                     },
                   ) : Padding(
-                    padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_LARGE),
+                    padding: const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
                     child: Center(child: Text('no_review_found'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor))),
-                  ) : Padding(
-                    padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_LARGE),
+                  ) : const Padding(
+                    padding: EdgeInsets.only(top: Dimensions.paddingSizeLarge),
                     child: Center(child: CircularProgressIndicator()),
                   ),
                 ],
-              ) : SizedBox(),
+              ) : const SizedBox(),
 
             ]),
           )),
 
           CustomButton(
             onPressed: () {
-              if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
+              if(Get.find<AuthController>().profileModel!.stores![0].itemSection!) {
                 // TODO: add product
                 Get.toNamed(RouteHelper.getItemRoute(item));
               }else {
@@ -240,7 +239,7 @@ class ItemDetailsScreen extends StatelessWidget {
               }
             },
             buttonText: 'update_item'.tr,
-            margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            margin: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           ),
 
         ]);
@@ -251,41 +250,41 @@ class ItemDetailsScreen extends StatelessWidget {
 
 class VariationView extends StatelessWidget {
   final Item item;
-  final bool stock;
-  const VariationView({Key key, @required this.item, @required this.stock}) : super(key: key);
+  final bool? stock;
+  const VariationView({Key? key, required this.item, required this.stock}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
 
-      (item.variations != null && item.variations.length > 0) ? Text('variations'.tr, style: robotoMedium) : SizedBox(),
-      SizedBox(height: (item.variations != null && item.variations.length > 0) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+      (item.variations != null && item.variations!.isNotEmpty) ? Text('variations'.tr, style: robotoMedium) : const SizedBox(),
+      SizedBox(height: (item.variations != null && item.variations!.isNotEmpty) ? Dimensions.paddingSizeExtraSmall : 0),
 
-      (item.variations != null && item.variations.length > 0) ? ListView.builder(
-        itemCount: item.variations.length,
-        physics: NeverScrollableScrollPhysics(),
+      (item.variations != null && item.variations!.isNotEmpty) ? ListView.builder(
+        itemCount: item.variations!.length,
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
           return Row(children: [
 
-            Text(item.variations[index].type+':', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-            SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            Text('${item.variations![index].type!}:', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
             Text(
-              PriceConverter.convertPrice(item.variations[index].price),
-              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+              PriceConverter.convertPrice(item.variations![index].price),
+              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
             ),
-            SizedBox(width: stock ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
-            stock ? Text(
-              '(${item.variations[index].stock})',
-              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-            ) : SizedBox(),
+            SizedBox(width: stock! ? Dimensions.paddingSizeExtraSmall : 0),
+            stock! ? Text(
+              '(${item.variations![index].stock})',
+              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+            ) : const SizedBox(),
 
           ]);
         },
-      ) : SizedBox(),
+      ) : const SizedBox(),
 
-      SizedBox(height: (item.variations != null && item.variations.length > 0) ? Dimensions.PADDING_SIZE_LARGE : 0),
+      SizedBox(height: (item.variations != null && item.variations!.isNotEmpty) ? Dimensions.paddingSizeLarge : 0),
 
     ]);
   }
@@ -293,45 +292,45 @@ class VariationView extends StatelessWidget {
 
 class FoodVariationView extends StatelessWidget {
   final Item item;
-  const FoodVariationView({Key key, @required this.item}) : super(key: key);
+  const FoodVariationView({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
 
-      (item.foodVariations != null && item.foodVariations.length > 0) ? Text('variations'.tr, style: robotoMedium) : SizedBox(),
-      SizedBox(height: (item.foodVariations != null && item.foodVariations.length > 0) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+      (item.foodVariations != null && item.foodVariations!.isNotEmpty) ? Text('variations'.tr, style: robotoMedium) : const SizedBox(),
+      SizedBox(height: (item.foodVariations != null && item.foodVariations!.isNotEmpty) ? Dimensions.paddingSizeExtraSmall : 0),
 
-      (item.foodVariations != null && item.foodVariations.length > 0) ? ListView.builder(
-        itemCount: item.foodVariations.length,
-        physics: NeverScrollableScrollPhysics(),
+      (item.foodVariations != null && item.foodVariations!.isNotEmpty) ? ListView.builder(
+        itemCount: item.foodVariations!.length,
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
               Row(children: [
-                Text('${item.foodVariations[index].name +' - '}', style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_DEFAULT)),
+                Text('${item.foodVariations![index].name!} - ', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
                 Text(
-                  ' ${item.foodVariations[index].type == 'multi' ? 'multiple_select'.tr : 'single_select'.tr}'
-                    ' (${item.foodVariations[index].required == 'on' ? 'required'.tr : 'optional'.tr})',
-                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                  ' ${item.foodVariations![index].type == 'multi' ? 'multiple_select'.tr : 'single_select'.tr}'
+                    ' (${item.foodVariations![index].required == 'on' ? 'required'.tr : 'optional'.tr})',
+                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                 ),
               ]),
 
-              SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
               ListView.builder(
-                itemCount: item.foodVariations[index].variationValues.length,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(left: 20),
+                itemCount: item.foodVariations![index].variationValues!.length,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(left: 20),
                 shrinkWrap: true,
                 itemBuilder: (context, i){
                   return Text(
-                    '${item.foodVariations[index].variationValues[i].level}'
-                        ' - ${PriceConverter.convertPrice(double.parse(item.foodVariations[index].variationValues[i].optionPrice))}',
-                    style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL),
+                    '${item.foodVariations![index].variationValues![i].level}'
+                        ' - ${PriceConverter.convertPrice(double.parse(item.foodVariations![index].variationValues![i].optionPrice!))}',
+                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall),
                   );
                 },
               ),
@@ -339,9 +338,9 @@ class FoodVariationView extends StatelessWidget {
             ]),
           );
         },
-      ) : SizedBox(),
+      ) : const SizedBox(),
 
-      SizedBox(height: (item.foodVariations != null && item.foodVariations.length > 0) ? Dimensions.PADDING_SIZE_LARGE : 0),
+      SizedBox(height: (item.foodVariations != null && item.foodVariations!.isNotEmpty) ? Dimensions.paddingSizeLarge : 0),
 
     ]);
   }

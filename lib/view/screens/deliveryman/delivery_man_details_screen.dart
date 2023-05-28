@@ -16,11 +16,11 @@ import 'package:get/get.dart';
 
 class DeliveryManDetailsScreen extends StatelessWidget {
   final DeliveryManModel deliveryMan;
-  DeliveryManDetailsScreen({@required this.deliveryMan});
+  const DeliveryManDetailsScreen({Key? key, required this.deliveryMan}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Get.find<DeliveryManController>().setSuspended(!deliveryMan.status);
+    Get.find<DeliveryManController>().setSuspended(!deliveryMan.status!);
     Get.find<DeliveryManController>().getDeliveryManReviewList(deliveryMan.id);
 
     return Scaffold(
@@ -29,8 +29,8 @@ class DeliveryManDetailsScreen extends StatelessWidget {
         return Column(children: [
 
           Expanded(child: SingleChildScrollView(
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+            physics: const BouncingScrollPhysics(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
               Row(children: [
@@ -40,74 +40,74 @@ class DeliveryManDetailsScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: ClipOval(child: CustomImage(
-                    image: '${Get.find<SplashController>().configModel.baseUrls.deliveryManImageUrl}/${deliveryMan.image}',
+                    image: '${Get.find<SplashController>().configModel!.baseUrls!.deliveryManImageUrl}/${deliveryMan.image}',
                     height: 70, width: 70, fit: BoxFit.cover,
                   )),
                 ),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    '${deliveryMan.fName} ${deliveryMan.lName}', style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                    '${deliveryMan.fName} ${deliveryMan.lName}', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                   Text(
                     deliveryMan.active == 1 ? 'online'.tr : 'offline'.tr,
                     style: robotoRegular.copyWith(
-                      color: deliveryMan.active == 1 ? Colors.green : Colors.red, fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
+                      color: deliveryMan.active == 1 ? Colors.green : Colors.red, fontSize: Dimensions.fontSizeExtraSmall,
                     ),
                   ),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                   Row(children: [
                     Icon(Icons.star, color: Theme.of(context).primaryColor, size: 20),
-                    Text(deliveryMan.avgRating.toStringAsFixed(1), style: robotoRegular),
-                    SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                    Text(deliveryMan.avgRating!.toStringAsFixed(1), style: robotoRegular),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
                     Text(
                       '${deliveryMan.ratingCount} ${'ratings'.tr}',
-                      style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                     ),
                   ]),
                 ])),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(children: [
                 AmountCardWidget(
                   title: 'total_delivered_order'.tr,
                   value: deliveryMan.ordersCount.toString(),
-                  color: Color(0xFF377DFF),
+                  color: const Color(0xFF377DFF),
                 ),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
                 AmountCardWidget(
                   title: 'cash_in_hand'.tr,
                   value: PriceConverter.convertPrice(deliveryMan.cashInHands),
-                  color: Color(0xFF132144),
+                  color: const Color(0xFF132144),
                 ),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('reviews'.tr, style: robotoMedium),
-                  SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                  dmController.dmReviewList != null ? dmController.dmReviewList.length > 0 ? ListView.builder(
-                    itemCount: dmController.dmReviewList.length,
-                    physics: NeverScrollableScrollPhysics(),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                  dmController.dmReviewList != null ? dmController.dmReviewList!.isNotEmpty ? ListView.builder(
+                    itemCount: dmController.dmReviewList!.length,
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return ReviewWidget(
-                        review: dmController.dmReviewList[index], fromStore: false,
-                        hasDivider: index != dmController.dmReviewList.length-1,
+                        review: dmController.dmReviewList![index], fromStore: false,
+                        hasDivider: index != dmController.dmReviewList!.length-1,
                       );
                     },
                   ) : Padding(
-                    padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_LARGE),
+                    padding: const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
                     child: Center(child: Text(
                       'no_review_found'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor),
                     )),
-                  ) : Padding(
-                    padding: EdgeInsets.only(top: Dimensions.PADDING_SIZE_LARGE),
+                  ) : const Padding(
+                    padding: EdgeInsets.only(top: Dimensions.paddingSizeLarge),
                     child: Center(child: CircularProgressIndicator()),
                   ),
                 ],
@@ -126,7 +126,7 @@ class DeliveryManDetailsScreen extends StatelessWidget {
               ));
             },
             buttonText: dmController.isSuspended ? 'un_suspend_this_delivery_man'.tr : 'suspend_this_delivery_man'.tr,
-            margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            margin: const EdgeInsets.all(Dimensions.paddingSizeSmall),
             color: dmController.isSuspended ? Colors.green : Colors.red,
           ),
 

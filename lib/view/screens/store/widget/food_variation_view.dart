@@ -8,8 +8,8 @@ import 'package:get/get.dart';
 
 class FoodVariationView extends StatefulWidget {
   final StoreController storeController;
-  final Item item;
-  const FoodVariationView({Key key, @required this.storeController, @required this.item}) : super(key: key);
+  final Item? item;
+  const FoodVariationView({Key? key, required this.storeController, required this.item}) : super(key: key);
 
   @override
   State<FoodVariationView> createState() => _FoodVariationViewState();
@@ -21,32 +21,32 @@ class _FoodVariationViewState extends State<FoodVariationView> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         'variation'.tr,
-        style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
       ),
-      SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-      widget.storeController.variationList.length > 0 ? ListView.builder(
-        itemCount: widget.storeController.variationList.length,
-        shrinkWrap: true, physics: NeverScrollableScrollPhysics(),
+      widget.storeController.variationList!.isNotEmpty ? ListView.builder(
+        itemCount: widget.storeController.variationList!.length,
+        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         itemBuilder: (context, index){
           return Stack(children: [
             Container(
-              margin: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-              decoration: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor), borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+              margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
+              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              decoration: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor), borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
               child: Column(children: [
                 Row(children: [
                   Expanded(child: CustomTextField(
                     hintText: 'name'.tr,
                     showTitle: true,
                     // showShadow: true,
-                    controller: widget.storeController.variationList[index].nameController,
+                    controller: widget.storeController.variationList![index].nameController,
                   )),
                   Expanded(child: Padding(
-                    padding: const EdgeInsets.only(top: Dimensions.PADDING_SIZE_DEFAULT),
+                    padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault),
                     child: CheckboxListTile(
-                      value: widget.storeController.variationList[index].required,
+                      value: widget.storeController.variationList![index].required,
                       title: Text('required'.tr),
                       tristate: true,
                       activeColor: Theme.of(context).primaryColor,
@@ -56,7 +56,7 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                     ),
                   )),
                 ]),
-                SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
 
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
@@ -68,8 +68,8 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                       child: Row(children: [
                         Radio<bool>(
                           value: true,
-                          groupValue: widget.storeController.variationList[index].isSingle,
-                          onChanged: (bool value){
+                          groupValue: widget.storeController.variationList![index].isSingle,
+                          onChanged: (bool? value){
                             widget.storeController.changeSelectVariationType(index);
                           },
                           activeColor: Theme.of(context).primaryColor,
@@ -77,15 +77,15 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                         Text('single'.tr)
                       ]),
                     ),
-                    SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                    const SizedBox(width: Dimensions.paddingSizeLarge),
 
                     InkWell(
                       onTap: () =>  widget.storeController.changeSelectVariationType(index),
                       child: Row(children: [
                         Radio<bool>(
                           value: false,
-                          groupValue: widget.storeController.variationList[index].isSingle,
-                          onChanged: (bool value){
+                          groupValue: widget.storeController.variationList![index].isSingle,
+                          onChanged: (bool? value){
                             widget.storeController.changeSelectVariationType(index);
                           },
                           activeColor: Theme.of(context).primaryColor,
@@ -97,7 +97,7 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                 ]),
 
                 Visibility(
-                  visible: !widget.storeController.variationList[index].isSingle,
+                  visible: !widget.storeController.variationList![index].isSingle,
                   child: Row(children: [
                     Flexible(child: CustomTextField(
                       hintText: 'minimum'.tr,
@@ -105,9 +105,9 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                       // showShadow: true,
                       inputType: TextInputType.number,
                       isNumber: true,
-                      controller: widget.storeController.variationList[index].minController,
+                      controller: widget.storeController.variationList![index].minController,
                     )),
-                    SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
 
                     Flexible(child: CustomTextField(
                       hintText: 'maximum'.tr,
@@ -115,69 +115,69 @@ class _FoodVariationViewState extends State<FoodVariationView> {
                       showTitle: true,
                       // showShadow: true,
                       isNumber: true,
-                      controller: widget.storeController.variationList[index].maxController,
+                      controller: widget.storeController.variationList![index].maxController,
                     )),
 
                   ]),
                 ),
-                SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
 
                 Container(
-                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                   ),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
                     ListView.builder(
-                      itemCount: widget.storeController.variationList[index].options.length,
-                      shrinkWrap: true, physics: NeverScrollableScrollPhysics(),
+                      itemCount: widget.storeController.variationList![index].options!.length,
+                      shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       itemBuilder: (context, i) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
                           child: Row(children: [
                             Flexible(flex: 4, child: CustomTextField(
                               hintText: 'option_name'.tr,
                               showTitle: true,
                               // showShadow: true,
-                              controller: widget.storeController.variationList[index].options[i].optionNameController,
+                              controller: widget.storeController.variationList![index].options![i].optionNameController,
                             )),
-                            SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                            const SizedBox(width: Dimensions.paddingSizeSmall),
 
                             Flexible(flex: 4, child: CustomTextField(
                               hintText: 'additional_price'.tr,
                               showTitle: true,
                               // showShadow: true,
                               isAmount: true,
-                              controller: widget.storeController.variationList[index].options[i].optionPriceController,
+                              controller: widget.storeController.variationList![index].options![i].optionPriceController,
                               inputType: TextInputType.number,
                               inputAction: TextInputAction.done,
                             )),
 
                             Flexible(flex: 1, child: Padding(
-                              padding: const EdgeInsets.only(top: Dimensions.PADDING_SIZE_SMALL),
-                              child: widget.storeController.variationList[index].options.length > 1 ? IconButton(
-                                icon: Icon(Icons.clear),
+                              padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+                              child: widget.storeController.variationList![index].options!.length > 1 ? IconButton(
+                                icon: const Icon(Icons.clear),
                                 onPressed: () => widget.storeController.removeOptionVariation(index, i),
-                              ) : SizedBox(),
+                              ) : const SizedBox(),
                             )),
                           ]),
                         );
                       },
                     ),
 
-                    SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
 
                     InkWell(
                       onTap: () {
                         widget.storeController.addOptionVariation(index);
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_SMALL),
-                        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), border: Border.all(color: Theme.of(context).primaryColor)),
-                        child: Text('add_new_option'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_DEFAULT)),
+                        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
+                        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall), border: Border.all(color: Theme.of(context).primaryColor)),
+                        child: Text('add_new_option'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
                       ),
                     ),
                   ]),
@@ -186,28 +186,28 @@ class _FoodVariationViewState extends State<FoodVariationView> {
               ]),
             ),
 
-            Align(alignment: Alignment.topRight, child: IconButton(icon: Icon(Icons.clear),
+            Align(alignment: Alignment.topRight, child: IconButton(icon: const Icon(Icons.clear),
               onPressed: () => widget.storeController.removeVariation(index),
             )),
           ]);
         },
-      ) : SizedBox(),
+      ) : const SizedBox(),
 
 
-      SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
+      const SizedBox(height: Dimensions.paddingSizeDefault),
 
       InkWell(
         onTap: () {
           widget.storeController.addVariation();
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_SMALL),
-          decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-          child: Text('${widget.storeController.variationList.length > 0 ? 'add_new_variation'.tr : 'add_variation'.tr}', style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.FONT_SIZE_DEFAULT)),
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
+          decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+          child: Text(widget.storeController.variationList!.isNotEmpty ? 'add_new_variation'.tr : 'add_variation'.tr, style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeDefault)),
         ),
       ),
 
-      SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+      const SizedBox(height: Dimensions.paddingSizeLarge),
 
     ]);
   }

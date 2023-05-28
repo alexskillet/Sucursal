@@ -1,14 +1,14 @@
 class ModuleModel {
-  int id;
-  String moduleName;
-  String moduleType;
-  String thumbnail;
-  String icon;
-  int themeId;
-  String description;
-  int storesCount;
-  String createdAt;
-  String updatedAt;
+  int? id;
+  String? moduleName;
+  String? moduleType;
+  String? thumbnail;
+  String? icon;
+  int? themeId;
+  String? description;
+  int? storesCount;
+  String? createdAt;
+  String? updatedAt;
 
   ModuleModel(
       {this.id,
@@ -37,17 +37,17 @@ class ModuleModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['module_name'] = this.moduleName;
-    data['module_type'] = this.moduleType;
-    data['thumbnail'] = this.thumbnail;
-    data['icon'] = this.icon;
-    data['theme_id'] = this.themeId;
-    data['description'] = this.description;
-    data['stores_count'] = this.storesCount;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['module_name'] = moduleName;
+    data['module_type'] = moduleType;
+    data['thumbnail'] = thumbnail;
+    data['icon'] = icon;
+    data['theme_id'] = themeId;
+    data['description'] = description;
+    data['stores_count'] = storesCount;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

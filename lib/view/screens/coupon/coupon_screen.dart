@@ -14,7 +14,7 @@ import 'package:sixam_mart_store/view/screens/coupon/add_coupon_screen.dart';
 
 import 'widgets/coupon_card_dialogue.dart';
 class CouponScreen extends StatefulWidget {
-  const CouponScreen({Key key}) : super(key: key);
+  const CouponScreen({Key? key}) : super(key: key);
 
   @override
   State<CouponScreen> createState() => _CouponScreenState();
@@ -32,7 +32,7 @@ class _CouponScreenState extends State<CouponScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: 'coupon'.tr),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.to(() => AddCouponScreen()),
+        onPressed: () => Get.to(() => const AddCouponScreen()),
         child: Icon(Icons.add_circle_outline, size: 30, color: Theme.of(context).cardColor),
       ),
       body: RefreshIndicator(
@@ -41,15 +41,15 @@ class _CouponScreenState extends State<CouponScreen> {
         },
         child: GetBuilder<CouponController>(
           builder: (couponController) {
-            return couponController.coupons != null ? couponController.coupons.length != 0 ? ListView.builder(
+            return couponController.coupons != null ? couponController.coupons!.isNotEmpty ? ListView.builder(
               shrinkWrap: true,
-                itemCount: couponController.coupons.length,
+                itemCount: couponController.coupons!.length,
                 itemBuilder: (context, index){
                 return InkWell(
                   onTap: (){
-                    Get.dialog(CouponCardDialogue(couponBody: couponController.coupons[index], index: index), barrierDismissible: true, useSafeArea: true);
+                    Get.dialog(CouponCardDialogue(couponBody: couponController.coupons![index], index: index), barrierDismissible: true, useSafeArea: true);
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 150,
                     // margin: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
                     // decoration: BoxDecoration(
@@ -59,10 +59,10 @@ class _CouponScreenState extends State<CouponScreen> {
                       children: [
                         Transform.rotate(
                           angle: Get.find<LocalizationController>().isLtr ? 0 : pi,
-                          child: Container(
+                          child: SizedBox(
                             height: 150,
                             // margin: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
-                            child: Image.asset(Images.coupon_bg_dark, fit: BoxFit.fill),
+                            child: Image.asset(Images.couponBgDark, fit: BoxFit.fill),
                           ),
                         ),
                         Row(children: [
@@ -72,9 +72,9 @@ class _CouponScreenState extends State<CouponScreen> {
                             padding: EdgeInsets.only(left: Get.find<LocalizationController>().isLtr ? 50.0 : 0, bottom: Get.find<LocalizationController>().isLtr ? 10 : 0, right: 0),
                             child: Stack(
                               children: [
-                                Center(child: Image.asset(Images.coupon_vertical, color: Theme.of(context).primaryColor)),
+                                Center(child: Image.asset(Images.couponVertical, color: Theme.of(context).primaryColor)),
                                 Center(
-                                  child: Text("${couponController.coupons[index].discountType == 'percent' ? '%' : '\$'}",
+                                  child: Text(couponController.coupons![index].discountType == 'percent' ? '%' : '\$',
                                     style: robotoBold.copyWith(fontSize: 18, color: Theme.of(context).cardColor),
                                   ),
                                 ),
@@ -83,29 +83,29 @@ class _CouponScreenState extends State<CouponScreen> {
                           )
                           ),
 
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
 
                           Expanded(
                             flex: 8,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_SMALL, horizontal: Dimensions.PADDING_SIZE_LARGE),
+                              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall, horizontal: Dimensions.paddingSizeLarge),
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                 // SizedBox(height: 10),
                                 Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  Text('${'${couponController.coupons[index].couponType == 'free_delivery' ? 'free_delivery'.tr : couponController.coupons[index].discountType != 'percent' ?
-                                  PriceConverter.convertPrice(double.parse(couponController.coupons[index].discount.toString())) :
-                                  couponController.coupons[index].discount}'} ${couponController.coupons[index].couponType == 'free_delivery' ? '' : couponController.coupons[index].discountType == 'percent' ? ' %' : ''}'
-                                      '${couponController.coupons[index].couponType == 'free_delivery' ? '' : 'off'.tr}',
-                                    style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                                  Text('${'${couponController.coupons![index].couponType == 'free_delivery' ? 'free_delivery'.tr : couponController.coupons![index].discountType != 'percent' ?
+                                  PriceConverter.convertPrice(double.parse(couponController.coupons![index].discount.toString())) :
+                                  couponController.coupons![index].discount}'} ${couponController.coupons![index].couponType == 'free_delivery' ? '' : couponController.coupons![index].discountType == 'percent' ? ' %' : ''}'
+                                      '${couponController.coupons![index].couponType == 'free_delivery' ? '' : 'off'.tr}',
+                                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
                                   ),
 
                                   Row(
                                     children: [
                                       Switch(
                                         activeColor: Theme.of(context).primaryColor,
-                                        value: couponController.coupons[index].status == 1 ? true : false,
+                                        value: couponController.coupons![index].status == 1 ? true : false,
                                         onChanged: (bool status){
-                                          couponController.changeStatus(couponController.coupons[index].id, status).then((success) {
+                                          couponController.changeStatus(couponController.coupons![index].id, status).then((success) {
                                             if(success){
                                               Get.find<CouponController>().getCouponList();
                                             }
@@ -117,27 +117,27 @@ class _CouponScreenState extends State<CouponScreen> {
                                           itemBuilder: (context) {
                                             return <PopupMenuEntry>[
                                               PopupMenuItem(
-                                                child: Text('edit'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
                                                 value: 'edit',
+                                                child: Text('edit'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
                                               ),
                                               PopupMenuItem(
-                                                child: Text('delete'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Colors.red)),
                                                 value: 'delete',
+                                                child: Text('delete'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Colors.red)),
                                               ),
                                             ];
                                           },
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-                                          offset: Offset(-20, 20),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+                                          offset: const Offset(-20, 20),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                                             child: Icon(Icons.more_vert, size: 25),
                                           ),
-                                          onSelected: (value) {
+                                          onSelected: (dynamic value) {
                                             if (value == 'delete') {
                                               Get.dialog(ConfirmationDialog(
                                                 icon: Images.warning, title: 'are_you_sure_to_delete'.tr, description: 'you_want_to_delete_this_coupon'.tr,
                                                 onYesPressed: () {
-                                                  couponController.deleteCoupon(couponController.coupons[index].id).then((success) {
+                                                  couponController.deleteCoupon(couponController.coupons![index].id).then((success) {
                                                     if(success){
                                                       Get.find<CouponController>().getCouponList();
                                                     }
@@ -146,7 +146,7 @@ class _CouponScreenState extends State<CouponScreen> {
                                               ), barrierDismissible: false);
 
                                             }else{
-                                              Get.to(()=> AddCouponScreen(coupon: couponController.coupons[index]));
+                                              Get.to(()=> AddCouponScreen(coupon: couponController.coupons![index]));
                                             }
                                           }
                                       ),
@@ -154,14 +154,14 @@ class _CouponScreenState extends State<CouponScreen> {
                                   ),
                                 ]),
 
-                                Text('${'code'.tr + ': ' + couponController.coupons[index].code}', style: robotoMedium),
-                                SizedBox(height: 5),
+                                Text('${'code'.tr}: ${couponController.coupons![index].code!}', style: robotoMedium),
+                                const SizedBox(height: 5),
 
-                                Text('${'total_users'.tr + ': ' + couponController.coupons[index].totalUses.toString()}', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),
-                                SizedBox(height: 5),
+                                Text('${'total_users'.tr}: ${couponController.coupons![index].totalUses}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall)),
+                                const SizedBox(height: 5),
 
-                                Text('${'valid_until'.tr +" "+ couponController.coupons[index].startDate +" " + 'to'.tr +' '+ couponController.coupons[index].expireDate}',
-                                  style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL),
+                                Text('${'valid_until'.tr} ${couponController.coupons![index].startDate!} ${'to'.tr} ${couponController.coupons![index].expireDate!}',
+                                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall),
                                 ),
 
                               ]),
@@ -263,7 +263,7 @@ class _CouponScreenState extends State<CouponScreen> {
                   ),
                 ),
               )*/;
-            }) : Center(child: Text('no_coupon_found'.tr)) : Center(child: CircularProgressIndicator());
+            }) : Center(child: Text('no_coupon_found'.tr)) : const Center(child: CircularProgressIndicator());
           }
         ),
       ),

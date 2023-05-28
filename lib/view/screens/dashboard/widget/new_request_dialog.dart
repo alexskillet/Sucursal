@@ -12,14 +12,14 @@ import 'package:get/get.dart';
 class NewRequestDialog extends StatefulWidget {
   final int orderId;
 
-  const NewRequestDialog({@required this.orderId});
+  const NewRequestDialog({Key? key, required this.orderId}) : super(key: key);
 
   @override
   State<NewRequestDialog> createState() => _NewRequestDialogState();
 }
 
 class _NewRequestDialogState extends State<NewRequestDialog> {
-  Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -36,29 +36,29 @@ class _NewRequestDialogState extends State<NewRequestDialog> {
   }
 
   void _startAlarm() async {
-    AudioCache _audio = AudioCache();
-    _audio.play('notification.mp3');
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      _audio.play('notification.mp3');
+    AudioCache audio = AudioCache();
+    audio.play('notification.mp3');
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      audio.play('notification.mp3');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
       //insetPadding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
       child: Padding(
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
 
-          Image.asset(Images.notification_in, height: 60, color: Theme.of(context).primaryColor),
+          Image.asset(Images.notificationIn, height: 60, color: Theme.of(context).primaryColor),
 
           Padding(
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
             child: Text(
               'new_order_placed'.tr, textAlign: TextAlign.center,
-              style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge),
             ),
           ),
 
@@ -67,7 +67,7 @@ class _NewRequestDialogState extends State<NewRequestDialog> {
             buttonText: 'ok'.tr,
             onPressed: () {
               _timer?.cancel();
-              if(Get.isDialogOpen) {
+              if(Get.isDialogOpen!) {
                 Get.back();
               }
 

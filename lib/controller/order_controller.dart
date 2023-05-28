@@ -8,39 +8,38 @@ import 'package:sixam_mart_store/data/model/response/order_model.dart';
 import 'package:sixam_mart_store/data/model/response/running_order_model.dart';
 import 'package:sixam_mart_store/data/repository/order_repo.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
-  OrderController({@required this.orderRepo});
+  OrderController({required this.orderRepo});
 
-  List<OrderModel> _allOrderList;
-  List<OrderModel> _orderList;
-  List<OrderModel> _runningOrderList;
-  List<RunningOrderModel> _runningOrders;
-  List<OrderModel> _historyOrderList;
-  List<OrderDetailsModel> _orderDetailsModel;
+  late List<OrderModel> _allOrderList;
+  List<OrderModel>? _orderList;
+  List<OrderModel>? _runningOrderList;
+  List<RunningOrderModel>? _runningOrders;
+  List<OrderModel>? _historyOrderList;
+  List<OrderDetailsModel>? _orderDetailsModel;
   bool _isLoading = false;
   int _orderIndex = 0;
   bool _campaignOnly = false;
   String _otp = '';
   int _historyIndex = 0;
-  List<String> _statusList = ['all', 'delivered', 'refunded'];
+  final List<String> _statusList = ['all', 'delivered', 'refunded'];
   bool _paginate = false;
-  int _pageSize;
+  int? _pageSize;
   List<int> _offsetList = [];
   int _offset = 1;
   String _orderType = 'all';
-  OrderModel _orderModel;
-  List<Data> _orderCancelReasons;
-  String _cancelReason = '';
+  OrderModel? _orderModel;
+  List<Data>? _orderCancelReasons;
+  String? _cancelReason = '';
 
-  List<OrderModel> get orderList => _orderList;
-  List<OrderModel> get runningOrderList => _runningOrderList;
-  List<RunningOrderModel> get runningOrders => _runningOrders;
-  List<OrderModel> get historyOrderList => _historyOrderList;
-  List<OrderDetailsModel> get orderDetailsModel => _orderDetailsModel;
+  List<OrderModel>? get orderList => _orderList;
+  List<OrderModel>? get runningOrderList => _runningOrderList;
+  List<RunningOrderModel>? get runningOrders => _runningOrders;
+  List<OrderModel>? get historyOrderList => _historyOrderList;
+  List<OrderDetailsModel>? get orderDetailsModel => _orderDetailsModel;
   bool get isLoading => _isLoading;
   int get orderIndex => _orderIndex;
   bool get campaignOnly => _campaignOnly;
@@ -48,14 +47,14 @@ class OrderController extends GetxController implements GetxService {
   int get historyIndex => _historyIndex;
   List<String> get statusList => _statusList;
   bool get paginate => _paginate;
-  int get pageSize => _pageSize;
+  int? get pageSize => _pageSize;
   int get offset => _offset;
   String get orderType => _orderType;
-  OrderModel get orderModel => _orderModel;
-  List<Data> get orderCancelReasons => _orderCancelReasons;
-  String get cancelReason => _cancelReason;
+  OrderModel? get orderModel => _orderModel;
+  List<Data>? get orderCancelReasons => _orderCancelReasons;
+  String? get cancelReason => _cancelReason;
 
-  void setOrderCancelReason(String reason){
+  void setOrderCancelReason(String? reason){
     _cancelReason = reason;
     update();
   }
@@ -65,10 +64,8 @@ class OrderController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       OrderCancellationBody orderCancellationBody = OrderCancellationBody.fromJson(response.body);
       _orderCancelReasons = [];
-      if(orderCancellationBody != null){
-        orderCancellationBody.data.forEach((element) {
-          _orderCancelReasons.add(element);
-        });
+      for (var element in orderCancellationBody.data!) {
+        _orderCancelReasons!.add(element);
       }
 
     }else{
@@ -100,9 +97,9 @@ class OrderController extends GetxController implements GetxService {
       _allOrderList = [];
       _orderList = [];
       response.body.forEach((order) {
-        OrderModel _orderModel = OrderModel.fromJson(order);
-        _allOrderList.add(_orderModel);
-        _orderList.add(_orderModel);
+        OrderModel orderModel = OrderModel.fromJson(order);
+        _allOrderList.add(orderModel);
+        _orderList!.add(orderModel);
       });
     }else {
       ApiChecker.checkApi(response);
@@ -117,14 +114,14 @@ class OrderController extends GetxController implements GetxService {
       _runningOrders = [
         RunningOrderModel(status: 'pending', orderList: []),
         RunningOrderModel(status: 'confirmed', orderList: []),
-        RunningOrderModel(status: Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText
+        RunningOrderModel(status: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
             ? 'cooking' : 'processing', orderList: []),
         RunningOrderModel(status: 'ready_for_handover', orderList: []),
         RunningOrderModel(status: 'food_on_the_way', orderList: []),
       ];
       response.body.forEach((order) {
-        OrderModel _orderModel = OrderModel.fromJson(order);
-        _runningOrderList.add(_orderModel);
+        OrderModel orderModel = OrderModel.fromJson(order);
+        _runningOrderList!.add(orderModel);
       });
       _campaignOnly = true;
       toggleCampaignOnly();
@@ -164,7 +161,7 @@ class OrderController extends GetxController implements GetxService {
         if (offset == 1) {
           _historyOrderList = [];
         }
-        _historyOrderList.addAll(PaginatedOrderModel.fromJson(response.body).orders);
+        _historyOrderList!.addAll(PaginatedOrderModel.fromJson(response.body).orders!);
         _pageSize = PaginatedOrderModel.fromJson(response.body).totalSize;
         _paginate = false;
         update();
@@ -193,17 +190,17 @@ class OrderController extends GetxController implements GetxService {
     getPaginatedOrders(1, true);
   }
 
-  Future<bool> updateOrderStatus(int orderID, String status, {bool back = false, String reason}) async {
+  Future<bool> updateOrderStatus(int? orderID, String status, {bool back = false, String? reason}) async {
     _isLoading = true;
     update();
-    UpdateStatusBody _updateStatusBody = UpdateStatusBody(
+    UpdateStatusBody updateStatusBody = UpdateStatusBody(
       orderId: orderID, status: status,
       otp: status == 'delivered' ? _otp : null,
       reason: reason,
     );
-    Response response = await orderRepo.updateOrderStatus(_updateStatusBody);
+    Response response = await orderRepo.updateOrderStatus(updateStatusBody);
     Get.back();
-    bool _isSuccess;
+    bool isSuccess;
     if(response.statusCode == 200) {
       if(back) {
         Get.back();
@@ -211,14 +208,14 @@ class OrderController extends GetxController implements GetxService {
       getCurrentOrders();
       Get.find<AuthController>().getProfile();
       showCustomSnackBar(response.body['message'], isError: false);
-      _isSuccess = true;
+      isSuccess = true;
     }else {
       ApiChecker.checkApi(response);
-      _isSuccess = false;
+      isSuccess = false;
     }
     _isLoading = false;
     update();
-    return _isSuccess;
+    return isSuccess;
   }
 
   Future<bool> updateOrderAmount(int orderID, String amount, bool isItemPrice) async {
@@ -235,29 +232,29 @@ class OrderController extends GetxController implements GetxService {
       body['discount_amount'] = amount;
     }
     Response response = await orderRepo.updateOrderAmount(body);
-    bool _isSuccess;
+    bool isSuccess;
     if(response.statusCode == 200) {
       await getOrderDetails(orderID);
       Get.back();
       showCustomSnackBar(response.body['message'], isError: false);
-      _isSuccess = true;
+      isSuccess = true;
     }else {
       ApiChecker.checkApi(response);
-      _isSuccess = false;
+      isSuccess = false;
     }
     _isLoading = false;
     update();
-    return _isSuccess;
+    return isSuccess;
   }
 
   Future<void> getOrderItemsDetails(int orderID) async {
     _orderDetailsModel = null;
 
-    if(_orderModel != null && !_orderModel.prescriptionOrder){
+    if(_orderModel != null && !_orderModel!.prescriptionOrder!){
       Response response = await orderRepo.getOrderDetails(orderID);
       if(response.statusCode == 200) {
         _orderDetailsModel = [];
-        response.body.forEach((orderDetails) => _orderDetailsModel.add(OrderDetailsModel.fromJson(orderDetails)));
+        response.body.forEach((orderDetails) => _orderDetailsModel!.add(OrderDetailsModel.fromJson(orderDetails)));
       }else {
         ApiChecker.checkApi(response);
       }
@@ -274,27 +271,27 @@ class OrderController extends GetxController implements GetxService {
 
   void toggleCampaignOnly() {
     _campaignOnly = !_campaignOnly;
-    _runningOrders[0].orderList = [];
-    _runningOrders[1].orderList = [];
-    _runningOrders[2].orderList = [];
-    _runningOrders[3].orderList = [];
-    _runningOrders[4].orderList = [];
-    _runningOrderList.forEach((order) {
-      if(order.orderStatus == 'pending' && (Get.find<SplashController>().configModel.orderConfirmationModel != 'deliveryman'
-          || order.orderType == 'take_away' || Get.find<AuthController>().profileModel.stores[0].selfDeliverySystem == 1)
+    _runningOrders![0].orderList = [];
+    _runningOrders![1].orderList = [];
+    _runningOrders![2].orderList = [];
+    _runningOrders![3].orderList = [];
+    _runningOrders![4].orderList = [];
+    for (var order in _runningOrderList!) {
+      if(order.orderStatus == 'pending' && (Get.find<SplashController>().configModel!.orderConfirmationModel != 'deliveryman'
+          || order.orderType == 'take_away' || Get.find<AuthController>().profileModel!.stores![0].selfDeliverySystem == 1)
           && (_campaignOnly ? order.itemCampaign == 1 : true)) {
-        _runningOrders[0].orderList.add(order);
+        _runningOrders![0].orderList.add(order);
       }else if((order.orderStatus == 'confirmed' || (order.orderStatus == 'accepted' && order.confirmed != null))
           && (_campaignOnly ? order.itemCampaign == 1 : true)) {
-        _runningOrders[1].orderList.add(order);
+        _runningOrders![1].orderList.add(order);
       }else if(order.orderStatus == 'processing' && (_campaignOnly ? order.itemCampaign == 1 : true)) {
-        _runningOrders[2].orderList.add(order);
+        _runningOrders![2].orderList.add(order);
       }else if(order.orderStatus == 'handover' && (_campaignOnly ? order.itemCampaign == 1 : true)) {
-        _runningOrders[3].orderList.add(order);
+        _runningOrders![3].orderList.add(order);
       }else if(order.orderStatus == 'picked_up' && (_campaignOnly ? order.itemCampaign == 1 : true)) {
-        _runningOrders[4].orderList.add(order);
+        _runningOrders![4].orderList.add(order);
       }
-    });
+    }
     update();
   }
 

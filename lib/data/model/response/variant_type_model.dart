@@ -7,6 +7,6 @@ class VariantTypeModel {
   FocusNode priceNode;
   FocusNode stockNode;
 
-  VariantTypeModel({@required this.variantType, @required this.priceController, @required this.priceNode,
-    @required this.stockController, @required this.stockNode});
+  VariantTypeModel({required this.variantType, required this.priceController, required this.priceNode,
+    required this.stockController, required this.stockNode});
 }

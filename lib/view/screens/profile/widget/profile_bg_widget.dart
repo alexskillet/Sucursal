@@ -8,7 +8,7 @@ class ProfileBgWidget extends StatelessWidget {
   final Widget circularImage;
   final Widget mainWidget;
   final bool backButton;
-  ProfileBgWidget({@required this.mainWidget, @required this.circularImage, @required this.backButton});
+  const ProfileBgWidget({Key? key, required this.mainWidget, required this.circularImage, required this.backButton}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class ProfileBgWidget extends StatelessWidget {
 
         SizedBox(
           width: context.width, height: 260,
-          child: Center(child: Image.asset(Images.profile_bg, height: 260, width: 1170, fit: BoxFit.fill)),
+          child: Center(child: Image.asset(Images.profileBg, height: 260, width: 1170, fit: BoxFit.fill)),
         ),
 
         Positioned(
@@ -32,7 +32,7 @@ class ProfileBgWidget extends StatelessWidget {
             child: Container(
               width: 1170,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.RADIUS_EXTRA_LARGE)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge)),
                 color: Theme.of(context).cardColor,
               ),
             ),
@@ -43,7 +43,7 @@ class ProfileBgWidget extends StatelessWidget {
           top: MediaQuery.of(context).padding.top+10, left: 0, right: 0,
           child: Text(
             'profile'.tr, textAlign: TextAlign.center,
-            style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: Theme.of(context).cardColor),
+            style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).cardColor),
           ),
         ),
 
@@ -53,7 +53,7 @@ class ProfileBgWidget extends StatelessWidget {
             icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).cardColor, size: 20),
             onPressed: () => Get.back(),
           ),
-        ) : SizedBox(),
+        ) : const SizedBox(),
 
         Positioned(
           top: 150, left: 0, right: 0,

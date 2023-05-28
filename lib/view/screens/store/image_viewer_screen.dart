@@ -9,15 +9,15 @@ import 'package:sixam_mart_store/view/base/custom_app_bar.dart';
 
 class ImageViewerScreen extends StatelessWidget {
   final Item item;
-  ImageViewerScreen({@required this.item});
+  const ImageViewerScreen({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Get.find<StoreController>().setImageIndex(0, false);
-    List<String> _imageList = [];
-    _imageList.add(item.image);
-    _imageList.addAll(item.images);
-    final PageController _pageController = PageController();
+    List<String?> imageList = [];
+    imageList.add(item.image);
+    imageList.addAll(item.images!);
+    final PageController pageController = PageController();
 
     return Scaffold(
       appBar: CustomAppBar(title: 'item_images'.tr),
@@ -27,19 +27,19 @@ class ImageViewerScreen extends StatelessWidget {
           Expanded(child: Stack(children: [
 
             PhotoViewGallery.builder(
-              scrollPhysics: BouncingScrollPhysics(),
+              scrollPhysics: const BouncingScrollPhysics(),
               backgroundDecoration: BoxDecoration(color: Theme.of(context).cardColor),
-              itemCount: _imageList.length,
-              pageController: _pageController,
+              itemCount: imageList.length,
+              pageController: pageController,
               builder: (BuildContext context, int index) {
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage('${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${_imageList[index]}'),
+                  imageProvider: NetworkImage('${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}/${imageList[index]}'),
                   initialScale: PhotoViewComputedScale.contained,
                   heroAttributes: PhotoViewHeroAttributes(tag: index.toString()),
                 );
               },
-              loadingBuilder: (context, event) => Center(child: Container(width: 20.0, height: 20.0, child: CircularProgressIndicator(
-                value: event == null ? 0 : event.cumulativeBytesLoaded / event.expectedTotalBytes,
+              loadingBuilder: (context, event) => Center(child: SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(
+                value: event == null ? 0 : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
               ))),
               onPageChanged: (int index) => storeController.setImageIndex(index, true),
             ),
@@ -48,47 +48,47 @@ class ImageViewerScreen extends StatelessWidget {
               left: 5, top: 0, bottom: 0,
               child: Container(
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
                   onTap: () {
                     if(storeController.imageIndex > 0) {
-                      _pageController.animateToPage(
+                      pageController.animateToPage(
                         storeController.imageIndex-1,
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.easeInOut,
                       );
                     }
                   },
-                  child: Icon(Icons.chevron_left_outlined, size: 40),
+                  child: const Icon(Icons.chevron_left_outlined, size: 40),
                 ),
               ),
-            ) : SizedBox(),
+            ) : const SizedBox(),
 
-            storeController.imageIndex != _imageList.length-1 ? Positioned(
+            storeController.imageIndex != imageList.length-1 ? Positioned(
               right: 5, top: 0, bottom: 0,
               child: Container(
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
                   onTap: () {
-                    if(storeController.imageIndex < _imageList.length) {
-                      _pageController.animateToPage(
+                    if(storeController.imageIndex < imageList.length) {
+                      pageController.animateToPage(
                         storeController.imageIndex+1,
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.easeInOut,
                       );
                     }
                   },
-                  child: Icon(Icons.chevron_right_outlined, size: 40),
+                  child: const Icon(Icons.chevron_right_outlined, size: 40),
                 ),
               ),
-            ) : SizedBox(),
+            ) : const SizedBox(),
 
           ])),
 

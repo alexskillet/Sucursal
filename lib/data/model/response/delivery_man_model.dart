@@ -1,21 +1,21 @@
 class DeliveryManModel {
-  int id;
-  String fName;
-  String lName;
-  String phone;
-  String email;
-  String identityNumber;
-  String identityType;
-  List<String> identityImage;
-  String image;
-  bool status;
-  int active;
-  int earning;
-  String type;
-  int ordersCount;
-  double avgRating;
-  int ratingCount;
-  double cashInHands;
+  int? id;
+  String? fName;
+  String? lName;
+  String? phone;
+  String? email;
+  String? identityNumber;
+  String? identityType;
+  List<String>? identityImage;
+  String? image;
+  bool? status;
+  int? active;
+  int? earning;
+  String? type;
+  int? ordersCount;
+  double? avgRating;
+  int? ratingCount;
+  double? cashInHands;
 
   DeliveryManModel(
       {this.id,
@@ -57,24 +57,24 @@ class DeliveryManModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['identity_number'] = this.identityNumber;
-    data['identity_type'] = this.identityType;
-    data['identity_image'] = this.identityImage;
-    data['image'] = this.image;
-    data['status'] = this.status;
-    data['active'] = this.active;
-    data['earning'] = this.earning;
-    data['type'] = this.type;
-    data['orders_count'] = this.ordersCount;
-    data['avg_rating'] = this.avgRating;
-    data['rating_count'] = this.ratingCount;
-    data['cash_in_hands'] = this.cashInHands;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['identity_number'] = identityNumber;
+    data['identity_type'] = identityType;
+    data['identity_image'] = identityImage;
+    data['image'] = image;
+    data['status'] = status;
+    data['active'] = active;
+    data['earning'] = earning;
+    data['type'] = type;
+    data['orders_count'] = ordersCount;
+    data['avg_rating'] = avgRating;
+    data['rating_count'] = ratingCount;
+    data['cash_in_hands'] = cashInHands;
     return data;
   }
 }

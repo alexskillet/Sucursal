@@ -2,42 +2,41 @@ import 'package:sixam_mart_store/controller/auth_controller.dart';
 import 'package:sixam_mart_store/data/api/api_checker.dart';
 import 'package:sixam_mart_store/data/model/response/config_model.dart';
 import 'package:sixam_mart_store/data/repository/splash_repo.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class SplashController extends GetxController implements GetxService {
   final SplashRepo splashRepo;
-  SplashController({@required this.splashRepo});
+  SplashController({required this.splashRepo});
 
-  ConfigModel _configModel;
-  DateTime _currentTime = DateTime.now();
+  ConfigModel? _configModel;
+  final DateTime _currentTime = DateTime.now();
   bool _firstTimeConnectionCheck = true;
-  int _moduleID;
-  String _moduleType;
-  Map<String, dynamic> _data = Map();
-  String _htmlText;
+  int? _moduleID;
+  String? _moduleType;
+  Map<String, dynamic>? _data = {};
+  String? _htmlText;
 
-  ConfigModel get configModel => _configModel;
+  ConfigModel? get configModel => _configModel;
   DateTime get currentTime => _currentTime;
   bool get firstTimeConnectionCheck => _firstTimeConnectionCheck;
-  int get moduleID => _moduleID;
-  String get moduleType => _moduleType;
-  String get htmlText => _htmlText;
+  int? get moduleID => _moduleID;
+  String? get moduleType => _moduleType;
+  String? get htmlText => _htmlText;
 
   Future<bool> getConfigData() async {
     Response response = await splashRepo.getConfigData();
-    bool _isSuccess = false;
+    bool isSuccess = false;
     if(response.statusCode == 200) {
       _data = response.body;
       _configModel = ConfigModel.fromJson(response.body);
-      _isSuccess = true;
+      isSuccess = true;
     }else {
       ApiChecker.checkApi(response);
-      _isSuccess = false;
+      isSuccess = false;
     }
     update();
-    return _isSuccess;
+    return isSuccess;
   }
 
   Future<bool> initSharedData() {
@@ -57,14 +56,14 @@ class SplashController extends GetxController implements GetxService {
   }
 
   bool isRestaurantClosed() {
-    DateTime _open = DateFormat('hh:mm').parse('');
-    DateTime _close = DateFormat('hh:mm').parse('');
-    DateTime _openTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, _open.hour, _open.minute);
-    DateTime _closeTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, _close.hour, _close.minute);
-    if(_closeTime.isBefore(_openTime)) {
-      _closeTime = _closeTime.add(Duration(days: 1));
+    DateTime open = DateFormat('hh:mm').parse('');
+    DateTime close = DateFormat('hh:mm').parse('');
+    DateTime openTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, open.hour, open.minute);
+    DateTime closeTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, close.hour, close.minute);
+    if(closeTime.isBefore(openTime)) {
+      closeTime = closeTime.add(const Duration(days: 1));
     }
-    if(_currentTime.isAfter(_openTime) && _currentTime.isBefore(_closeTime)) {
+    if(_currentTime.isAfter(openTime) && _currentTime.isBefore(closeTime)) {
       return false;
     }else {
       return true;
@@ -75,33 +74,33 @@ class SplashController extends GetxController implements GetxService {
     _firstTimeConnectionCheck = isChecked;
   }
 
-  Future<void> setModule(int moduleID, String moduleType) async {
+  Future<void> setModule(int? moduleID, String? moduleType) async {
     _moduleID = moduleID;
     _moduleType = moduleType;
     if(moduleType != null) {
-      _configModel.moduleConfig.module = Module.fromJson(_data['module_config'][moduleType]);
+      _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][moduleType]);
     }
     update();
   }
 
-  Module getModuleConfig(String moduleType) {
-    Module _module = Module.fromJson(_data['module_config'][moduleType]);
+  Module getModuleConfig(String? moduleType) {
+    Module module = Module.fromJson(_data!['module_config'][moduleType]);
     if(moduleType == 'food') {
-      _module.newVariation = true;
+      module.newVariation = true;
     }else {
-      _module.newVariation = false;
+      module.newVariation = false;
     }
-    return _module;
+    return module;
   }
 
   Module getStoreModuleConfig() {
-    Module _module = Module.fromJson(_data['module_config'][Get.find<AuthController>().profileModel.stores.first.module.moduleType]);
-    if(Get.find<AuthController>().profileModel.stores.first.module.moduleType == 'food') {
-      _module.newVariation = true;
+    Module module = Module.fromJson(_data!['module_config'][Get.find<AuthController>().profileModel!.stores!.first.module!.moduleType]);
+    if(Get.find<AuthController>().profileModel!.stores!.first.module!.moduleType == 'food') {
+      module.newVariation = true;
     }else {
-      _module.newVariation = false;
+      module.newVariation = false;
     }
-    return _module;
+    return module;
   }
 
   Future<void> getHtmlText(bool isPrivacyPolicy) async {
@@ -109,8 +108,8 @@ class SplashController extends GetxController implements GetxService {
     Response response = await splashRepo.getHtmlText(isPrivacyPolicy);
     if (response.statusCode == 200) {
       _htmlText = response.body;
-      if(_htmlText != null && _htmlText.isNotEmpty) {
-        _htmlText = _htmlText.replaceAll('href=', 'target="_blank" href=');
+      if(_htmlText != null && _htmlText!.isNotEmpty) {
+        _htmlText = _htmlText!.replaceAll('href=', 'target="_blank" href=');
       }else {
         _htmlText = '';
       }

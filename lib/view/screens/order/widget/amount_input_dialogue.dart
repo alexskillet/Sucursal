@@ -9,8 +9,8 @@ import 'package:sixam_mart_store/view/base/my_text_field.dart';
 class AmountInputDialogue extends StatefulWidget {
   final int orderId;
   final bool isItemPrice;
-  final double amount;
-  AmountInputDialogue({@required this.orderId, @required this.isItemPrice, @required this.amount});
+  final double? amount;
+  const AmountInputDialogue({Key? key, required this.orderId, required this.isItemPrice, required this.amount}) : super(key: key);
 
   @override
   State<AmountInputDialogue> createState() => _AmountInputDialogueState();
@@ -29,21 +29,21 @@ class _AmountInputDialogueState extends State<AmountInputDialogue> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL)),
-      insetPadding: EdgeInsets.all(30),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+      insetPadding: const EdgeInsets.all(30),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: SizedBox(width: 500, child: Padding(
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
 
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
             child: Text(
               widget.isItemPrice ? 'update_order_amount'.tr : 'update_discount_amount'.tr, textAlign: TextAlign.center,
-              style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Colors.red),
+              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Colors.red),
             ),
           ),
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_LARGE),
+          const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
           MyTextField(
             hintText: widget.isItemPrice ? 'order_amount'.tr : 'discount_amount'.tr,
@@ -53,7 +53,7 @@ class _AmountInputDialogueState extends State<AmountInputDialogue> {
             isAmount: true,
             amountIcon: true,
           ),
-          SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
 
           GetBuilder<OrderController>(
             builder: (orderController) {
@@ -62,7 +62,7 @@ class _AmountInputDialogueState extends State<AmountInputDialogue> {
                 onPressed: (){
                   orderController.updateOrderAmount(widget.orderId, _amountController.text.trim(), widget.isItemPrice);
                 },
-              ) : CircularProgressIndicator();
+              ) : const CircularProgressIndicator();
             }
           )
 

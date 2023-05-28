@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 class HtmlViewerScreen extends StatefulWidget {
   final bool isPrivacyPolicy;
-  HtmlViewerScreen({@required this.isPrivacyPolicy});
+  const HtmlViewerScreen({Key? key, required this.isPrivacyPolicy}) : super(key: key);
 
   @override
   State<HtmlViewerScreen> createState() => _HtmlViewerScreenState();
@@ -34,20 +34,20 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
           width: MediaQuery.of(context).size.width,
           color: Theme.of(context).cardColor,
           child: splashController.htmlText != null ? SingleChildScrollView(
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+            physics: const BouncingScrollPhysics(),
             child: Html(
               data: splashController.htmlText ?? '', shrinkWrap: true,
               key: Key(widget.isPrivacyPolicy ? 'privacy_policy' : 'terms_condition'),
-              onLinkTap: (String url, RenderContext context, Map<String, String> attributes, element) {
-                if(url.startsWith('www.')) {
-                  url = 'https://' + url;
+              onLinkTap: (String? url, RenderContext context, Map<String, String> attributes, element) {
+                if(url!.startsWith('www.')) {
+                  url = 'https://$url';
                 }
-                print('Redirect to url: $url');
+                debugPrint('Redirect to url: $url');
                 launchUrlString(url, mode: LaunchMode.externalApplication);
               },
             ),
-          ) : Center(child: CircularProgressIndicator()),
+          ) : const Center(child: CircularProgressIndicator()),
         );
       }),
     );

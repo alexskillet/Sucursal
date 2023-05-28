@@ -21,10 +21,10 @@ import 'package:sixam_mart_store/util/styles.dart';
 import 'package:sixam_mart_store/view/base/custom_button.dart';
 
 class InVoicePrintScreen extends StatefulWidget {
-  final OrderModel order;
-  final List<OrderDetailsModel> orderDetails;
-  final bool isPrescriptionOrder;
-  const InVoicePrintScreen({@required this.order, @required this.orderDetails, this.isPrescriptionOrder = false});
+  final OrderModel? order;
+  final List<OrderDetailsModel>? orderDetails;
+  final bool? isPrescriptionOrder;
+  const InVoicePrintScreen({Key? key, required this.order, required this.orderDetails, this.isPrescriptionOrder = false}) : super(key: key);
 
   @override
   State<InVoicePrintScreen> createState() => _InVoicePrintScreenState();
@@ -32,19 +32,19 @@ class InVoicePrintScreen extends StatefulWidget {
 
 class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
   PrinterType _defaultPrinterType = PrinterType.bluetooth;
-  bool _isBle = GetPlatform.isIOS;
-  PrinterManager _printerManager = PrinterManager.instance;
-  List<BluetoothPrinter> _devices = <BluetoothPrinter>[];
-  StreamSubscription<PrinterDevice> _subscription;
-  StreamSubscription<BTStatus> _subscriptionBtStatus;
-  BTStatus _currentStatus = BTStatus.none;
-  List<int> pendingTask;
+  final bool _isBle = GetPlatform.isIOS;
+  final PrinterManager _printerManager = PrinterManager.instance;
+  final List<BluetoothPrinter> _devices = <BluetoothPrinter>[];
+  StreamSubscription<PrinterDevice>? _subscription;
+  StreamSubscription<BTStatus>? _subscriptionBtStatus;
+  BTStatus currentStatus = BTStatus.none;
+  List<int>? pendingTask;
   String _ipAddress = '';
   String _port = '9100';
   bool _paper80MM = true;
   final TextEditingController _ipController = TextEditingController();
   final TextEditingController _portController = TextEditingController();
-  BluetoothPrinter _selectedPrinter;
+  BluetoothPrinter? _selectedPrinter;
   bool _searchingMode = true;
 
   @override
@@ -57,11 +57,11 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
     // subscription to listen change status of bluetooth connection
     _subscriptionBtStatus = PrinterManager.instance.stateBluetooth.listen((status) {
       log(' ----------------- status bt $status ------------------ ');
-      _currentStatus = status;
+      currentStatus = status;
 
       if (status == BTStatus.connected && pendingTask != null) {
         Future.delayed(const Duration(milliseconds: 1000), () {
-          PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask);
+          PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask!);
           pendingTask = null;
         });
       }
@@ -108,20 +108,20 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
 
   void _setIpAddress(String value) {
     _ipAddress = value;
-    BluetoothPrinter _device = BluetoothPrinter(
+    BluetoothPrinter device = BluetoothPrinter(
       deviceName: value,
       address: _ipAddress,
       port: _port,
       typePrinter: PrinterType.network,
       state: false,
     );
-    _selectDevice(_device);
+    _selectDevice(device);
   }
 
   void _selectDevice(BluetoothPrinter device) async {
     if (_selectedPrinter != null) {
-      if ((device.address != _selectedPrinter.address) || (device.typePrinter == PrinterType.usb && _selectedPrinter.vendorId != device.vendorId)) {
-        await PrinterManager.instance.disconnect(type: _selectedPrinter.typePrinter);
+      if ((device.address != _selectedPrinter!.address) || (device.typePrinter == PrinterType.usb && _selectedPrinter!.vendorId != device.vendorId)) {
+        await PrinterManager.instance.disconnect(type: _selectedPrinter!.typePrinter);
       }
     }
 
@@ -131,17 +131,17 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
 
   Future _printReceipt(i.Image image) async {
     i.Image resized = i.copyResize(image, width: _paper80MM ? 500 : 365);
-    CapabilityProfile _profile = await CapabilityProfile.load();
-    Generator _generator = Generator(_paper80MM ? PaperSize.mm80 : PaperSize.mm58, _profile);
-    List<int> _bytes = [];
-    _bytes += _generator.image(resized);
-    _printEscPos(_bytes, _generator);
+    CapabilityProfile profile = await CapabilityProfile.load();
+    Generator generator = Generator(_paper80MM ? PaperSize.mm80 : PaperSize.mm58, profile);
+    List<int> bytes = [];
+    bytes += generator.image(resized);
+    _printEscPos(bytes, generator);
   }
 
   /// print ticket
   void _printEscPos(List<int> bytes, Generator generator) async {
     if (_selectedPrinter == null) return;
-    var bluetoothPrinter = _selectedPrinter;
+    var bluetoothPrinter = _selectedPrinter!;
 
     switch (bluetoothPrinter.typePrinter) {
       case PrinterType.usb:
@@ -162,8 +162,8 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
           type: bluetoothPrinter.typePrinter,
           model: BluetoothPrinterInput(
             name: bluetoothPrinter.deviceName,
-            address: bluetoothPrinter.address,
-            isBle: bluetoothPrinter.isBle ?? false,
+            address: bluetoothPrinter.address!,
+            isBle: bluetoothPrinter.isBle,
           ),
         );
         pendingTask = null;
@@ -174,7 +174,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
         bytes += generator.cut();
         await _printerManager.connect(
           type: bluetoothPrinter.typePrinter,
-          model: TcpPrinterInput(ipAddress: bluetoothPrinter.address),
+          model: TcpPrinterInput(ipAddress: bluetoothPrinter.address!),
         );
         break;
       default:
@@ -185,7 +185,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
           _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
           pendingTask = null;
         });
-      }catch(e) {}
+      }catch(_) {}
     } else {
       _printerManager.send(type: bluetoothPrinter.typePrinter, bytes: bytes);
     }
@@ -194,7 +194,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
   @override
   Widget build(BuildContext context) {
     return _searchingMode ? SingleChildScrollView(
-      padding: EdgeInsets.all(Dimensions.FONT_SIZE_LARGE),
+      padding: const EdgeInsets.all(Dimensions.fontSizeLarge),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -207,7 +207,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
               dense: true,
               contentPadding: EdgeInsets.zero,
               value: true,
-              onChanged: (bool value) {
+              onChanged: (bool? value) {
                 _paper80MM = true;
                 setState(() {});
               },
@@ -218,21 +218,21 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
               contentPadding: EdgeInsets.zero,
               dense: true,
               value: false,
-              onChanged: (bool value) {
+              onChanged: (bool? value) {
                 _paper80MM = false;
                 setState(() {});
               },
             )),
           ]),
-          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
 
           ListView.builder(
             itemCount: _devices.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return Padding(
-                padding: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
+                padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                 child: InkWell(
                   onTap: () {
                     _selectDevice(_devices[index]);
@@ -246,22 +246,22 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
 
                       Text('${_devices[index].deviceName}'),
 
-                      Platform.isAndroid && _defaultPrinterType == PrinterType.usb ? null : Visibility(
+                      Platform.isAndroid && _defaultPrinterType == PrinterType.usb ? const SizedBox() : Visibility(
                         visible: !Platform.isWindows,
                         child: Text("${_devices[index].address}"),
                       ),
 
-                      index != _devices.length-1 ? Divider(color: Theme.of(context).disabledColor) : SizedBox(),
+                      index != _devices.length-1 ? Divider(color: Theme.of(context).disabledColor) : const SizedBox(),
 
                     ]),
 
                     (_selectedPrinter != null && ((_devices[index].typePrinter == PrinterType.usb && Platform.isWindows
-                        ? _devices[index].deviceName == _selectedPrinter.deviceName
-                        : _devices[index].vendorId != null && _selectedPrinter.vendorId == _devices[index].vendorId) ||
-                        (_devices[index].address != null && _selectedPrinter.address == _devices[index].address))) ? Positioned(
+                        ? _devices[index].deviceName == _selectedPrinter!.deviceName
+                        : _devices[index].vendorId != null && _selectedPrinter!.vendorId == _devices[index].vendorId) ||
+                        (_devices[index].address != null && _selectedPrinter!.address == _devices[index].address))) ? const Positioned(
                       top: 5, right: 5,
                       child: Icon(Icons.check, color: Colors.green),
-                    ) : SizedBox(),
+                    ) : const SizedBox(),
 
                   ]),
                 ),
@@ -277,7 +277,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
                 keyboardType: const TextInputType.numberWithOptions(signed: true),
                 decoration: InputDecoration(
                   label: Text('ip_address'.tr),
-                  prefixIcon: Icon(Icons.wifi, size: 24),
+                  prefixIcon: const Icon(Icons.wifi, size: 24),
                 ),
                 onChanged: _setIpAddress,
               ),
@@ -292,7 +292,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
                 keyboardType: const TextInputType.numberWithOptions(signed: true),
                 decoration: InputDecoration(
                   label: Text('port'.tr),
-                  prefixIcon: Icon(Icons.numbers_outlined, size: 24),
+                  prefixIcon: const Icon(Icons.numbers_outlined, size: 24),
                 ),
                 onChanged: _setPort,
               ),
@@ -310,7 +310,7 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
                   });
                 },
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 50),
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 50),
                   child: Text("print_ticket".tr, textAlign: TextAlign.center),
                 ),
               ),
@@ -320,180 +320,180 @@ class _InVoicePrintScreenState extends State<InVoicePrintScreen> {
       ),
     ) : InvoiceDialog(
       order: widget.order, orderDetails: widget.orderDetails, isPrescriptionOrder: widget.isPrescriptionOrder,
-      onPrint: (i.Image image) => _printReceipt(image), paper80MM: _paper80MM,
+      onPrint: (i.Image? image) => _printReceipt(image!), paper80MM: _paper80MM,
     );
   }
 }
 
 class InvoiceDialog extends StatelessWidget {
-  final OrderModel order;
-  final List<OrderDetailsModel> orderDetails;
-  final Function(i.Image image) onPrint;
-  final bool isPrescriptionOrder;
+  final OrderModel? order;
+  final List<OrderDetailsModel>? orderDetails;
+  final Function(i.Image? image) onPrint;
+  final bool? isPrescriptionOrder;
   final bool paper80MM;
-  const InvoiceDialog({@required this.order, @required this.orderDetails, @required this.onPrint, @required this.isPrescriptionOrder, @required this.paper80MM});
+  const InvoiceDialog({Key? key, required this.order, required this.orderDetails, required this.onPrint, required this.isPrescriptionOrder, required this.paper80MM}) : super(key: key);
 
   String _priceDecimal(double price) {
-    return price.toStringAsFixed(Get.find<SplashController>().configModel.digitAfterDecimalPoint);
+    return price.toStringAsFixed(Get.find<SplashController>().configModel!.digitAfterDecimalPoint!);
   }
 
   @override
   Widget build(BuildContext context) {
-    double _fontSize = window.physicalSize.width > 1000 ? Dimensions.FONT_SIZE_EXTRA_SMALL : Dimensions.PADDING_SIZE_SMALL;
-    ScreenshotController _controller = ScreenshotController();
-    Store _store = Get.find<AuthController>().profileModel.stores[0];
+    double fontSize = window.physicalSize.width > 1000 ? Dimensions.fontSizeExtraSmall : Dimensions.paddingSizeSmall;
+    ScreenshotController controller = ScreenshotController();
+    Store store = Get.find<AuthController>().profileModel!.stores![0];
 
-    double _itemsPrice = 0;
-    double _addOns = 0;
+    double itemsPrice = 0;
+    double addOns = 0;
 
-    if(isPrescriptionOrder){
-      double orderAmount = order.orderAmount ?? 0;
-      double discount = order.storeDiscountAmount ?? 0;
-      double tax = order.totalTaxAmount ?? 0;
-      double deliveryCharge = order.deliveryCharge ?? 0;
-      _itemsPrice = (orderAmount + discount) - (tax + deliveryCharge );
+    if(isPrescriptionOrder!){
+      double orderAmount = order!.orderAmount ?? 0;
+      double discount = order!.storeDiscountAmount ?? 0;
+      double tax = order!.totalTaxAmount ?? 0;
+      double deliveryCharge = order!.deliveryCharge ?? 0;
+      itemsPrice = (orderAmount + discount) - (tax + deliveryCharge );
     }
-    for(OrderDetailsModel orderDetails in orderDetails) {
-      for(AddOn addOn in orderDetails.addOns) {
-        _addOns = _addOns + (addOn.price * addOn.quantity);
+    for(OrderDetailsModel orderDetails in orderDetails!) {
+      for(AddOn addOn in orderDetails.addOns!) {
+        addOns = addOns + (addOn.price! * addOn.quantity!);
       }
-      if(!isPrescriptionOrder) {
-        _itemsPrice = _itemsPrice + (orderDetails.price * orderDetails.quantity);
+      if(!isPrescriptionOrder!) {
+        itemsPrice = itemsPrice + (orderDetails.price! * orderDetails.quantity!);
       }
     }
 
     return OrientationBuilder(builder: (context, orientation) {
-      double _fixedSize = window.physicalSize.width / (orientation == Orientation.portrait ? 720 : 1400);
-      double _printWidth = (paper80MM ? 280 : 185) / _fixedSize;
+      double fixedSize = window.physicalSize.width / (orientation == Orientation.portrait ? 720 : 1400);
+      double printWidth = (paper80MM ? 280 : 185) / fixedSize;
 
       return SingleChildScrollView(
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
 
           Screenshot(
-            controller: _controller,
+            controller: controller,
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5)],
+                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, spreadRadius: 1, blurRadius: 5)],
               ),
-              width: _printWidth,
-              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+              width: printWidth,
+              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
 
-                Text(_store.name, style: robotoMedium.copyWith(fontSize: _fontSize)),
-                Text(_store.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                Text(_store.phone, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                Text(_store.email, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                SizedBox(height: 10),
+                Text(store.name!, style: robotoMedium.copyWith(fontSize: fontSize)),
+                Text(store.address!, style: robotoRegular.copyWith(fontSize: fontSize)),
+                Text(store.phone!, style: robotoRegular.copyWith(fontSize: fontSize)),
+                Text(store.email!, style: robotoRegular.copyWith(fontSize: fontSize)),
+                const SizedBox(height: 10),
 
                 Row(children: [
-                  Text('order_id'.tr + ':', style: robotoRegular.copyWith(fontSize: _fontSize)),
-                  SizedBox(width: 5),
-                  Expanded(child: Text(order.id.toString(), style: robotoMedium.copyWith(fontSize: _fontSize))),
-                  Text(DateConverter.dateTimeStringToMonthAndTime(order.createdAt), style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  Text('${'order_id'.tr}:', style: robotoRegular.copyWith(fontSize: fontSize)),
+                  const SizedBox(width: 5),
+                  Expanded(child: Text(order!.id.toString(), style: robotoMedium.copyWith(fontSize: fontSize))),
+                  Text(DateConverter.dateTimeStringToMonthAndTime(order!.createdAt!), style: robotoRegular.copyWith(fontSize: fontSize)),
                 ]),
-                order.scheduled == 1 ? Text(
-                  '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(order.scheduleAt)}',
-                  style: robotoRegular.copyWith(fontSize: _fontSize),
-                ) : SizedBox(),
-                SizedBox(height: 5),
+                order!.scheduled == 1 ? Text(
+                  '${'scheduled_order_time'.tr} ${DateConverter.dateTimeStringToDateTime(order!.scheduleAt!)}',
+                  style: robotoRegular.copyWith(fontSize: fontSize),
+                ) : const SizedBox(),
+                const SizedBox(height: 5),
 
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(order.orderType.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                  Text(order.paymentMethod.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                  Text(order!.orderType!.tr, style: robotoRegular.copyWith(fontSize: fontSize)),
+                  Text(order!.paymentMethod!.tr, style: robotoRegular.copyWith(fontSize: fontSize)),
                 ]),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
 
                 Align(
                   alignment: Get.find<LocalizationController>().isLtr ? Alignment.topLeft : Alignment.topRight,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('${order.customer.fName} ${order.customer.lName}', style: robotoRegular.copyWith(fontSize: _fontSize)),
-                    Text(order.deliveryAddress.address, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                    Text(order.deliveryAddress.contactPersonNumber, style: robotoRegular.copyWith(fontSize: _fontSize)),
+                    Text('${order!.customer!.fName} ${order!.customer!.lName}', style: robotoRegular.copyWith(fontSize: fontSize)),
+                    Text(order!.deliveryAddress!.address!, style: robotoRegular.copyWith(fontSize: fontSize)),
+                    Text(order!.deliveryAddress!.contactPersonNumber!, style: robotoRegular.copyWith(fontSize: fontSize)),
                   ]),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 Row(children: [
-                  Expanded(flex: 1, child: Text('sl'.tr.toUpperCase(), style: robotoMedium.copyWith(fontSize: _fontSize))),
-                  Expanded(flex: 6, child: Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: _fontSize))),
+                  Expanded(flex: 1, child: Text('sl'.tr.toUpperCase(), style: robotoMedium.copyWith(fontSize: fontSize))),
+                  Expanded(flex: 6, child: Text('item_info'.tr, style: robotoMedium.copyWith(fontSize: fontSize))),
                   Expanded(flex: 1, child: Text(
-                    'qty'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                    'qty'.tr, style: robotoMedium.copyWith(fontSize: fontSize),
                     textAlign: TextAlign.center,
                   )),
                   Expanded(flex: 2, child: Text(
-                    'price'.tr, style: robotoMedium.copyWith(fontSize: _fontSize),
+                    'price'.tr, style: robotoMedium.copyWith(fontSize: fontSize),
                     textAlign: TextAlign.right,
                   )),
                 ]),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
 
                 ListView.builder(
-                  itemCount: orderDetails.length,
+                  itemCount: orderDetails!.length,
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     return Row(children: [
                       Expanded(flex: 1, child: Text(
                         (index+1).toString(),
-                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                        style: robotoRegular.copyWith(fontSize: fontSize),
                       )),
                       Expanded(flex: 6, child: Text(
-                        orderDetails[index].itemDetails.name,
-                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                        orderDetails![index].itemDetails!.name!,
+                        style: robotoRegular.copyWith(fontSize: fontSize),
                       )),
                       Expanded(flex: 1, child: Text(
-                        orderDetails[index].quantity.toString(), textAlign: TextAlign.center,
-                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                        orderDetails![index].quantity.toString(), textAlign: TextAlign.center,
+                        style: robotoRegular.copyWith(fontSize: fontSize),
                       )),
                       Expanded(flex: 2, child: Text(
-                        _priceDecimal(orderDetails[index].price), textAlign: TextAlign.right,
-                        style: robotoRegular.copyWith(fontSize: _fontSize),
+                        _priceDecimal(orderDetails![index].price!), textAlign: TextAlign.right,
+                        style: robotoRegular.copyWith(fontSize: fontSize),
                       )),
                     ]);
                   },
                 ),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
 
-                PriceWidget(title: 'item_price'.tr, value: _priceDecimal(_itemsPrice), fontSize: _fontSize),
-                SizedBox(height: 5),
-                _addOns > 0 ? PriceWidget(title: 'add_ons'.tr, value: _priceDecimal(_addOns), fontSize: _fontSize) : SizedBox(),
-                SizedBox(height: _addOns > 0 ? 5 : 0),
-                PriceWidget(title: 'subtotal'.tr, value: _priceDecimal(_itemsPrice + _addOns), fontSize: _fontSize),
-                SizedBox(height: 5),
-                PriceWidget(title: 'discount'.tr, value: _priceDecimal(order.storeDiscountAmount), fontSize: _fontSize),
-                SizedBox(height: 5),
-                PriceWidget(title: 'coupon_discount'.tr, value: _priceDecimal(order.couponDiscountAmount), fontSize: _fontSize),
-                SizedBox(height: 5),
-                PriceWidget(title: 'vat_tax'.tr, value: _priceDecimal(order.totalTaxAmount), fontSize: _fontSize),
-                SizedBox(height: 5),
-                PriceWidget(title: 'delivery_fee'.tr, value: _priceDecimal(order.deliveryCharge), fontSize: _fontSize),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
-                PriceWidget(title: 'total_amount'.tr, value: _priceDecimal(order.orderAmount), fontSize: _fontSize+2),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                PriceWidget(title: 'item_price'.tr, value: _priceDecimal(itemsPrice), fontSize: fontSize),
+                const SizedBox(height: 5),
+                addOns > 0 ? PriceWidget(title: 'add_ons'.tr, value: _priceDecimal(addOns), fontSize: fontSize) : const SizedBox(),
+                SizedBox(height: addOns > 0 ? 5 : 0),
+                PriceWidget(title: 'subtotal'.tr, value: _priceDecimal(itemsPrice + addOns), fontSize: fontSize),
+                const SizedBox(height: 5),
+                PriceWidget(title: 'discount'.tr, value: _priceDecimal(order!.storeDiscountAmount!), fontSize: fontSize),
+                const SizedBox(height: 5),
+                PriceWidget(title: 'coupon_discount'.tr, value: _priceDecimal(order!.couponDiscountAmount!), fontSize: fontSize),
+                const SizedBox(height: 5),
+                PriceWidget(title: 'vat_tax'.tr, value: _priceDecimal(order!.totalTaxAmount!), fontSize: fontSize),
+                const SizedBox(height: 5),
+                PriceWidget(title: 'delivery_fee'.tr, value: _priceDecimal(order!.deliveryCharge!), fontSize: fontSize),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
+                PriceWidget(title: 'total_amount'.tr, value: _priceDecimal(order!.orderAmount!), fontSize: fontSize+2),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
 
-                Text('thank_you'.tr, style: robotoRegular.copyWith(fontSize: _fontSize)),
-                Divider(color: Theme.of(context).textTheme.bodyLarge.color, thickness: 1),
+                Text('thank_you'.tr, style: robotoRegular.copyWith(fontSize: fontSize)),
+                Divider(color: Theme.of(context).textTheme.bodyLarge!.color, thickness: 1),
 
                 Text(
-                  '${Get.find<SplashController>().configModel.businessName}. ${Get.find<SplashController>().configModel.footerText}',
-                  style: robotoRegular.copyWith(fontSize: _fontSize),
+                  '${Get.find<SplashController>().configModel!.businessName}. ${Get.find<SplashController>().configModel!.footerText}',
+                  style: robotoRegular.copyWith(fontSize: fontSize),
                 ),
 
               ]),
             ),
           ),
-          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
 
           CustomButton(buttonText: 'print_invoice'.tr, height: 40, onPressed: () {
-            _controller.capture(delay: const Duration(milliseconds: 10)).then((capturedImage) async {
+            controller.capture(delay: const Duration(milliseconds: 10)).then((capturedImage) async {
               Get.back();
-              onPrint(i.decodeImage(capturedImage));
+              onPrint(i.decodeImage(capturedImage!));
             }).catchError((onError) {
-              print(onError);
+              debugPrint(onError);
             });
           }),
 
@@ -508,7 +508,7 @@ class PriceWidget extends StatelessWidget {
   final String title;
   final String value;
   final double fontSize;
-  const PriceWidget({@required this.title, @required this.value, @required this.fontSize});
+  const PriceWidget({Key? key, required this.title, required this.value, required this.fontSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

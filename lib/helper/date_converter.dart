@@ -64,25 +64,25 @@ class DateConverter {
     return DateFormat('yyyy-MM-dd').format(dateTime);
   }
 
-  static bool isAvailable(String start, String end, {DateTime time, bool isoTime = false}) {
-    DateTime _currentTime;
+  static bool isAvailable(String? start, String? end, {DateTime? time, bool isoTime = false}) {
+    DateTime currentTime;
     if(time != null) {
-      _currentTime = time;
+      currentTime = time;
     }else {
-      _currentTime = Get.find<SplashController>().currentTime;
+      currentTime = Get.find<SplashController>().currentTime;
     }
-    DateTime _start = start != null ? isoTime ? isoStringToLocalDate(start) : DateFormat('HH:mm').parse(start) : DateTime(_currentTime.year);
-    DateTime _end = end != null ? isoTime ? isoStringToLocalDate(end) : DateFormat('HH:mm').parse(end) : DateTime(_currentTime.year, _currentTime.month, _currentTime.day, 23, 59);
-    DateTime _startTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, _start.hour, _start.minute, _start.second);
-    DateTime _endTime = DateTime(_currentTime.year, _currentTime.month, _currentTime.day, _end.hour, _end.minute, _end.second);
-    if(_endTime.isBefore(_startTime)) {
-      _endTime = _endTime.add(Duration(days: 1));
+    DateTime start0 = start != null ? isoTime ? isoStringToLocalDate(start) : DateFormat('HH:mm').parse(start) : DateTime(currentTime.year);
+    DateTime end0 = end != null ? isoTime ? isoStringToLocalDate(end) : DateFormat('HH:mm').parse(end) : DateTime(currentTime.year, currentTime.month, currentTime.day, 23, 59);
+    DateTime startTime = DateTime(currentTime.year, currentTime.month, currentTime.day, start0.hour, start0.minute, start0.second);
+    DateTime endTime = DateTime(currentTime.year, currentTime.month, currentTime.day, end0.hour, end0.minute, end0.second);
+    if(endTime.isBefore(startTime)) {
+      endTime = endTime.add(const Duration(days: 1));
     }
-    return _currentTime.isAfter(_startTime) && _currentTime.isBefore(_endTime);
+    return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
   }
 
   static String _timeFormatter() {
-    return Get.find<SplashController>().configModel.timeformat == '24' ? 'HH:mm' : 'hh:mm a';
+    return Get.find<SplashController>().configModel!.timeformat == '24' ? 'HH:mm' : 'hh:mm a';
   }
 
   static String localDateToIsoStringAMPM(DateTime dateTime) {

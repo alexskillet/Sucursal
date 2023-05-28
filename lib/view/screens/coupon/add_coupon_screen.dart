@@ -11,8 +11,8 @@ import 'package:sixam_mart_store/view/base/custom_button.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
 import 'package:sixam_mart_store/view/base/my_text_field.dart';
 class AddCouponScreen extends StatefulWidget {
-  final CouponBody coupon;
-  const AddCouponScreen({Key key, this.coupon}) : super(key: key);
+  final CouponBody? coupon;
+  const AddCouponScreen({Key? key, this.coupon}) : super(key: key);
 
   @override
   State<AddCouponScreen> createState() => _AddCouponScreenState();
@@ -38,33 +38,31 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
   void initState() {
     super.initState();
     if(widget.coupon != null){
-      _titleController.text = widget.coupon.title;
-      _codeController.text = widget.coupon.code;
-      _limitController.text = widget.coupon.limit.toString();
-      _startDateController.text = widget.coupon.startDate.toString();
-      _expireDateController.text = widget.coupon.expireDate.toString();
-      _discountController.text = widget.coupon.discount.toString();
-      _maxDiscountController.text = widget.coupon.maxDiscount.toString();
-      _minPurchaseController.text = widget.coupon.minPurchase.toString();
-      print('=====couponType=====${widget.coupon.couponType == 'default'}');
-      print('=====discountType=====${widget.coupon.discountType == 'percent'}');
-      Get.find<CouponController>().setCouponTypeIndex(widget.coupon.couponType == 'default' ? 0 : 1 , false);
-      Get.find<CouponController>().setDiscountTypeIndex(widget.coupon.discountType == 'percent' ? 0 : 1, false);
+      _titleController.text = widget.coupon!.title!;
+      _codeController.text = widget.coupon!.code!;
+      _limitController.text = widget.coupon!.limit.toString();
+      _startDateController.text = widget.coupon!.startDate.toString();
+      _expireDateController.text = widget.coupon!.expireDate.toString();
+      _discountController.text = widget.coupon!.discount.toString();
+      _maxDiscountController.text = widget.coupon!.maxDiscount.toString();
+      _minPurchaseController.text = widget.coupon!.minPurchase.toString();
+      Get.find<CouponController>().setCouponTypeIndex(widget.coupon!.couponType == 'default' ? 0 : 1 , false);
+      Get.find<CouponController>().setDiscountTypeIndex(widget.coupon!.discountType == 'percent' ? 0 : 1, false);
     }
   }
   @override
   Widget build(BuildContext context) {
-    bool _selfDelivery;
-    if(Get.find<AuthController>().profileModel != null && Get.find<AuthController>().profileModel.stores != null){
-      _selfDelivery = Get.find<AuthController>().profileModel.stores[0].selfDeliverySystem == 1;
+    late bool selfDelivery;
+    if(Get.find<AuthController>().profileModel != null && Get.find<AuthController>().profileModel!.stores != null){
+      selfDelivery = Get.find<AuthController>().profileModel!.stores![0].selfDeliverySystem == 1;
     }
-    if(!_selfDelivery){
+    if(!selfDelivery){
       Get.find<CouponController>().setCouponTypeIndex(0, false);
     }
     return Scaffold(
       appBar: CustomAppBar(title: widget.coupon != null ? 'update_coupon'.tr : 'add_coupon'.tr),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_SMALL),
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
         child: GetBuilder<CouponController>(
           builder: (couponController) {
             return Column(children: [
@@ -74,22 +72,22 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                 controller: _titleController,
                 nextFocus: _codeNode,
               ),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(children: [
-                _selfDelivery ? Expanded(
+                selfDelivery ? Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(
                       'coupon_type'.tr,
-                      style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                     ),
-                    SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                        boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 2, blurRadius: 5, offset: Offset(0, 5))],
+                        color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                        boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 2, blurRadius: 5, offset: const Offset(0, 5))],
                       ),
                       child: DropdownButton<String>(
                         value: couponController.couponTypeIndex == 0 ? 'default' : 'free_delivery',
@@ -103,12 +101,12 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                           couponController.setCouponTypeIndex(value == 'default' ? 0 : 1, true);
                         },
                         isExpanded: true,
-                        underline: SizedBox(),
+                        underline: const SizedBox(),
                       ),
                     ),
                   ]),
-                )  : SizedBox(),
-                SizedBox(width: _selfDelivery ? Dimensions.PADDING_SIZE_SMALL : 0),
+                )  : const SizedBox(),
+                SizedBox(width: selfDelivery ? Dimensions.paddingSizeSmall : 0),
 
                 Expanded(child: MyTextField(
                   hintText: 'code'.tr,
@@ -117,7 +115,7 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   nextFocus: _limitNode,
                 )),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(children: [
                 Expanded(child: MyTextField(
@@ -127,7 +125,7 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   nextFocus: _minNode,
                   isAmount: true,
                 )),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
 
                 Expanded(child: MyTextField(
                   hintText: 'min_purchase'.tr,
@@ -137,7 +135,7 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   nextFocus: _discountNode,
                 )),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(children: [
                 Expanded(child: MyTextField(
@@ -145,7 +143,7 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   hintText: 'start_date'.tr,
                   readOnly: true,
                   onTap: () async{
-                    DateTime pickedDate = await showDatePicker(
+                    DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
@@ -159,14 +157,14 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                     }
                   },
                 )),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
 
                 Expanded(child: MyTextField(
                   controller: _expireDateController,
                   hintText: 'expire_date'.tr,
                   readOnly: true,
                   onTap: () async{
-                    DateTime pickedDate = await showDatePicker(
+                    DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
@@ -181,7 +179,7 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   },
                 )),
               ]),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
 
               couponController.couponTypeIndex == 0 ? Row(children: [
                 Expanded(child: MyTextField(
@@ -191,19 +189,19 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   focusNode: _discountNode,
                   nextFocus: _maxDiscountNode,
                 )),
-                SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
 
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                     'discount_type'.tr,
-                    style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                   ),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
+                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                      boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 2, blurRadius: 5, offset: Offset(0, 5))],
+                      color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 2, blurRadius: 5, offset: const Offset(0, 5))],
                     ),
                     child: DropdownButton<String>(
                       value: couponController.discountTypeIndex == 0 ? 'percent' : 'amount',
@@ -217,12 +215,12 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                         couponController.setDiscountTypeIndex(value == 'percent' ? 0 : 1, true);
                       },
                       isExpanded: true,
-                      underline: SizedBox(),
+                      underline: const SizedBox(),
                     ),
                   ),
                 ])),
-              ]) : SizedBox(),
-              SizedBox(height: couponController.couponTypeIndex == 0 ? Dimensions.PADDING_SIZE_LARGE : 0),
+              ]) : const SizedBox(),
+              SizedBox(height: couponController.couponTypeIndex == 0 ? Dimensions.paddingSizeLarge : 0),
 
               couponController.couponTypeIndex == 0 && couponController.discountTypeIndex == 0 ?MyTextField(
                 hintText: 'max_discount'.tr,
@@ -230,8 +228,8 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                 isAmount: true,
                 focusNode: _maxDiscountNode,
                 inputAction: TextInputAction.done,
-              ) : SizedBox(),
-              SizedBox(height: 50),
+              ) : const SizedBox(),
+              const SizedBox(height: 50),
 
               !couponController.isLoading ? CustomButton(
                 buttonText: widget.coupon == null ? 'add'.tr : 'update'.tr,
@@ -256,20 +254,20 @@ class _AddCouponScreenState extends State<AddCouponScreen> {
                   }else {
                     if(widget.coupon == null){
                       couponController.addCoupon(title: title, code: code, startDate: startDate, expireDate: expireDate,
-                        couponType: couponController.couponTypeIndex == 0 ? 'default' : 'free_delivery', discount: /*couponController.discountTypeIndex == 1 ? null :*/ discount,
+                        couponType: couponController.couponTypeIndex == 0 ? 'default' : 'free_delivery', discount: couponController.discountTypeIndex == 1 ? '' : discount,
                         discountType: couponController.discountTypeIndex == 0 ? 'percent' : 'amount', limit: _limitController.text.trim(),
                         maxDiscount: _maxDiscountController.text.trim(), minPurches: _minPurchaseController.text.trim(),
                       );
                     }else{
-                      couponController.updateCoupon(couponId: widget.coupon.id.toString(), title: title, code: code, startDate: startDate, expireDate: expireDate,
-                        couponType: couponController.couponTypeIndex == 0 ? 'default' : 'free_delivery', discount: /*couponController.discountTypeIndex == 1 ? null :*/ discount,
+                      couponController.updateCoupon(couponId: widget.coupon!.id.toString(), title: title, code: code, startDate: startDate, expireDate: expireDate,
+                        couponType: couponController.couponTypeIndex == 0 ? 'default' : 'free_delivery', discount: couponController.discountTypeIndex == 1 ? '' : discount,
                         discountType: couponController.discountTypeIndex == 0 ? 'percent' : 'amount', limit: _limitController.text.trim(),
                         maxDiscount: _maxDiscountController.text.trim(), minPurches: _minPurchaseController.text.trim(),
                       );
                     }
                   }
                 },
-              ) : Center(child: CircularProgressIndicator()),
+              ) : const Center(child: CircularProgressIndicator()),
 
             ]);
           }

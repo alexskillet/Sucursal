@@ -14,12 +14,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isOwner;
+  late bool _isOwner;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       body: GetBuilder<AuthController>(builder: (authController) {
-        return authController.profileModel == null ? Center(child: CircularProgressIndicator()) : ProfileBgWidget(
+        return authController.profileModel == null ? const Center(child: CircularProgressIndicator()) : ProfileBgWidget(
           backButton: true,
           circularImage: Container(
             decoration: BoxDecoration(
@@ -46,38 +48,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
             alignment: Alignment.center,
             child: ClipOval(child: FadeInImage.assetNetwork(
               placeholder: Images.placeholder,
-              image: _isOwner ? '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}'
-                  '/${authController.profileModel != null ? authController.profileModel.image : ''}'
-                  : '${Get.find<SplashController>().configModel.baseUrls.vendorImageUrl}/${authController.profileModel.image}',
+              image: _isOwner ? '${Get.find<SplashController>().configModel!.baseUrls!.vendorImageUrl}'
+                  '/${authController.profileModel != null ? authController.profileModel!.image : ''}'
+                  : '${Get.find<SplashController>().configModel!.baseUrls!.vendorImageUrl}/${authController.profileModel!.image}',
               height: 100, width: 100, fit: BoxFit.cover,
               imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholder, height: 100, width: 100, fit: BoxFit.cover),
             )),
           ),
-          mainWidget: SingleChildScrollView(physics: BouncingScrollPhysics(), child: Center(child: Container(
+          mainWidget: SingleChildScrollView(physics: const BouncingScrollPhysics(), child: Center(child: Container(
             width: 1170, color: Theme.of(context).cardColor,
-            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
             child: Column(children: [
 
               _isOwner ? Text(
-                '${authController.profileModel.fName} ${authController.profileModel.lName}',
-                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                '${authController.profileModel!.fName} ${authController.profileModel!.lName}',
+                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
               ) : Text(
-                '${authController.profileModel.employeeInfo.fName} ${authController.profileModel.employeeInfo.lName}',
-                style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+                '${authController.profileModel!.employeeInfo!.fName} ${authController.profileModel!.employeeInfo!.lName}',
+                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               Row(children: [
-                _isOwner ? ProfileCard(title: 'since_joining'.tr, data: '${authController.profileModel.memberSinceDays} ${'days'.tr}') : SizedBox(),
-                SizedBox(width: Get.find<AuthController>().modulePermission.order && _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
-                Get.find<AuthController>().modulePermission.order ? ProfileCard(title: 'total_order'.tr, data: authController.profileModel.orderCount.toString()) : SizedBox(),
+                _isOwner ? ProfileCard(title: 'since_joining'.tr, data: '${authController.profileModel!.memberSinceDays} ${'days'.tr}') : const SizedBox(),
+                SizedBox(width: Get.find<AuthController>().modulePermission!.order! && _isOwner ? Dimensions.paddingSizeSmall : 0),
+                Get.find<AuthController>().modulePermission!.order! ? ProfileCard(title: 'total_order'.tr, data: authController.profileModel!.orderCount.toString()) : const SizedBox(),
               ]),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               SwitchButton(icon: Icons.dark_mode, title: 'dark_mode'.tr, isButtonActive: Get.isDarkMode, onTap: () {
                 Get.find<ThemeController>().toggleTheme();
               }),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
               SwitchButton(
                 icon: Icons.notifications, title: 'notification'.tr,
@@ -85,17 +87,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   authController.setNotificationActive(!authController.notification);
                 },
               ),
-              SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
               _isOwner ? SwitchButton(icon: Icons.lock, title: 'change_password'.tr, onTap: () {
                 Get.toNamed(RouteHelper.getResetPasswordRoute('', '', 'password-change'));
-              }) : SizedBox(),
-              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
+              }) : const SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.paddingSizeSmall : 0),
 
               _isOwner ? SwitchButton(icon: Icons.edit, title: 'edit_profile'.tr, onTap: () {
                 Get.toNamed(RouteHelper.getUpdateProfileRoute());
-              }) : SizedBox(),
-              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_SMALL : 0),
+              }) : const SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.paddingSizeSmall : 0),
 
               _isOwner ? SwitchButton(
                 icon: Icons.delete, title: 'delete_account'.tr,
@@ -105,13 +107,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onYesPressed: () => authController.removeVendor()),
                       useSafeArea: false);
                 },
-              ) : SizedBox(),
-              SizedBox(height: _isOwner ? Dimensions.PADDING_SIZE_LARGE : 0),
+              ) : const SizedBox(),
+              SizedBox(height: _isOwner ? Dimensions.paddingSizeLarge : 0),
 
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('${'version'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),
-                SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                Text(AppConstants.APP_VERSION.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL)),
+                Text('${'version'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall)),
+                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                Text(AppConstants.appVersion.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall)),
               ]),
 
             ]),

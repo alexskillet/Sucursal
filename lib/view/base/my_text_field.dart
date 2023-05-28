@@ -7,28 +7,28 @@ import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final FocusNode nextFocus;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final FocusNode? nextFocus;
   final TextInputType inputType;
   final TextInputAction inputAction;
   final int maxLines;
   final bool isPassword;
-  final Function onTap;
-  final Function onChanged;
-  final Function onSubmit;
-  final bool isEnabled;
+  final Function? onTap;
+  final Function? onChanged;
+  final Function? onSubmit;
+  final bool? isEnabled;
   final TextCapitalization capitalization;
-  final Color fillColor;
+  final Color? fillColor;
   final bool isAmount;
   final bool isNumber;
   final bool amountIcon;
   final bool title;
-  final Function onComplete;
+  final Function? onComplete;
   final bool readOnly;
 
-  MyTextField(
-      {this.hintText = '',
+  const MyTextField(
+      {Key? key, this.hintText = '',
         this.controller,
         this.focusNode,
         this.nextFocus,
@@ -48,13 +48,13 @@ class MyTextField extends StatefulWidget {
         this.title = true,
         this.onComplete,
         this.readOnly = false,
-      });
+      }) : super(key: key);
 
   @override
-  _MyTextFieldState createState() => _MyTextFieldState();
+  MyTextFieldState createState() => MyTextFieldState();
 }
 
-class _MyTextFieldState extends State<MyTextField> {
+class MyTextFieldState extends State<MyTextField> {
   bool _obscureText = true;
 
   @override
@@ -64,21 +64,21 @@ class _MyTextFieldState extends State<MyTextField> {
       widget.title ? Row(children: [
         Text(
           widget.hintText,
-          style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+          style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
         ),
-        SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-        widget.isEnabled ? SizedBox() : Text('(${'non_changeable'.tr})', style: robotoRegular.copyWith(
-          fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL, color: Theme.of(context).colorScheme.error,
+        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+        widget.isEnabled! ? const SizedBox() : Text('(${'non_changeable'.tr})', style: robotoRegular.copyWith(
+          fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).colorScheme.error,
         )),
-      ]) : SizedBox(),
-      SizedBox(height: widget.title ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+      ]) : const SizedBox(),
+      SizedBox(height: widget.title ? Dimensions.paddingSizeExtraSmall : 0),
 
       Container(
         height: widget.maxLines != 5 ? 50 : 100,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-          boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 1, blurRadius: 5, offset: Offset(0, 5))],
+          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+          boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 5))],
         ),
         child: TextField(
           maxLines: widget.maxLines,
@@ -87,7 +87,7 @@ class _MyTextFieldState extends State<MyTextField> {
           readOnly: widget.readOnly,
           style: robotoRegular,
           textInputAction: widget.nextFocus != null ? widget.inputAction : TextInputAction.done,
-          keyboardType: widget.isAmount ? TextInputType.numberWithOptions(decimal: true) : widget.isNumber ? TextInputType.number : widget.inputType,
+          keyboardType: widget.isAmount ? const TextInputType.numberWithOptions(decimal: true) : widget.isNumber ? TextInputType.number : widget.inputType,
           autofillHints: widget.inputType == TextInputType.name ? [AutofillHints.name]
               : widget.inputType == TextInputType.emailAddress ? [AutofillHints.email]
               : widget.inputType == TextInputType.phone ? [AutofillHints.telephoneNumber]
@@ -108,23 +108,23 @@ class _MyTextFieldState extends State<MyTextField> {
             hintText: widget.hintText,
             isDense: true,
             filled: true,
-            fillColor: widget.fillColor != null ? widget.fillColor : Theme.of(context).cardColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), borderSide: BorderSide.none),
+            fillColor: widget.fillColor ?? Theme.of(context).cardColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), borderSide: BorderSide.none),
             hintStyle: robotoRegular.copyWith(color: Theme.of(context).hintColor),
             suffixIcon: widget.isPassword ? IconButton(
               icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).hintColor.withOpacity(0.3)),
               onPressed: _toggle,
             ) : null,
             prefixIcon: widget.amountIcon ? Padding(
-              padding: const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_DEFAULT, horizontal: Dimensions.PADDING_SIZE_SMALL),
-              child: Text(Get.find<SplashController>().configModel.currencySymbol, style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE)),
+              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault, horizontal: Dimensions.paddingSizeSmall),
+              child: Text(Get.find<SplashController>().configModel!.currencySymbol!, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
             ) : null,
           ),
-          onTap: widget.onTap,
+          onTap: widget.onTap as void Function()?,
           onSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
-              : widget.onSubmit != null ? widget.onSubmit(text) : null,
-          onChanged: widget.onChanged,
-          onEditingComplete: widget.onComplete,
+              : widget.onSubmit != null ? widget.onSubmit!(text) : null,
+          onChanged: widget.onChanged as void Function(String)?,
+          onEditingComplete: widget.onComplete as void Function()?,
         ),
       ),
 

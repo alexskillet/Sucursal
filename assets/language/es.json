@@ -519,5 +519,6 @@
   "limit": "Límite",
   "tax_included": "Impuesto incluido",
   "no_reasons_available": "No hay razones disponibles",
-  "rejected": "Rechazada"
+  "rejected": "Rechazada",
+  "enter_maximum_delivery_fee": "Enter maximum delivery fee"
 }

@@ -1,10 +1,10 @@
 class WithdrawModel {
-  int id;
-  double amount;
-  String updatedAt;
-  String status;
-  String bankName;
-  String requestedAt;
+  int? id;
+  double? amount;
+  String? updatedAt;
+  String? status;
+  String? bankName;
+  String? requestedAt;
 
   WithdrawModel({this.id, this.amount, this.updatedAt, this.status, this.bankName, this.requestedAt});
 
@@ -18,13 +18,13 @@ class WithdrawModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['amount'] = this.amount;
-    data['updated_at'] = this.updatedAt;
-    data['status'] = this.status;
-    data['bank_name'] = this.bankName;
-    data['requested_at'] = this.requestedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['amount'] = amount;
+    data['updated_at'] = updatedAt;
+    data['status'] = status;
+    data['bank_name'] = bankName;
+    data['requested_at'] = requestedAt;
     return data;
   }
 }

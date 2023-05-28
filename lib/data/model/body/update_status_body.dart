@@ -1,10 +1,10 @@
 class UpdateStatusBody {
-  String token;
-  int orderId;
-  String status;
-  String otp;
+  String? token;
+  int? orderId;
+  String? status;
+  String? otp;
   String method = 'put';
-  String reason;
+  String? reason;
 
   UpdateStatusBody({this.token, this.orderId, this.status, this.otp, this.reason});
 
@@ -18,14 +18,14 @@ class UpdateStatusBody {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['token'] = this.token;
-    data['order_id'] = this.orderId;
-    data['status'] = this.status;
-    data['otp'] = this.otp;
-    data['_method'] = this.method;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['token'] = token;
+    data['order_id'] = orderId;
+    data['status'] = status;
+    data['otp'] = otp;
+    data['_method'] = method;
     if(reason != '') {
-      data['reason'] = this.reason;
+      data['reason'] = reason;
     }
     return data;
   }

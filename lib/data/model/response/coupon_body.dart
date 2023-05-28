@@ -1,24 +1,24 @@
 class CouponBody {
-  int id;
-  String title;
-  String code;
-  String startDate;
-  String expireDate;
-  int minPurchase;
-  int maxDiscount;
-  int discount;
-  String discountType;
-  String couponType;
-  int limit;
-  int status;
-  String createdAt;
-  String updatedAt;
-  String data;
-  int totalUses;
-  String createdBy;
-  List<String> customerId;
-  String slug;
-  int restaurantId;
+  int? id;
+  String? title;
+  String? code;
+  String? startDate;
+  String? expireDate;
+  int? minPurchase;
+  int? maxDiscount;
+  int? discount;
+  String? discountType;
+  String? couponType;
+  int? limit;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
+  String? data;
+  int? totalUses;
+  String? createdBy;
+  List<String>? customerId;
+  String? slug;
+  int? restaurantId;
 
   CouponBody(
       {this.id,
@@ -66,27 +66,27 @@ class CouponBody {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['code'] = this.code;
-    data['start_date'] = this.startDate;
-    data['expire_date'] = this.expireDate;
-    data['min_purchase'] = this.minPurchase;
-    data['max_discount'] = this.maxDiscount;
-    data['discount'] = this.discount;
-    data['discount_type'] = this.discountType;
-    data['coupon_type'] = this.couponType;
-    data['limit'] = this.limit;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['code'] = code;
+    data['start_date'] = startDate;
+    data['expire_date'] = expireDate;
+    data['min_purchase'] = minPurchase;
+    data['max_discount'] = maxDiscount;
+    data['discount'] = discount;
+    data['discount_type'] = discountType;
+    data['coupon_type'] = couponType;
+    data['limit'] = limit;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     data['data'] = this.data;
-    data['total_uses'] = this.totalUses;
-    data['created_by'] = this.createdBy;
-    data['customer_id'] = this.customerId;
-    data['slug'] = this.slug;
-    data['restaurant_id'] = this.restaurantId;
+    data['total_uses'] = totalUses;
+    data['created_by'] = createdBy;
+    data['customer_id'] = customerId;
+    data['slug'] = slug;
+    data['restaurant_id'] = restaurantId;
     return data;
   }
 }

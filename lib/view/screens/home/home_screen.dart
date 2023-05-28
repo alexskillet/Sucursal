@@ -18,6 +18,8 @@ import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
 
   Future<void> _loadData() async {
     await Get.find<AuthController>().getProfile();
@@ -34,23 +36,23 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).cardColor,
         leading: Padding(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: Image.asset(Images.logo, height: 30, width: 30),
         ),
         titleSpacing: 0, elevation: 0,
-        title: Text(AppConstants.APP_NAME, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoMedium.copyWith(
-          color: Theme.of(context).textTheme.bodyText1.color, fontSize: Dimensions.FONT_SIZE_DEFAULT,
+        title: Text(AppConstants.appName, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoMedium.copyWith(
+          color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeDefault,
         )),
         actions: [IconButton(
           icon: GetBuilder<NotificationController>(builder: (notificationController) {
             return Stack(children: [
-              Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyText1.color),
+              Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyLarge!.color),
               notificationController.hasNotification ? Positioned(top: 0, right: 0, child: Container(
                 height: 10, width: 10, decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor, shape: BoxShape.circle,
                 border: Border.all(width: 1, color: Theme.of(context).cardColor),
               ),
-              )) : SizedBox(),
+              )) : const SizedBox(),
             ]);
           }),
           onPressed: () => Get.toNamed(RouteHelper.getNotificationRoute()),
@@ -62,35 +64,35 @@ class HomeScreen extends StatelessWidget {
           await _loadData();
         },
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-          physics: AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(children: [
 
             GetBuilder<AuthController>(builder: (authController) {
               return Column(children: [
-                Get.find<AuthController>().modulePermission.storeSetup ? Container(
-                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                Get.find<AuthController>().modulePermission!.storeSetup! ? Container(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                     color: Theme.of(context).cardColor,
-                    boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 200], spreadRadius: 1, blurRadius: 5)],
+                    boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 200]!, spreadRadius: 1, blurRadius: 5)],
                   ),
                   child: Row(children: [
                     Expanded(child: Text(
-                      Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText
+                      Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
                           ? 'restaurant_temporarily_closed'.tr : 'store_temporarily_closed'.tr, style: robotoMedium,
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                     )),
                     authController.profileModel != null ? Switch(
-                      value: !authController.profileModel.stores[0].active,
+                      value: !authController.profileModel!.stores![0].active!,
                       activeColor: Theme.of(context).primaryColor,
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       onChanged: (bool isActive) {
-                        bool _showRestaurantText = Get.find<SplashController>().configModel.moduleConfig.module.showRestaurantText;
+                        bool? showRestaurantText = Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText;
                         Get.dialog(ConfirmationDialog(
                           icon: Images.warning,
-                          description: isActive ? _showRestaurantText ? 'are_you_sure_to_close_restaurant'.tr
-                              : 'are_you_sure_to_close_store'.tr : _showRestaurantText ? 'are_you_sure_to_open_restaurant'.tr
+                          description: isActive ? showRestaurantText! ? 'are_you_sure_to_close_restaurant'.tr
+                              : 'are_you_sure_to_close_store'.tr : showRestaurantText! ? 'are_you_sure_to_open_restaurant'.tr
                               : 'are_you_sure_to_open_store'.tr,
                           onYesPressed: () {
                             Get.back();
@@ -98,90 +100,90 @@ class HomeScreen extends StatelessWidget {
                           },
                         ));
                       },
-                    ) : Shimmer(duration: Duration(seconds: 2), child: Container(height: 30, width: 50, color: Colors.grey[300])),
+                    ) : Shimmer(duration: const Duration(seconds: 2), child: Container(height: 30, width: 50, color: Colors.grey[300])),
                   ]),
-                ) : SizedBox(),
-                SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                ) : const SizedBox(),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                authController.modulePermission.wallet ? Container(
-                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                authController.modulePermission!.wallet! ? Container(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                     color: Theme.of(context).primaryColor,
                   ),
                   child: Column(children: [
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       Image.asset(Images.wallet, width: 60, height: 60),
-                      SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                      const SizedBox(width: Dimensions.paddingSizeLarge),
                       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(
                           'today'.tr,
-                          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).cardColor),
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
                         ),
-                        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
                         Text(
-                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel.todaysEarning) : '0',
+                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel!.todaysEarning) : '0',
                           style: robotoBold.copyWith(fontSize: 24, color: Theme.of(context).cardColor),
                         ),
                       ]),
                     ]),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(children: [
                       Expanded(child: Column(children: [
                         Text(
                           'this_week'.tr,
-                          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).cardColor),
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
                         ),
-                        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
                         Text(
-                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel.thisWeekEarning) : '0',
-                          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Theme.of(context).cardColor),
+                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel!.thisWeekEarning) : '0',
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).cardColor),
                         ),
                       ])),
                       Container(height: 30, width: 1, color: Theme.of(context).cardColor),
                       Expanded(child: Column(children: [
                         Text(
                           'this_month'.tr,
-                          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).cardColor),
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
                         ),
-                        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
                         Text(
-                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel.thisMonthEarning) : '0',
-                          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE, color: Theme.of(context).cardColor),
+                          authController.profileModel != null ? PriceConverter.convertPrice(authController.profileModel!.thisMonthEarning) : '0',
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).cardColor),
                         ),
                       ])),
                     ]),
                   ]),
-                ) : SizedBox(),
+                ) : const SizedBox(),
               ]);
             }),
-            SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
 
             GetBuilder<OrderController>(builder: (orderController) {
-              List<OrderModel> _orderList = [];
+              List<OrderModel> orderList = [];
               if(orderController.runningOrders != null) {
-                _orderList = orderController.runningOrders[orderController.orderIndex].orderList;
+                orderList = orderController.runningOrders![orderController.orderIndex].orderList;
               }
 
-              return Get.find<AuthController>().modulePermission.order ? Column(children: [
+              return Get.find<AuthController>().modulePermission!.order! ? Column(children: [
 
                 orderController.runningOrders != null ? Container(
                   height: 40,
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).disabledColor, width: 1),
-                    borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                   ),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: orderController.runningOrders.length,
+                    itemCount: orderController.runningOrders!.length,
                     itemBuilder: (context, index) {
                       return OrderButton(
-                        title: orderController.runningOrders[index].status.tr, index: index,
+                        title: orderController.runningOrders![index].status.tr, index: index,
                         orderController: orderController, fromHistory: false,
                       );
                     },
                   ),
-                ) : SizedBox(),
+                ) : const SizedBox(),
 
                 orderController.runningOrders != null ? InkWell(
                   onTap: () => orderController.toggleCampaignOnly(),
@@ -193,23 +195,23 @@ class HomeScreen extends StatelessWidget {
                     ),
                     Text(
                       'campaign_order'.tr,
-                      style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Theme.of(context).disabledColor),
+                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                     ),
                   ]),
-                ) : SizedBox(),
+                ) : const SizedBox(),
 
-                orderController.runningOrders != null ? _orderList.length > 0 ? ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                orderController.runningOrders != null ? orderList.isNotEmpty ? ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: _orderList.length,
+                  itemCount: orderList.length,
                   itemBuilder: (context, index) {
-                    return OrderWidget(orderModel: _orderList[index], hasDivider: index != _orderList.length-1, isRunning: true);
+                    return OrderWidget(orderModel: orderList[index], hasDivider: index != orderList.length-1, isRunning: true);
                   },
                 ) : Padding(
-                  padding: EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.only(top: 50),
                   child: Center(child: Text('no_order_found'.tr)),
                 ) : ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: 10,
                   itemBuilder: (context, index) {

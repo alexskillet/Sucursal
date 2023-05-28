@@ -26,84 +26,84 @@ class ItemWidget extends StatelessWidget {
   final int length;
   final bool inStore;
   final bool isCampaign;
-  ItemWidget({@required this.item, @required this.index,
-   @required this.length, this.inStore = false, this.isCampaign = false});
+  const ItemWidget({Key? key, required this.item, required this.index,
+   required this.length, this.inStore = false, this.isCampaign = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    BaseUrls _baseUrls = Get.find<SplashController>().configModel.baseUrls;
-    bool _desktop = ResponsiveHelper.isDesktop(context);
-    double _discount;
-    String _discountType;
-    bool _isAvailable;
-    _discount = (item.storeDiscount == 0 || isCampaign) ? item.discount : item.storeDiscount;
-    _discountType = (item.storeDiscount == 0 || isCampaign) ? item.discountType : 'percent';
-    _isAvailable = DateConverter.isAvailable(item.availableTimeStarts, item.availableTimeEnds);
+    BaseUrls? baseUrls = Get.find<SplashController>().configModel!.baseUrls;
+    bool desktop = ResponsiveHelper.isDesktop(context);
+    double? discount;
+    String? discountType;
+    bool isAvailable;
+    discount = (item.storeDiscount == 0 || isCampaign) ? item.discount : item.storeDiscount;
+    discountType = (item.storeDiscount == 0 || isCampaign) ? item.discountType : 'percent';
+    isAvailable = DateConverter.isAvailable(item.availableTimeStarts, item.availableTimeEnds);
 
     return InkWell(
       onTap: () => Get.toNamed(RouteHelper.getItemDetailsRoute(item), arguments: ItemDetailsScreen(item: item)),
       child: Container(
-        padding: ResponsiveHelper.isDesktop(context) ? EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL) : null,
+        padding: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.all(Dimensions.paddingSizeSmall) : null,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
           color: ResponsiveHelper.isDesktop(context) ? Theme.of(context).cardColor : null,
           boxShadow: ResponsiveHelper.isDesktop(context) ? [BoxShadow(
-            color: Colors.grey[Get.isDarkMode ? 700 : 300], spreadRadius: 1, blurRadius: 5,
+            color: Colors.grey[Get.isDarkMode ? 700 : 300]!, spreadRadius: 1, blurRadius: 5,
           )] : null,
         ),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
           Expanded(child: Padding(
-            padding: EdgeInsets.symmetric(vertical: _desktop ? 0 : Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            padding: EdgeInsets.symmetric(vertical: desktop ? 0 : Dimensions.paddingSizeExtraSmall),
             child: Row(children: [
 
               Stack(children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                   child: CustomImage(
-                    image: '${isCampaign ? _baseUrls.campaignImageUrl : _baseUrls.itemImageUrl}/${item.image}',
-                    height: _desktop ? 120 : 65, width: _desktop ? 120 : 80, fit: BoxFit.cover,
+                    image: '${isCampaign ? baseUrls!.campaignImageUrl : baseUrls!.itemImageUrl}/${item.image}',
+                    height: desktop ? 120 : 65, width: desktop ? 120 : 80, fit: BoxFit.cover,
                   ),
                 ),
                 DiscountTag(
-                  discount: _discount, discountType: _discountType,
+                  discount: discount, discountType: discountType,
                   freeDelivery: false,
                 ),
-                _isAvailable ? SizedBox() : NotAvailableWidget(isStore: false),
+                isAvailable ? const SizedBox() : const NotAvailableWidget(isStore: false),
               ]),
-              SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
 
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 
                   Text(
-                    item.name,
-                    style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-                    maxLines: _desktop ? 2 : 1, overflow: TextOverflow.ellipsis,
+                    item.name!,
+                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                    maxLines: desktop ? 2 : 1, overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                   RatingBar(
-                    rating: item.avgRating, size: _desktop ? 15 : 12,
+                    rating: item.avgRating, size: desktop ? 15 : 12,
                     ratingCount: item.ratingCount,
                   ),
 
                   Row(children: [
 
                     Text(
-                      PriceConverter.convertPrice(item.price, discount: _discount, discountType: _discountType),
-                      style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+                      PriceConverter.convertPrice(item.price, discount: discount, discountType: discountType),
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                     ),
-                    SizedBox(width: _discount > 0 ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+                    SizedBox(width: discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
 
-                    _discount > 0 ? Text(
+                    discount > 0 ? Text(
                       PriceConverter.convertPrice(item.price),
                       style: robotoMedium.copyWith(
-                        fontSize: Dimensions.FONT_SIZE_EXTRA_SMALL,
+                        fontSize: Dimensions.fontSizeExtraSmall,
                         color: Theme.of(context).disabledColor,
                         decoration: TextDecoration.lineThrough,
                       ),
-                    ) : SizedBox(),
+                    ) : const SizedBox(),
 
                   ]),
 
@@ -112,18 +112,18 @@ class ItemWidget extends StatelessWidget {
 
               IconButton(
                 onPressed: () {
-                  if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
+                  if(Get.find<AuthController>().profileModel!.stores![0].itemSection!) {
                     Get.toNamed(RouteHelper.getItemRoute(item));
                   }else {
                     showCustomSnackBar('this_feature_is_blocked_by_admin'.tr);
                   }
                 },
-                icon: Icon(Icons.edit, color: Colors.blue),
+                icon: const Icon(Icons.edit, color: Colors.blue),
               ),
 
               IconButton(
                 onPressed: () {
-                  if(Get.find<AuthController>().profileModel.stores[0].itemSection) {
+                  if(Get.find<AuthController>().profileModel!.stores![0].itemSection!) {
                     Get.dialog(ConfirmationDialog(
                       icon: Images.warning, description: 'are_you_sure_want_to_delete_this_product'.tr,
                       onYesPressed: () => Get.find<StoreController>().deleteItem(item.id),
@@ -132,14 +132,14 @@ class ItemWidget extends StatelessWidget {
                     showCustomSnackBar('this_feature_is_blocked_by_admin'.tr);
                   }
                 },
-                icon: Icon(Icons.delete_forever, color: Colors.red),
+                icon: const Icon(Icons.delete_forever, color: Colors.red),
               ),
 
             ]),
           )),
 
-          _desktop ? SizedBox() : Padding(
-            padding: EdgeInsets.only(left: _desktop ? 130 : 90),
+          desktop ? const SizedBox() : Padding(
+            padding: EdgeInsets.only(left: desktop ? 130 : 90),
             child: Divider(color: index == length-1 ? Colors.transparent : Theme.of(context).disabledColor),
           ),
 

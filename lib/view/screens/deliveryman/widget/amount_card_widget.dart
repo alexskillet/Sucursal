@@ -6,25 +6,25 @@ class AmountCardWidget extends StatelessWidget {
   final String title;
   final String value;
   final Color color;
-  AmountCardWidget({@required this.title, @required this.value, @required this.color});
+  const AmountCardWidget({Key? key, required this.title, required this.value, required this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(child: Container(
       height: 100,
-      padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
         color: color,
       ),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
-        Text(value, style: robotoBold.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: Colors.white)),
-        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+        Text(value, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white)),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
 
         Text(
           title, textAlign: TextAlign.center,
-          style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: Colors.white),
+          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Colors.white),
         ),
 
       ]),

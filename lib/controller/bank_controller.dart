@@ -4,23 +4,22 @@ import 'package:sixam_mart_store/data/model/body/bank_info_body.dart';
 import 'package:sixam_mart_store/data/model/response/bank_repo.dart';
 import 'package:sixam_mart_store/data/model/response/withdraw_model.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BankController extends GetxController implements GetxService {
   final BankRepo bankRepo;
-  BankController({@required this.bankRepo});
+  BankController({required this.bankRepo});
 
   bool _isLoading = false;
-  List<WithdrawModel> _withdrawList;
-  List<WithdrawModel> _allWithdrawList;
+  List<WithdrawModel>? _withdrawList;
+  late List<WithdrawModel> _allWithdrawList;
   double _pendingWithdraw = 0;
   double _withdrawn = 0;
-  List<String> _statusList = ['All', 'Pending', 'Approved', 'Denied'];
+  final List<String> _statusList = ['All', 'Pending', 'Approved', 'Denied'];
   int _filterIndex = 0;
 
   bool get isLoading => _isLoading;
-  List<WithdrawModel> get withdrawList => _withdrawList;
+  List<WithdrawModel>? get withdrawList => _withdrawList;
   double get pendingWithdraw => _pendingWithdraw;
   double get withdrawn => _withdrawn;
   List<String> get statusList => _statusList;
@@ -49,13 +48,13 @@ class BankController extends GetxController implements GetxService {
       _pendingWithdraw = 0;
       _withdrawn = 0;
       response.body.forEach((withdraw) {
-        WithdrawModel _withdrawModel = WithdrawModel.fromJson(withdraw);
-        _withdrawList.add(_withdrawModel);
-        _allWithdrawList.add(_withdrawModel);
-        if(_withdrawModel.status == 'Pending') {
-          _pendingWithdraw = _pendingWithdraw + _withdrawModel.amount;
-        }else if(_withdrawModel.status == 'Approved') {
-          _withdrawn = _withdrawn + _withdrawModel.amount;
+        WithdrawModel withdrawModel = WithdrawModel.fromJson(withdraw);
+        _withdrawList!.add(withdrawModel);
+        _allWithdrawList.add(withdrawModel);
+        if(withdrawModel.status == 'Pending') {
+          _pendingWithdraw = _pendingWithdraw + withdrawModel.amount!;
+        }else if(withdrawModel.status == 'Approved') {
+          _withdrawn = _withdrawn + withdrawModel.amount!;
         }
       });
     }else {
@@ -68,13 +67,13 @@ class BankController extends GetxController implements GetxService {
     _filterIndex = index;
     _withdrawList = [];
     if(index == 0) {
-      _withdrawList.addAll(_allWithdrawList);
+      _withdrawList!.addAll(_allWithdrawList);
     }else {
-      _allWithdrawList.forEach((withdraw) {
+      for (var withdraw in _allWithdrawList) {
         if(withdraw.status == _statusList[index]) {
-          _withdrawList.add(withdraw);
+          _withdrawList!.add(withdraw);
         }
-      });
+      }
     }
     update();
   }

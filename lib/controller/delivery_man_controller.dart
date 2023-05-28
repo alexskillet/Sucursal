@@ -3,37 +3,36 @@ import 'package:sixam_mart_store/data/model/response/delivery_man_model.dart';
 import 'package:sixam_mart_store/data/model/response/review_model.dart';
 import 'package:sixam_mart_store/data/repository/delivery_man_repo.dart';
 import 'package:sixam_mart_store/view/base/custom_snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DeliveryManController extends GetxController implements GetxService {
   final DeliveryManRepo deliveryManRepo;
-  DeliveryManController({@required this.deliveryManRepo});
+  DeliveryManController({required this.deliveryManRepo});
 
-  List<DeliveryManModel> _deliveryManList;
-  XFile _pickedImage;
+  List<DeliveryManModel>? _deliveryManList;
+  XFile? _pickedImage;
   List<XFile> _pickedIdentities = [];
-  List<String> _identityTypeList = ['passport', 'driving_license', 'nid'];
+  final List<String> _identityTypeList = ['passport', 'driving_license', 'nid'];
   int _identityTypeIndex = 0;
   bool _isLoading = false;
-  List<ReviewModel> _dmReviewList;
+  List<ReviewModel>? _dmReviewList;
   bool _isSuspended = false;
 
-  List<DeliveryManModel> get deliveryManList => _deliveryManList;
-  XFile get pickedImage => _pickedImage;
+  List<DeliveryManModel>? get deliveryManList => _deliveryManList;
+  XFile? get pickedImage => _pickedImage;
   List<XFile> get pickedIdentities => _pickedIdentities;
   List<String> get identityTypeList => _identityTypeList;
   int get identityTypeIndex => _identityTypeIndex;
   bool get isLoading => _isLoading;
-  List<ReviewModel> get dmReviewList => _dmReviewList;
+  List<ReviewModel>? get dmReviewList => _dmReviewList;
   bool get isSuspended => _isSuspended;
 
   Future<void> getDeliveryManList() async {
     Response response = await deliveryManRepo.getDeliveryManList();
     if(response.statusCode == 200) {
       _deliveryManList = [];
-      response.body.forEach((deliveryMan) => _deliveryManList.add(DeliveryManModel.fromJson(deliveryMan)));
+      response.body.forEach((deliveryMan) => _deliveryManList!.add(DeliveryManModel.fromJson(deliveryMan)));
     }else {
       ApiChecker.checkApi(response);
     }
@@ -55,7 +54,7 @@ class DeliveryManController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> deleteDeliveryMan(int deliveryManID) async {
+  Future<void> deleteDeliveryMan(int? deliveryManID) async {
     _isLoading = true;
     update();
     Response response = await deliveryManRepo.deleteDeliveryMan(deliveryManID);
@@ -74,7 +73,7 @@ class DeliveryManController extends GetxController implements GetxService {
     _isSuspended = isSuspended;
   }
 
-  void toggleSuspension(int deliveryManID) async {
+  void toggleSuspension(int? deliveryManID) async {
     _isLoading = true;
     update();
     Response response = await deliveryManRepo.updateDeliveryManStatus(deliveryManID, _isSuspended ? 1 : 0);
@@ -92,27 +91,27 @@ class DeliveryManController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getDeliveryManReviewList(int deliveryManID) async {
+  Future<void> getDeliveryManReviewList(int? deliveryManID) async {
     _dmReviewList = null;
     Response response = await deliveryManRepo.getDeliveryManReviews(deliveryManID);
     if(response.statusCode == 200) {
       _dmReviewList = [];
-      response.body['reviews'].forEach((review) => _dmReviewList.add(ReviewModel.fromJson(review)));
+      response.body['reviews'].forEach((review) => _dmReviewList!.add(ReviewModel.fromJson(review)));
     }else {
       ApiChecker.checkApi(response);
     }
     update();
   }
 
-  void setIdentityTypeIndex(String identityType, bool notify) {
-    int _index = 0;
+  void setIdentityTypeIndex(String? identityType, bool notify) {
+    int index0 = 0;
     for(int index=0; index<_identityTypeList.length; index++) {
       if(_identityTypeList[index] == identityType) {
-        _index = index;
+        index0 = index;
         break;
       }
     }
-    _identityTypeIndex = _index;
+    _identityTypeIndex = index0;
     if(notify) {
       update();
     }
@@ -124,14 +123,14 @@ class DeliveryManController extends GetxController implements GetxService {
       _pickedIdentities = [];
     }else {
       if (isLogo) {
-        XFile _picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-        if(_picked != null) {
-          _pickedImage = _picked;
+        XFile? picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+        if(picked != null) {
+          _pickedImage = picked;
         }
       } else {
-        XFile _xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-        if(_xFile != null) {
-          _pickedIdentities.add(_xFile);
+        XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+        if(xFile != null) {
+          _pickedIdentities.add(xFile);
         }
       }
       update();
